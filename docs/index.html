@@ -39,6 +39,12 @@ main{padding:0 20px 40px}
 .tile{border-radius:8px;padding:9px 10px;cursor:pointer;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);transition:transform .12s,opacity .2s}
 .tile:hover{transform:translateY(-2px);outline:1px solid rgba(255,255,255,.5)}
 .tile.dim{opacity:.18}
+.chp{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
+.chp label{font-size:10px;color:var(--mut);letter-spacing:.1em}
+.lk{cursor:pointer;border-bottom:1px dotted var(--acc)}.lk:hover{color:var(--acc)}
+.cth{max-height:420px;overflow:auto;margin-top:8px;border:1px solid var(--line);border-radius:6px}
+.cth th{position:sticky;top:0;background:var(--panel2);z-index:1}
+.cth td,.cth th{text-align:right;white-space:nowrap}.cth td:first-child,.cth th:first-child{text-align:left}
 .hleg{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--mut);letter-spacing:.06em;margin-bottom:2px}
 .hleg i{flex:0 1 260px;height:8px;border-radius:4px}
 .tn{font-size:12px;font-weight:700}.ts{font-size:24px;font-weight:700;line-height:1.1}.td{font-size:10px;opacity:.9}
@@ -170,7 +176,7 @@ const fDT = s => { if (!s) return 'N/A'; const d = new Date(s); return isNaN(d) 
 const num = v => (v === undefined || v === null || v === '') ? null : Number(v);
 
 let P = null;
-let S = { page: 'home', tf: 'WEEKLY', filter: 'ALL', pair: 'EUR/USD', inst: 'EUR', gq: '' };
+let S = { page: 'home', tf: 'WEEKLY', filter: 'ALL', pair: 'EUR/USD', inst: 'EUR', gq: '', chi: '' };
 const TFS = ['DAILY','WEEKLY','MONTHLY','QUARTERLY','6 MONTH','ANNUAL'];
 const TFL = { 'DAILY':'Daily','WEEKLY':'Weekly','MONTHLY':'Monthly','QUARTERLY':'Quarterly','6 MONTH':'6 Month','ANNUAL':'Annual' };
 const FILTERS = ['ALL','BULLISH','BEARISH','EXTREME','REVERSAL','DIVERGENCE','ACCELERATING','MULTI TF ALIGNED'];
@@ -911,6 +917,8 @@ document.addEventListener('click', ev => {
   const t = ev.target;
   if (!t.closest) return;
   if (t.id === 'info' || t.closest('[data-close]')) { closeInfo(); return; }
+  const ci = t.closest('[data-chi]');
+  if (ci) { S.chi = ci.dataset.chi; render(); return; }
   const sf = t.closest('[data-setf]');
   if (sf) { S.filter = sf.dataset.setf; S.page = 'home'; closeInfo(); render(); window.scrollTo(0, 0); return; }
   const el = t.closest('[data-go]'), ke = t.closest('[data-k]'), ge = t.closest('[data-g]');
@@ -941,7 +949,7 @@ function lineChart(vals, o) {
   const pts = vals.map((v, i) => ({ v: num(v), i })).filter(p => p.v !== null);
   if (pts.length < 2) return '<div class="mut small">' + esc(o.title || '') + ': no data</div>';
   let lo = o.lo, hi = o.hi;
-  if (lo === undefined) { lo = Math.min.apply(null, pts.map(p => p.v)); hi = Math.max.apply(null, pts.map(p => p.v)); const pad = (hi - lo) * .08 || 1; lo -= pad; hi += pad; }
+  if (lo === undefined) { lo = Math.min.apply(null, pts.map(p => p.v)); hi = Math.max.apply(null, pts.map(p => p.v)); if (o.incZero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); } const pad = (hi - lo) * .08 || 1; lo -= pad; hi += pad; }
   const X = i => pl + (W - pl - pr) * i / (vals.length - 1);
   const Y = v => pt + (H - pt - pb) * (1 - (v - lo) / (hi - lo));
   let g = '';
@@ -1021,6 +1029,37 @@ function controls() {
   document.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { S.filter = b.dataset.f; render(); });
 }
 
+/* ---- "What changed" panel: pick an instrument to see its last six months of COT reports ---- */
+function chPicker() {
+  const opts = ['<option value="">All markets \u00b7 what changed this week</option>'].concat(P.insts.map(i => '<option value="' + esc(i) + '" ' + (S.chi === i ? 'selected' : '') + '>' + esc(i) + ' \u00b7 6-month COT history</option>'));
+  return '<div class="chp"><label for="chi">SHOW</label><select id="chi">' + opts.join('') + '</select>' + (S.chi ? '<button class="btn" data-chi="">BACK TO ALL CHANGES</button>' : '<span class="mut small">or click a market name below</span>') + '</div>';
+}
+function cotHistory(name) {
+  const rows = (P.cot || {})[name];
+  if (!rows || !rows.length) return '<div class="note">The report history for ' + esc(name) + ' will appear after the next data update.</div>';
+  const der = {};
+  (P.hist[name + '|Instrument'] || []).forEach(h => { der[h[0]] = h; });
+  const net = rows.map(r => r[1] - r[2]);
+  const first = net[0], last = net[net.length - 1], d = last - first;
+  const side = v => v > 0 ? 'net long (betting on a rise)' : v < 0 ? 'net short (betting on a fall)' : 'flat';
+  const summary = 'Over these ' + rows.length + ' reports speculators went from ' + fInt(first) + ' to ' + fInt(last) + ' contracts, ' + side(last) + '. That is ' +
+    (d === 0 ? 'no change' : (d > 0 ? 'a move towards buying of ' : 'a move towards selling of ') + fInt(Math.abs(d)) + ' contracts') + '.';
+  const mine = P.changes.filter(c => c.Kind === 'Instrument' && c.Item === name);
+  const wk = mine.length ? mine.map(c => esc(c.Metric) + ' ' + (Number(c.Change) > 0 ? '+' : '') + (c.Unit === '\u03c3' ? Number(c.Change).toFixed(1) + '\u03c3' : Math.round(Number(c.Change)))).join(' \u00b7 ') : 'no meaningful change';
+  const sg = v => '<span class="' + (v > 0 ? 'pos' : v < 0 ? 'neg' : '') + '">' + (v > 0 ? '+' : '') + fInt(v) + '</span>';
+  const body = rows.slice().reverse().map(r => {
+    const n = r[1] - r[2], h = der[r[0]] || [];
+    return '<tr><td>' + fD(r[0]) + '</td><td>' + fInt(r[1]) + '</td><td>' + fInt(r[2]) + '</td><td>' + N(n, 'netPos', {}, (n > 0 ? '+' : '') + fInt(n)) + '</td><td>' + sg(r[3] - r[4]) + '</td><td>' +
+      (isNum(num(h[2])) ? N(num(h[2]), 'netPctl') : '<span class="mut">N/A</span>') + '</td><td>' + (isNum(num(h[1])) ? '<b style="color:' + col(num(h[1])) + '">' + N(num(h[1]), 'strength') + '</b>' : '<span class="mut">N/A</span>') + '</td></tr>';
+  }).join('');
+  return '<div class="note">' + esc(summary) + '</div>' +
+    '<div class="small mut">This week for ' + esc(name) + ': ' + wk + '</div>' +
+    lineChart(net, { title: 'NET POSITION, ' + fD(rows[0][0]) + ' to ' + fD(rows[rows.length - 1][0]) + ' (contracts, dashed line = zero)', dates: rows.map(r => r[0]), zero: 0, color: last >= 0 ? '#58c26d' : '#f0624d', fmt: v => fInt(v), h: 120, incZero: true }) +
+    '<div class="cth"><table><tr><th>REPORT DATE</th><th>LONG</th><th>SHORT</th><th>NET</th><th>NET CHANGE</th><th>RANK</th><th>STRENGTH</th></tr>' + body + '</table></div>' +
+    '<div class="small mut" style="margin-top:6px"><b>Long</b> = contracts betting on a rise. <b>Short</b> = contracts betting on a fall. <b>Net</b> = long minus short. <b>Net change</b> = how net moved that week. <b>Rank</b> = how net compares with its own history (0 lowest, 100 highest). Click any underlined number for an explanation. ' +
+    '<button class="btn" data-go="inst:' + esc(name) + '" style="margin-left:6px">OPEN ' + esc(name) + ' ANALYSIS</button></div>';
+}
+
 function pHome() {
   const pr = rowsOf('Pair'), ins = rowsOf('Instrument');
   const bull = pr.filter(r => sgn(r.Score) === 1).length, bear = pr.filter(r => sgn(r.Score) === -1).length;
@@ -1034,7 +1073,7 @@ function pHome() {
   const hm = groups.map(g => { const rs = pr.filter(r => r.Group === g); return rs.length ? '<div class="glabel">' + g.toUpperCase() + '</div><div class="hm">' + rs.map(tile).join('') + '</div>' : ''; }).join('');
   const ccy = ins.filter(r => r.Group === 'Currency').slice().sort((a, b) => (b.Score || -999) - (a.Score || -999));
   const com = ins.filter(r => r.Group !== 'Currency');
-  const ch = P.changes.slice(0, 12).map(c => '<li><span><b>' + esc(c.Item) + '</b> <span class="mut">' + esc(c.Metric) + '</span></span><span>' + N(Number(c.Change), 'chg', { metric: c.Item + ' ' + c.Metric }, (Number(c.Change) > 0 ? '+' : '') + (c.Unit === '\u03c3' ? Number(c.Change).toFixed(1) + '\u03c3' : Math.round(Number(c.Change)))) + '</span></li>').join('') || '<li class="mut">No meaningful changes.</li>';
+  const ch = P.changes.slice(0, 12).map(c => '<li><span>' + (c.Kind === 'Instrument' ? '<b class="lk" data-chi="' + esc(c.Item) + '" title="Show the last six months of COT reports for ' + esc(c.Item) + '">' + esc(c.Item) + '</b>' : '<b>' + esc(c.Item) + '</b>') + ' <span class="mut">' + esc(c.Metric) + '</span></span><span>' + N(Number(c.Change), 'chg', { metric: c.Item + ' ' + c.Metric }, (Number(c.Change) > 0 ? '+' : '') + (c.Unit === '\u03c3' ? Number(c.Change).toFixed(1) + '\u03c3' : Math.round(Number(c.Change)))) + '</span></li>').join('') || '<li class="mut">No meaningful changes.</li>';
   const wt = P.watch.slice(0, 10).map(w => '<li data-go="' + (w.Kind === 'Pair' ? 'pair:' : 'inst:') + esc(w.Item) + '" style="cursor:pointer"><span><b>' + esc(w.Item) + '</b> <span class="mut small">' + esc(w.Reasons) + '</span></span><span style="color:' + col(Number(w.Score)) + ';font-weight:700">' + (w.Score === undefined ? 'N/A' : fS(Number(w.Score))) + '</span></li>').join('') || '<li class="mut">Nothing flagged.</li>';
   const exl = ins.filter(r => r.Extreme !== 'No' || r.Reversal !== 'No').map(r => '<tr class="click" data-go="inst:' + esc(r.Item) + '"><td><b>' + esc(r.Item) + '</b></td><td>' + N(r['Net Percentile'], 'netPctl') + '</td><td>' + esc(r.Extreme) + '</td><td>' + esc(r.Reversal) + '</td></tr>').join('') || '<tr><td colspan="4" class="mut">None.</td></tr>';
   const dvl = pr.concat(ins).filter(r => r['COT Price Relationship'] === 'DIVERGING').slice(0, 10).map(r => '<tr class="click" data-go="' + (r.Kind === 'Pair' ? 'pair:' : 'inst:') + esc(r.Item) + '"><td><b>' + esc(r.Item) + '</b></td><td>' + esc(r['Divergence Type']) + '</td><td>' + esc(r['Price Direction']) + '</td></tr>').join('') || '<tr><td colspan="3" class="mut">None.</td></tr>';
@@ -1042,7 +1081,7 @@ function pHome() {
   const dq = P.status;
   return '<div class="panel"><h2>Market regime \u00b7 ' + TFL[S.tf] + ' \u00b7 hover for a quick read, click for the full explanation</h2><div class="kpis">' + k(bull, 'nBull', 'BULLISH PAIRS') + k(bear, 'nBear', 'BEARISH PAIRS') + k(neu, 'nNeutral', 'NEUTRAL PAIRS') + k(ext, 'nExtreme', 'EXTREME POSITIONING') + k(rev, 'nReversal', 'REVERSAL CONDITIONS') + k(mom, 'nMomentum', 'STRONG MOMENTUM') + k(div, 'nDiverge', 'COT / PRICE DIVERGENCES') + k(P.live.daysSince, 'daysSince', 'DAYS SINCE COT') + '</div></div>' +
     '<div class="panel"><h2>Pair heatmap \u00b7 hover for intelligence, click for analysis</h2>' + heatLegend() + hm + '</div>' +
-    '<div class="row r2"><div class="panel"><h2>What changed since last COT report</h2><ul class="l">' + ch + '</ul></div><div class="panel"><h2>Markets to watch \u00b7 monitoring only</h2><ul class="l">' + wt + '</ul></div></div>' +
+    '<div class="row r2"><div class="panel"><h2>What changed since last COT report</h2>' + chPicker() + (S.chi ? cotHistory(S.chi) : '<ul class="l">' + ch + '</ul>') + '</div><div class="panel"><h2>Markets to watch \u00b7 monitoring only</h2><ul class="l">' + wt + '</ul></div></div>' +
     '<div class="row r2"><div class="panel"><h2>Currency strength</h2><div class="ct">' + ccy.map(tile).join('') + '</div></div><div class="panel"><h2>Commodity strength</h2><div class="ct">' + com.map(tile).join('') + '</div></div></div>' +
     '<div class="row r2"><div class="panel"><h2>Extremes / reversals</h2><table><tr><th>INSTRUMENT</th><th>PERCENTILE</th><th>EXTREME</th><th>REVERSAL</th></tr>' + exl + '</table></div><div class="panel"><h2>COT / price divergences</h2><table><tr><th>MARKET</th><th>TYPE</th><th>PRICE</th></tr>' + dvl + '</table></div></div>' +
     '<div class="panel"><h2>Selected market</h2><div style="margin-bottom:8px">' + selectBox('hp', P.pairs, S.pair) + ' <button class="btn" data-go="pair:' + esc(S.pair) + '">OPEN FULL ANALYSIS</button></div>' + (sel ? '<div class="gauges">' + gauge(sel.Score, { title: S.pair + ' BIAS', kind: 'bias' }) + gauge(sel['Base Strength'], { title: sel.Base + ' STRENGTH', kind: 'strength', sm: true }) + gauge(sel['Quote Strength'], { title: sel.Quote + ' STRENGTH', kind: 'strength', sm: true }) + '</div>' : '') + '</div>' +
@@ -1238,6 +1277,7 @@ function render() {
   catch (e) { $('page').innerHTML = '<div class="warn">Render error: ' + esc(e.message) + '</div>'; }
   const on = (id, fn) => { const el = $(id); if (el) el.onchange = fn; };
   on('hp', e => { S.pair = e.target.value; render(); });
+  on('chi', e => { S.chi = e.target.value; render(); });
   on('pp', e => { S.pair = e.target.value; render(); });
   on('ip', e => { S.inst = e.target.value; render(); });
   on('hcp', e => { S.pair = e.target.value; render(); });
