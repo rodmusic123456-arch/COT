@@ -222,6 +222,7 @@ function build(opts) {
     changes: toObjects(['Item', 'Kind', 'Metric', 'Previous', 'Current', 'Change', 'Unit', 'Magnitude', 'Display'], out.changes),
     watch: toObjects(['Item', 'Kind', 'Score', 'Direction', 'Reasons', 'Reason Count', 'Primary Reason'], out.watch),
     hist: hist,
+    cot: cot.loadRecentReports(183),
     hasBacktest: !!backtest,
     stamp: stamp,
     serverTime: isoNow

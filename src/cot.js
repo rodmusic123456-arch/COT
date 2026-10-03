@@ -117,4 +117,23 @@ function loadHistories() {
   return out;
 }
 
-module.exports = { updateCOT, loadHistories, FILE };
+// Raw report rows for the dashboard's "COT report history" view: the latest `days` days per instrument.
+// Shape: { EUR: [[date, long, short, changeLong, changeShort, openInterest], ...] } oldest first.
+// The Dollar Index is published under the dashboard's instrument name, USD.
+function loadRecentReports(days) {
+  const store = readJSON(FILE, {});
+  const out = {};
+
+  Object.keys(engine.HISTORICAL_INSTRUMENTS).forEach(function (name) {
+    const rows = store[name] || [];
+    if (!rows.length) return;
+    const from = dayKeyBack(rows[rows.length - 1].d, days);
+    out[name === 'Dollar Index' ? 'USD' : name] = rows
+      .filter(function (r) { return r.d >= from; })
+      .map(function (r) { return [r.d, r.long, r.short, r.cl, r.cs, r.oi]; });
+  });
+
+  return out;
+}
+
+module.exports = { updateCOT, loadHistories, loadRecentReports, FILE };

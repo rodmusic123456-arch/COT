@@ -145,3 +145,16 @@ test('build writes the files the page reads', function () {
   assert.equal(p.cfg.strong, 50);
   assert.ok(p.data.length > 100);
 });
+
+test('payload carries about six months of raw COT reports per instrument', function () {
+  writeData(299, 0, true);
+  const p = build({ now: NOW, write: false }).payload;
+  const names = p.data.filter(function (x) { return x.Kind === 'Instrument' && x.Timeframe === 'WEEKLY'; }).map(function (x) { return x.Item; });
+  assert.ok(names.length >= 12);
+  names.forEach(function (n) {
+    const rows = p.cot[n];
+    assert.ok(rows && rows.length >= 25 && rows.length <= 28, n + ' has ' + (rows ? rows.length : 0) + ' rows');
+    assert.equal(rows[rows.length - 1][0], p.status['COT DATE'], n + ' ends on the latest COT date');
+    rows.forEach(function (r, i) { if (i) assert.ok(r[0] > rows[i - 1][0], n + ' is oldest first'); });
+  });
+});
