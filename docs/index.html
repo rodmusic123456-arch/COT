@@ -1049,14 +1049,14 @@ function cotHistory(name) {
   const sg = v => '<span class="' + (v > 0 ? 'pos' : v < 0 ? 'neg' : '') + '">' + (v > 0 ? '+' : v < 0 ? '\u2212' : '') + fInt(Math.abs(v)) + '</span>';
   const body = rows.slice().reverse().map(r => {
     const n = r[1] - r[2], h = der[r[0]] || [];
-    return '<tr><td>' + fD(r[0]) + '</td><td>' + fInt(r[1]) + '</td><td>' + fInt(r[2]) + '</td><td>' + sg(r[3]) + '</td><td>' + sg(r[4]) + '</td><td>' + N(n, 'netPos', {}, (n > 0 ? '+' : '') + fInt(n)) + '</td><td>' + sg(r[3] - r[4]) + '</td><td>' +
+    return '<tr><td>' + fD(r[0]) + '</td><td>' + fInt(r[1]) + '</td><td>' + fInt(r[2]) + '</td><td>' + sg(r[3]) + '</td><td>' + sg(r[4]) + '</td><td><span class="' + (n > 0 ? 'pos' : n < 0 ? 'neg' : '') + '">' + N(n, 'netPos', {}, (n > 0 ? '+' : n < 0 ? '\u2212' : '') + fInt(Math.abs(n))) + '</span></td><td>' +
       (isNum(num(h[2])) ? N(num(h[2]), 'netPctl') : '<span class="mut">N/A</span>') + '</td><td>' + (isNum(num(h[1])) ? '<b style="color:' + col(num(h[1])) + '">' + N(num(h[1]), 'strength') + '</b>' : '<span class="mut">N/A</span>') + '</td></tr>';
   }).join('');
   return '<div class="note">' + esc(summary) + '</div>' +
     '<div class="small mut">This week for ' + esc(name) + ': ' + wk + '</div>' +
-    lineChart(net, { title: 'NET POSITION, ' + fD(rows[0][0]) + ' to ' + fD(rows[rows.length - 1][0]) + ' (contracts, dashed line = zero)', dates: rows.map(r => r[0]), zero: 0, color: last >= 0 ? '#58c26d' : '#f0624d', fmt: v => fInt(v), h: 120, incZero: true }) +
-    '<div class="cth"><table><tr><th>REPORT DATE</th><th>LONG</th><th>SHORT</th><th>CHANGE LONG</th><th>CHANGE SHORT</th><th>NET</th><th>NET CHANGE</th><th>RANK</th><th>STRENGTH</th></tr>' + body + '</table></div>' +
-    '<div class="small mut" style="margin-top:6px"><b>Long</b> = contracts betting on a rise. <b>Short</b> = contracts betting on a fall. <b>Change long / change short</b> = how many of each were added (+, green) or removed (\u2212, red) that week. <b>Net</b> = long minus short. <b>Net change</b> = how net moved that week. <b>Rank</b> = how net compares with its own history (0 lowest, 100 highest). Click any underlined number for an explanation. ' +
+    lineChart(net, { title: 'NET POSITIONS, ' + fD(rows[0][0]) + ' to ' + fD(rows[rows.length - 1][0]) + ' (contracts, dashed line = zero)', dates: rows.map(r => r[0]), zero: 0, color: last >= 0 ? '#58c26d' : '#f0624d', fmt: v => fInt(v), h: 120, incZero: true }) +
+    '<div class="cth"><table><tr><th>REPORT DATE</th><th>LONG</th><th>SHORT</th><th>CHANGE LONG</th><th>CHANGE SHORT</th><th>NET POSITIONS</th><th>RANK</th><th>STRENGTH</th></tr>' + body + '</table></div>' +
+    '<div class="small mut" style="margin-top:6px"><b>Long</b> = contracts betting on a rise. <b>Short</b> = contracts betting on a fall. <b>Change long / change short</b> = how many of each were added (+, green) or removed (\u2212, red) that week. <b>Net positions</b> = long minus short (green when net long, red when net short). <b>Rank</b> = how net positions compare with its own history (0 lowest, 100 highest). Click any underlined number for an explanation. ' +
     '<button class="btn" data-go="inst:' + esc(name) + '" style="margin-left:6px">OPEN ' + esc(name) + ' ANALYSIS</button></div>';
 }
 
