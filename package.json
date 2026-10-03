@@ -1,0 +1,15 @@
+{
+  "name": "cot-dashboard",
+  "version": "1.0.0",
+  "description": "CFTC Commitments of Traders market command centre: scheduled data build + static dashboard for GitHub Pages",
+  "private": true,
+  "type": "commonjs",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "update": "node scripts/update.js",
+    "build": "node scripts/update.js --offline",
+    "test": "node --test test/*.test.js",
+    "serve": "node scripts/serve.js"
+  },
+  "license": "UNLICENSED"
+}

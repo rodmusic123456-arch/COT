@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COT Market Command Centre</title>
+<style>
+:root{--bg:#0d1117;--panel:#151b24;--panel2:#1b2330;--line:#263140;--text:#e6edf3;--mut:#8b98a8;--acc:#6ea8fe;--green:#3fae5a;--red:#d9412b;--grey:#8c95a0}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line);background:#0a0e14}
+.title{font-size:20px;font-weight:700;letter-spacing:.08em}
+#chips{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--mut);white-space:nowrap}
+.chip b{display:block;color:var(--text);font-size:13px;font-weight:600}
+nav{display:flex;flex-wrap:wrap;gap:2px;padding:0 20px;border-bottom:1px solid var(--line);background:#0a0e14}
+nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--mut);padding:10px 14px;font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer}
+nav button.on{color:var(--text);border-bottom-color:var(--acc)}
+nav button:hover{color:var(--text)}
+#ctl{display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding:12px 20px}
+.grp{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.grp label{font-size:10px;color:var(--mut);letter-spacing:.1em;margin-right:6px}
+.btn{background:var(--panel);border:1px solid var(--line);color:var(--mut);border-radius:5px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer}
+.btn:hover{color:var(--text);border-color:#3a4a5f}
+.btn.on{background:#22344d;color:var(--text);border-color:var(--acc)}
+main{padding:0 20px 40px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.panel h2{margin:0 0 10px;font-size:11px;letter-spacing:.14em;color:var(--mut);font-weight:700;text-transform:uppercase}
+.panel h3{margin:12px 0 6px;font-size:12px;color:var(--text)}
+.row{display:grid;gap:14px}
+.r2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.r3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.kpi{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.kpi .v{font-size:22px;font-weight:700}
+.kpi .l{font-size:10px;color:var(--mut);letter-spacing:.06em}
+.hm{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.glabel{font-size:10px;color:var(--mut);letter-spacing:.12em;margin:10px 0 6px}
+.tile{border-radius:8px;padding:9px 10px;cursor:pointer;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);transition:transform .12s,opacity .2s}
+.tile:hover{transform:translateY(-2px);outline:1px solid rgba(255,255,255,.5)}
+.tile.dim{opacity:.18}
+.tn{font-size:12px;font-weight:700}.ts{font-size:24px;font-weight:700;line-height:1.1}.td{font-size:10px;opacity:.9}
+.ct{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
+.ct .tile .ts{font-size:20px}
+.n{border-bottom:1px dotted rgba(255,255,255,.35);cursor:help}
+.pos{color:#58c26d}.neg{color:#f0624d}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-size:10px;color:var(--mut);letter-spacing:.08em;text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);font-weight:600}
+td{padding:5px 6px;border-bottom:1px solid #1d2632}
+tr.click{cursor:pointer}tr.click:hover td{background:#1a2432}
+ul.l{margin:0;padding:0;list-style:none}
+ul.l li{padding:5px 0;border-bottom:1px solid #1d2632;display:flex;justify-content:space-between;gap:10px;font-size:12px}
+ul.l li:last-child{border-bottom:0}
+.mut{color:var(--mut)}.small{font-size:11px}
+.badge{display:inline-block;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:.05em}
+.gwrap{display:inline-block;text-align:center;cursor:crosshair}
+.gwrap svg{width:100%;max-width:280px;height:auto;display:block;margin:0 auto}
+.gwrap.sm svg{max-width:190px}
+.gcap{font-size:10px;letter-spacing:.12em;color:var(--mut);margin-top:2px}
+.gzone{font-size:11px;font-weight:700;letter-spacing:.06em;margin-top:2px}
+.needle{transition:transform 1.1s cubic-bezier(.2,.9,.3,1)}
+.gauges{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-around;align-items:flex-end}
+.bar{position:relative;height:14px;background:#10161e;border-radius:3px;margin:3px 0}
+.bar i{position:absolute;top:0;bottom:0;border-radius:3px}
+.bar u{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#566}
+.tfrow{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.tfc{border-radius:6px;padding:6px 4px;text-align:center;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.tfc small{display:block;font-size:9px;opacity:.9;letter-spacing:.06em}
+.tfc b{font-size:16px}
+select,input{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:5px;padding:6px 8px;font-size:12px}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+.form label{display:block;font-size:10px;color:var(--mut);letter-spacing:.08em;margin-bottom:3px}
+.form select,.form input{width:100%}
+.warn{background:#2a1d1d;border:1px solid #5a2b2b;color:#f1b0a6;border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:10px}
+.note{background:#1a2230;border-left:3px solid var(--acc);padding:8px 12px;border-radius:4px;font-size:12px;color:#c3cedb;margin:8px 0}
+#tip{position:fixed;z-index:50;display:none;max-width:340px;background:#0a0e14;border:1px solid #3a4a5f;border-radius:8px;padding:10px 12px;font-size:12px;box-shadow:0 8px 28px rgba(0,0,0,.6);pointer-events:none}
+#tip h4{margin:0 0 4px;font-size:13px}
+#tip .tv{font-size:15px;font-weight:700;margin-bottom:4px}
+#tip .sec{margin-top:6px}
+#tip .sec b{display:block;font-size:9px;letter-spacing:.12em;color:var(--mut);margin-bottom:1px}
+#tip .kv{display:flex;justify-content:space-between;gap:14px}
+#tip .kv span:first-child{color:var(--mut)}
+.loading{padding:60px;text-align:center;color:var(--mut)}
+.gl dt{font-weight:700;margin-top:10px}.gl dd{margin:2px 0 0;color:#c3cedb}
+.gl .gh{font-size:10px;letter-spacing:.14em;color:var(--acc);margin-top:18px;border-bottom:1px solid var(--line);padding-bottom:3px}
+svg text{font-family:inherit}
+</style>
+</head>
+<body>
+<header>
+  <div class="title">COT MARKET COMMAND CENTRE</div>
+  <div id="chips"></div>
+</header>
+<nav id="nav"></nav>
+<div id="ctl"></div>
+<main id="page"><div class="loading">Loading dashboard data…</div></main>
+<div id="tip"></div>
+
+<script src="engine.js"></script>
+<script src="research.js"></script>
+<script src="data-loader.js"></script>
+<script>
+window.onerror = function (msg, src, line, col) {
+  var m = document.getElementById('page');
+  if (m) m.innerHTML = '<div class="warn">Page script error: ' + String(msg).replace(/</g, '&lt;') + ' (line ' + line + ')</div>';
+};
+window.addEventListener('unhandledrejection', function (ev) {
+  var m = document.getElementById('page');
+  if (m) m.innerHTML = '<div class="warn">Page error: ' + String(ev.reason && ev.reason.message || ev.reason).replace(/</g, '&lt;') + '</div>';
+});
+/* ============================== helpers ============================== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isNum = v => typeof v === 'number' && isFinite(v);
+const fS = v => isNum(v) ? (v > 0 ? '+' : '') + Math.round(v) : 'N/A';
+const fP = v => isNum(v) ? Math.round(v) + '%' : 'N/A';
+const fSig = v => isNum(v) ? (v > 0 ? '+' : '') + v.toFixed(1) + '\u03c3' : 'N/A';
+const fPlain = v => isNum(v) ? String(Math.round(v)) : 'N/A';
+const fRet = v => isNum(v) ? (v > 0 ? '+' : '') + v.toFixed(2) + '%' : 'N/A';
+const fInt = v => isNum(v) ? Math.round(v).toLocaleString('en-GB') : 'N/A';
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fD = s => { if (!s) return 'N/A'; const p = String(s).substring(0,10).split('-'); return p.length === 3 ? (+p[2]) + ' ' + MON[+p[1]-1] + ' ' + p[0] : 'N/A'; };
+const fDT = s => { if (!s) return 'N/A'; const d = new Date(s); return isNaN(d) ? 'N/A' : d.getDate() + ' ' + MON[d.getMonth()] + ' ' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); };
+const num = v => (v === undefined || v === null || v === '') ? null : Number(v);
+
+let P = null;
+let S = { page: 'home', tf: 'WEEKLY', filter: 'ALL', pair: 'EUR/USD', inst: 'EUR', gq: '' };
+const TFS = ['DAILY','WEEKLY','MONTHLY','QUARTERLY','6 MONTH','ANNUAL'];
+const TFL = { 'DAILY':'Daily','WEEKLY':'Weekly','MONTHLY':'Monthly','QUARTERLY':'Quarterly','6 MONTH':'6 Month','ANNUAL':'Annual' };
+const FILTERS = ['ALL','BULLISH','BEARISH','EXTREME','REVERSAL','DIVERGENCE','ACCELERATING','MULTI TF ALIGNED'];
+const PAGES = [['home','MARKET COMMAND CENTRE'],['pair','PAIR ANALYSIS'],['inst','INSTRUMENT ANALYSIS'],['pos','POSITIONING'],['hist','HISTORICAL CONTEXT'],['res','RESEARCH / BACKTEST'],['gloss','GLOSSARY'],['meth','METHODOLOGY']];
+
+/* ============================== colour scale ============================== */
+/* One scale used everywhere: red -> orange -> grey (neutral zone) -> light green -> green */
+const STOPS = [[-100,[163,22,33]],[-65,[217,65,43]],[-40,[238,139,58]],[-20,[140,149,160]],[20,[140,149,160]],[35,[168,194,86]],[65,[79,174,90]],[100,[26,127,60]]];
+function col(s) {
+  if (!isNum(s)) return '#3a4350';
+  s = Math.max(-100, Math.min(100, s));
+  for (let i = 1; i < STOPS.length; i++) {
+    if (s <= STOPS[i][0]) {
+      const a = STOPS[i-1], b = STOPS[i], t = (s - a[0]) / ((b[0] - a[0]) || 1);
+      return 'rgb(' + a[1].map((v,k) => Math.round(v + (b[1][k] - v) * t)).join(',') + ')';
+    }
+  }
+  return 'rgb(26,127,60)';
+}
+const cfg = () => P.cfg;
+const sgn = s => !isNum(s) ? null : s >= cfg().neutral ? 1 : s <= -cfg().neutral ? -1 : 0;
+function zoneOf(s) {
+  if (!isNum(s)) return { t: 'NO DATA', c: '#8b98a8', n: 'No data' };
+  const a = Math.abs(s), side = s > 0 ? 'BULLISH' : 'BEARISH', c = col(s);
+  if (a < cfg().neutral) return { t: 'NEUTRAL ZONE \u00b7 LOW PRIORITY', c: '#9aa3ad', n: 'Neutral' };
+  if (a < cfg().strong) return { t: side + ' ZONE \u00b7 POSSIBLE SETUP', c: c, n: side[0] + side.slice(1).toLowerCase() };
+  return { t: 'STRONG ' + side + ' ZONE', c: c, n: 'Strong ' + side.toLowerCase() };
+}
+
+/* ============================== definitions (hover + glossary) ============================== */
+const pctRead = v => !isNum(v) ? 'No data.' : v >= 80 ? 'High: in the top 20% of its own history (extreme).' : v <= 20 ? 'Low: in the bottom 20% of its own history (extreme).' : 'Mid-range of its own history: not stretched.';
+const zoneRead = v => { if (!isNum(v)) return 'No data.'; const a = Math.abs(v), side = v > 0 ? 'bullish' : 'bearish'; return a < cfg().neutral ? 'Inside the neutral zone (\u00b1' + cfg().neutral + '). Little COT edge here.' : a < cfg().strong ? 'In the ' + side + ' zone (' + cfg().neutral + '\u2013' + cfg().strong + '). A possible setup is forming.' : 'Strong ' + side + ' zone (' + cfg().strong + '+). The COT picture is very one-sided.'; };
+const DEF = {
+ score: { n:'Pair bias score', f:fS, u:'-100 to +100', what:'How much stronger the base side is than the quote side in speculative positioning. Built as 50% positioning + 30% momentum + 20% acceleration differences.', why:'It is the one-number summary of relative COT strength. Size matters more than sign.', plan:'Neutral zone (\u00b120): low priority, move on. Bias zone (20 to 50): COT supports a direction, so check price, alignment and extremes. Strong zone (50+): very one-sided, so also check for extreme positioning and reversal risk.', read:(v)=>zoneRead(v), signed:true },
+ strength: { n:'Instrument strength', f:fS, u:'-100 to +100', what:'The same 50/30/20 blend of positioning, momentum and acceleration, applied to one instrument on its own. Pair score = (base strength \u2212 quote strength) / 2.', why:'Shows which side of a pair is doing the work: a strong base, a weak quote, or both.', plan:'Look for pairs where one leg is clearly strong and the other clearly weak. Both legs strong or both weak partly cancel in the pair score.', read:(v)=>zoneRead(v), signed:true },
+ tfScore: { n:'Timeframe score', f:fS, u:'-100 to +100', what:'Average of the weekly point-in-time scores over the timeframe window (Weekly 1 wk, Monthly 4, Quarterly 13, 6 Month 26, Annual 52). Daily uses the latest weekly COT reading, because COT is only published weekly.', why:'Shows whether the current weekly reading is part of a longer trend or a recent change.', plan:'Agreement across windows is stronger context than a single reading. A short window against a long window suggests a turn or a pullback.', read:(v,x)=>(x.tf?TFL[x.tf]+': ':'')+zoneRead(v), signed:true },
+ posDiv: { n:'Positioning divergence', f:fS, u:'points', what:'Base net-position percentile minus quote net-position percentile. It carries 50% of the pair score.', why:'Shows who is more heavily positioned long relative to their own history.', plan:'Large readings mean a lopsided speculative picture. Check the extreme flag, since stretched positioning can also unwind.', read:v=>!isNum(v)?'No data.':v>0?'Base is positioned more bullishly than the quote, relative to history.':v<0?'Quote is positioned more bullishly than the base, relative to history.':'Equal.', signed:true },
+ momDiv: { n:'Momentum divergence', f:fS, u:'points', what:'Base momentum percentile minus quote momentum percentile. It carries 30% of the pair score.', why:'Shows who is adding to positions faster than the other.', plan:'Momentum agreeing with positioning strengthens the picture. Momentum against positioning flags a possible fade.', read:v=>!isNum(v)?'No data.':v>0?'Base has stronger recent momentum.':v<0?'Quote has stronger recent momentum.':'Equal.', signed:true },
+ accDiv: { n:'Acceleration difference', f:fSig, u:'\u03c3', what:'Base normalised acceleration minus quote normalised acceleration, in standard deviations. It carries 20% of the pair score (capped at 3\u03c3 per side).', why:'Shows who is changing positioning unusually fast.', plan:'Acceleration is the most short-lived part of the score, so treat it as a heads-up rather than a trend.', read:v=>!isNum(v)?'No data.':Math.abs(v)>=2?'Large: unusually rapid change in relative positioning.':Math.abs(v)>=1?'Noticeable change in relative positioning.':'Ordinary pace.', signed:true },
+ posC: { n:'Positioning contribution', f:fS, u:'score points', what:'How many points of the total score come from positioning (weight 50%).', why:'Explains WHY the score is what it is.', plan:'If most points come from one component, the setup rests on one idea. Contributions all pointing the same way is a more robust picture.', read:v=>!isNum(v)?'No data.':(v>0?'Adds ':'Removes ')+Math.abs(v).toFixed(0)+' points '+(v>0?'to the bullish side.':'from the score (bearish side).'), signed:true },
+ momC: { n:'Momentum contribution', f:fS, u:'score points', what:'Points of the total score that come from momentum (weight 30%).', why:'Explains WHY the score is what it is.', plan:'See Positioning contribution.', read:v=>!isNum(v)?'No data.':(v>0?'Adds ':'Removes ')+Math.abs(v).toFixed(0)+' points.', signed:true },
+ accC: { n:'Acceleration contribution', f:fS, u:'score points', what:'Points of the total score that come from acceleration (weight 20%).', why:'Explains WHY the score is what it is.', plan:'A score that depends mostly on acceleration is less durable than one built on positioning.', read:v=>!isNum(v)?'No data.':(v>0?'Adds ':'Removes ')+Math.abs(v).toFixed(0)+' points.', signed:true },
+ netPctl: { n:'Net positioning percentile', f:fP, u:'0-100', what:'Where the current net position (non-commercial long minus short) ranks against its own history since 2021. 90 means it is higher than 90% of past weeks.', why:'Puts raw contract counts on a comparable scale across instruments.', plan:'80+ or 20\u2212 is flagged as extreme. Extremes show crowding: trends can persist, but the room left is smaller and reversals are more likely.', read:pctRead },
+ momPctl: { n:'Momentum percentile', f:fP, u:'0-100', what:'Where the 4-week momentum (net minus its 4-week average) ranks against its own history.', why:'Shows whether positioning is currently being built or reduced unusually fast.', plan:'High and rising momentum with price confirming supports the trend. High positioning but falling momentum is a warning.', read:pctRead },
+ momChange: { n:'Momentum change', f:fS, u:'percentile points', what:'Change in momentum percentile versus the previous COT week.', why:'Shows strengthening or weakening immediately.', plan:'Positive means momentum is improving, negative means fading. A pair "fading" label appears when this works against the bias.', read:v=>!isNum(v)?'No data.':v>=cfg().neutral/2?'Momentum strengthening sharply.':v<=-cfg().neutral/2?'Momentum weakening sharply.':Math.abs(v)<2?'Little change.':v>0?'Momentum edging up.':'Momentum edging down.', signed:true },
+ normAccel: { n:'Normalised acceleration', f:fSig, u:'\u03c3', what:'This week\'s change in the weekly net change, divided by the standard deviation of its own history. +1.6\u03c3 means 1.6 standard deviations faster than usual.', why:'Spots unusually rapid shifts in positioning, comparable across instruments.', plan:'Beyond \u00b12\u03c3 is unusual. It says the change is large, not that it will continue.', read:v=>!isNum(v)?'No data.':Math.abs(v)>=2?'Unusually rapid change.':Math.abs(v)>=1?'Faster than normal.':'Ordinary pace.', signed:true },
+ netPos: { n:'Net position', f:fInt, u:'contracts', what:'Non-commercial long contracts minus short contracts (CFTC legacy, futures only).', why:'The raw positioning the percentile is built from.', plan:'Compare via the percentile, not the raw number, because contract sizes differ between markets.', read:v=>!isNum(v)?'No data.':v>0?'Speculators are net long.':'Speculators are net short.', signed:true },
+ scoreChange: { n:'Score change', f:fS, u:'points', what:'Current score minus the same measure one COT week earlier.', why:'Shows whether the picture is building or decaying.', plan:'A big move into the bias zone is more informative than a stable reading.', read:v=>!isNum(v)?'No data.':Math.abs(v)>=10?'Large move since the last report.':'Small move since the last report.', signed:true },
+ chg: { n:'Change since last COT report', f:fS, u:'', what:'Only changes larger than a noise threshold are shown (Positioning \u22658 pts, Momentum \u226510 pts, Acceleration \u22650.5\u03c3, Score/Strength \u226510 pts).', why:'Tells you what is new, so you do not re-read what is unchanged.', plan:'Start your review with the biggest changes.', read:(v,x)=>(x.metric?x.metric+': ':'')+(isNum(v)?(v>0?'up ':'down ')+Math.abs(v).toFixed(1):'N/A') },
+ priceRet: { n:'Price return', f:fRet, u:'%', what:'Price change over the selected timeframe\'s horizon (Daily 1 session, Weekly 7 days, Monthly 30, Quarterly 91, 6M 182, Annual 365 days).', why:'Used to judge whether price confirms or contradicts COT.', plan:'Price moving WITH the COT bias is confirmation. Moving against it is a divergence worth investigating, not a signal.', read:v=>!isNum(v)?'No price data.':v>0?'Price rose over the horizon.':'Price fell over the horizon.', signed:true },
+ conf: { n:'Confluence', f:fPlain, u:'count', what:'Number of observable conditions that agree with the bias: positioning, momentum, acceleration, price, multi-timeframe alignment, extreme. It is a count, not a score.', why:'Shows how many independent things line up.', plan:'More ticks means the story is consistent. It does not mean the trade will work.', read:(v,x)=>isNum(v)?v+' of '+(x.total||'?')+' evaluable conditions agree.':'Not applicable in the neutral zone.' },
+ align: { n:'Timeframe alignment', f:fPlain, u:'count', what:'How many of the five distinct COT windows (Weekly, Monthly, Quarterly, 6M, Annual) sit in the bullish or bearish zone. Daily is excluded because it repeats the weekly COT.', why:'Separates short-lived readings from persistent ones.', plan:'Aligned windows suggest a persistent theme. Conflicting windows suggest a transition.', read:(v,x)=>x.state||'' },
+ age: { n:'Bias age', f:fPlain, u:'weeks', what:'Consecutive COT weeks the current bias direction has held (capped by the 2-year history window).', why:'Context only: newer is not better and older is not better.', plan:'Use it to know whether you are looking at a fresh change or a mature one.', read:(v,x)=>isNum(v)?'Held for '+v+' COT week(s)'+(x.since?' since '+fD(x.since):'')+'.':'N/A' },
+ nBull: { n:'Bullish pairs', f:fPlain, u:'count', what:'Pairs whose score is at or above +' + 20 + ' for the selected timeframe.', why:'Describes the environment; it is not a market score.', plan:'Many bullish and few bearish means one-way positioning across the board.', read:()=>'' },
+ nBear: { n:'Bearish pairs', f:fPlain, u:'count', what:'Pairs whose score is at or below \u221220 for the selected timeframe.', why:'Describes the environment.', plan:'See Bullish pairs.', read:()=>'' },
+ nNeutral: { n:'Neutral pairs', f:fPlain, u:'count', what:'Pairs inside the neutral zone (\u00b120).', why:'These are the low-priority pairs.', plan:'A high count means COT offers little directional edge right now.', read:()=>'' },
+ nExtreme: { n:'Extreme positioning', f:fPlain, u:'instruments', what:'Instruments with net positioning percentile \u226580 or \u226420.', why:'Stretched positioning is crowded.', plan:'Check each one on the Positioning page, together with its reversal status.', read:()=>'' },
+ nReversal: { n:'Reversal conditions', f:fPlain, u:'instruments', what:'Extreme positioning that has started to move the other way (high and net change negative, or low and net change positive).', why:'Early warning that a crowded position may be unwinding.', plan:'A potential reversal is a condition to investigate, not a guarantee.', read:()=>'' },
+ nMomentum: { n:'Strong momentum', f:fPlain, u:'instruments', what:'Instruments with momentum percentile \u226580 or \u226420.', why:'Where positioning is changing fastest relative to history.', plan:'Cross-check with price confirmation.', read:()=>'' },
+ nDiverge: { n:'COT / price divergences', f:fPlain, u:'pairs', what:'Pairs with a bullish or bearish COT bias while price moved the opposite way over the timeframe horizon.', why:'Disagreement between positioning and price.', plan:'Conditions needing investigation. Price may lead, or positioning may be early.', read:()=>'' },
+ daysSince: { n:'Days since COT report', f:fPlain, u:'days', what:'Days between the COT report date (a Tuesday) and today. The report is published the following Friday.', why:'COT is weekly. By Thursday the data is 9 days old.', plan:'Treat positioning as context that ages, especially before the next release.', read:v=>!isNum(v)?'':v<=4?'Fresh.':v<=10?'Normal weekly lag.':'Awaiting the next report.' },
+ rN: { n:'Sample size', f:fPlain, u:'observations', what:'Number of historical week-and-pair observations matching your filter.', why:'Small samples give unstable averages.', plan:'Under about 30, treat the statistics as anecdotal.', read:v=>!isNum(v)?'':v<30?'Small sample: treat with great caution.':'Reasonable sample, though overlapping windows reduce its real size.' },
+ rMean: { n:'Mean forward return', f:fRet, u:'%', what:'Average price change over the horizon after the setup appeared (entry: first close after the Friday release).', why:'The average outcome historically.', plan:'Historical association is not a forecast.', read:v=>!isNum(v)?'':v>0?'Positive on average.':'Negative on average.', signed:true },
+ rMedian: { n:'Median forward return', f:fRet, u:'%', what:'Middle outcome, which ignores extreme observations.', why:'If mean and median disagree a few big moves are driving the average.', plan:'Prefer the median when the two differ a lot.', read:()=>'', signed:true },
+ rHit: { n:'Positive outcome frequency', f:fP, u:'%', what:'Share of observations with a positive (directional) return.', why:'How often it worked, regardless of size.', plan:'Around 50% is no better than a coin flip.', read:v=>!isNum(v)?'':v>=55?'More often positive than not.':v<=45?'More often negative than not.':'Close to a coin flip.' },
+ rSd: { n:'Standard deviation', f:v=>isNum(v)?v.toFixed(2)+'%':'N/A', u:'%', what:'How widely the outcomes were spread.', why:'Shows how reliable the average is.', plan:'A mean small relative to this is easily noise.', read:()=>'' },
+ rT: { n:'t statistic', f:v=>isNum(v)?v.toFixed(2):'N/A', u:'', what:'Mean divided by its standard error. Assumes independent observations, which overlapping windows and shared currency legs violate.', why:'A rough gauge of whether the average is distinguishable from zero.', plan:'Rely on the non-overlap column and treat |t| below 3 with caution.', read:v=>!isNum(v)?'':Math.abs(v)>=3?'Large (but see independence caveat).':'Weak evidence.', signed:true },
+ hg: { n:'Historical setup gauge', f:fS, u:'-100 to +100', what:'(Positive outcome frequency \u2212 50) \u00d7 2 for comparable past setups, in the direction of the current bias. NOT a probability.', why:'A quick read of how often similar setups moved with the bias.', plan:'Needs a reasonable sample (30+) to mean anything.', read:v=>!isNum(v)?'':v>=20?'Comparable setups mostly moved with the bias.':v<=-20?'Comparable setups mostly moved against the bias.':'No clear tendency.', signed:true }
+};
+
+function explain(k, v, x) {
+  const d = DEF[k];
+  if (!d) return '<h4>' + esc(k) + '</h4>';
+  const val = d.f(v);
+  const cls = d.signed && isNum(v) ? (v > 0 ? 'pos' : v < 0 ? 'neg' : '') : '';
+  const rd = d.read ? d.read(v, x || {}) : '';
+  return '<h4>' + esc(d.n) + (d.u ? ' <span class="mut small">(' + esc(d.u) + ')</span>' : '') + '</h4>' +
+    '<div class="tv ' + cls + '">' + esc(val) + '</div>' +
+    (rd ? '<div class="sec"><b>THIS READING</b>' + esc(rd) + '</div>' : '') +
+    '<div class="sec"><b>WHAT IT IS</b>' + esc(d.what) + '</div>' +
+    '<div class="sec"><b>WHY IT MATTERS</b>' + esc(d.why) + '</div>' +
+    '<div class="sec"><b>FOR YOUR TRADE PLAN</b>' + esc(d.plan) + ' <span class="mut">(context only, not a recommendation)</span></div>';
+}
+
+function N(v, key, x, txt) {
+  const d = DEF[key];
+  const t = txt !== undefined ? txt : (d && d.f ? d.f(v) : (isNum(v) ? String(Math.round(v)) : 'N/A'));
+  return '<span class="n" data-k="' + key + '" data-v="' + esc(JSON.stringify(v === undefined ? null : v)) + '" data-x="' + esc(JSON.stringify(x || {})) + '">' + esc(t) + '</span>';
+}
+
+/* ============================== data access ============================== */
+const IDX = {};
+function index() {
+  Object.keys(IDX).forEach(k => delete IDX[k]);
+  P.data.forEach(r => {
+    ['Score','Base Strength','Quote Strength','Positioning Component','Momentum Component','Acceleration Component','Positioning Divergence','Momentum Divergence','Acceleration Divergence (\u03c3)','Base Net Pctl','Quote Net Pctl','Base Mom Pctl','Quote Mom Pctl','Momentum Change','Net Position','Net Percentile','4W Momentum','Momentum Percentile','Normalised Acceleration','Price Return %','Daily Score','Weekly Score','Monthly Score','Quarterly Score','6M Score','Annual Score','Previous Score','Score Change','Confluence Count','Confluence Total','Bias Age Weeks','Extreme Age Weeks'].forEach(k => { if (r[k] !== undefined) r[k] = Number(r[k]); });
+    IDX[r.Kind + '|' + r.Item + '|' + r.Timeframe] = r;
+  });
+  P.pairs = []; P.insts = [];
+  P.data.forEach(r => { if (r.Timeframe === 'WEEKLY') (r.Kind === 'Pair' ? P.pairs : P.insts).push(r.Item); });
+  if (P.pairs.indexOf(S.pair) < 0) S.pair = P.pairs[0];
+  if (P.insts.indexOf(S.inst) < 0) S.inst = P.insts[0];
+}
+const get = (kind, item, tf) => IDX[kind + '|' + item + '|' + (tf || S.tf)];
+const rowsOf = (kind, tf) => P.data.filter(r => r.Kind === kind && r.Timeframe === (tf || S.tf));
+const TFCOL = { 'DAILY':'Daily Score','WEEKLY':'Weekly Score','MONTHLY':'Monthly Score','QUARTERLY':'Quarterly Score','6 MONTH':'6M Score','ANNUAL':'Annual Score' };
+
+function passFilter(r) {
+  const f = S.filter, s = sgn(r.Score);
+  if (f === 'ALL') return true;
+  if (f === 'BULLISH') return s === 1;
+  if (f === 'BEARISH') return s === -1;
+  if (f === 'EXTREME') return r.Extreme && r.Extreme !== 'No';
+  if (f === 'REVERSAL') return r.Reversal && r.Reversal !== 'No';
+  if (f === 'DIVERGENCE') return r['COT Price Relationship'] === 'DIVERGING';
+  if (f === 'ACCELERATING') return Math.abs(r.Kind === 'Pair' ? (r['Acceleration Divergence (\u03c3)'] || 0) : (r['Normalised Acceleration'] || 0)) >= 1;
+  if (f === 'MULTI TF ALIGNED') return /^ALIGNED/.test(r['Alignment State'] || '');
+  return true;
+}
+
+/* ============================== gauge ============================== */
+/* Semicircle: -100 at the left end, 0 at the very TOP (neutral), +100 at the right end. */
+function gauge(score, o) {
+  o = o || {};
+  const cx = 120, cy = 122, r = 88, w = 17;
+  const pt = (s, rad) => { const a = s / 100 * Math.PI / 2; return [cx + rad * Math.sin(a), cy - rad * Math.cos(a)]; };
+  let arcs = '';
+  for (let s = -100; s < 100; s += 2) {
+    const a = pt(s, r), b = pt(s + 2.4, r);
+    arcs += '<path d="M' + a[0].toFixed(1) + ' ' + a[1].toFixed(1) + ' A' + r + ' ' + r + ' 0 0 1 ' + b[0].toFixed(1) + ' ' + b[1].toFixed(1) + '" stroke="' + col(s + 1) + '" stroke-width="' + w + '" fill="none"/>';
+  }
+  let ticks = '';
+  [-100,-50,-20,0,20,50,100].forEach(s => {
+    const a = pt(s, r - w / 2 - 1), b = pt(s, r + w / 2 + 4), t = pt(s, r + w / 2 + 15);
+    const major = (s === 0 || Math.abs(s) === 100 || Math.abs(s) === 50);
+    ticks += '<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '" stroke="' + (Math.abs(s) === 20 ? '#e6edf3' : '#6b7889') + '" stroke-width="' + (Math.abs(s) === 20 ? 1.6 : 1) + '"/>';
+    if (major) ticks += '<text x="' + t[0].toFixed(1) + '" y="' + (t[1] + 3).toFixed(1) + '" fill="#8b98a8" font-size="9" text-anchor="middle">' + (s > 0 ? '+' : '') + s + '</text>';
+  });
+  const L = pt(-62, r - 31), R = pt(62, r - 31);
+  const labels =
+    '<text x="' + L[0].toFixed(1) + '" y="' + L[1].toFixed(1) + '" fill="#8b98a8" font-size="8" text-anchor="middle">BEARISH</text>' +
+    '<text x="' + R[0].toFixed(1) + '" y="' + R[1].toFixed(1) + '" fill="#8b98a8" font-size="8" text-anchor="middle">BULLISH</text>' +
+    '<text x="' + cx + '" y="' + (cy - r + w + 15) + '" fill="#8b98a8" font-size="8" text-anchor="middle">NEUTRAL</text>';
+  const has = isNum(score);
+  const deg = has ? Math.max(-100, Math.min(100, score)) / 100 * 90 : 0;
+  const z = zoneOf(score);
+  const needle = has
+    ? '<g class="needle" data-a="' + deg.toFixed(1) + '" style="transform:rotate(0deg);transform-origin:' + cx + 'px ' + cy + 'px"><line x1="' + cx + '" y1="' + cy + '" x2="' + cx + '" y2="' + (cy - r + 4) + '" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g><circle cx="' + cx + '" cy="' + cy + '" r="7" fill="#e6edf3"/><circle cx="' + cx + '" cy="' + cy + '" r="3" fill="#0d1117"/>'
+    : '';
+  const svg = '<svg viewBox="-8 0 256 170" xmlns="http://www.w3.org/2000/svg">' + arcs + ticks + labels + needle +
+    '<text x="' + cx + '" y="' + (cy + 34) + '" fill="' + (has ? col(score) : '#8b98a8') + '" font-size="30" font-weight="700" text-anchor="middle">' + (has ? fS(score) : 'N/A') + '</text></svg>';
+  return '<div class="gwrap ' + (o.sm ? 'sm' : '') + '" data-g="' + (o.kind || 'bias') + '" data-v="' + esc(JSON.stringify(has ? score : null)) + '" data-x="' + esc(JSON.stringify({ title: o.title || '' })) + '">' +
+    svg + '<div class="gcap">' + esc(o.title || '') + '</div><div class="gzone" style="color:' + z.c + '">' + z.t + '</div></div>';
+}
+function animateNeedles() {
+  document.querySelectorAll('.needle').forEach(n => { n.style.transform = 'rotate(' + n.getAttribute('data-a') + 'deg)'; });
+}
+
+/* ============================== tooltips ============================== */
+function kv(a, b) { return '<div class="kv"><span>' + a + '</span><span>' + b + '</span></div>'; }
+function sec(t, inner) { return '<div class="sec"><b>' + t + '</b>' + inner + '</div>'; }
+
+function pairTip(name) {
+  const r = get('Pair', name);
+  if (!r) return '<h4>' + esc(name) + '</h4>N/A';
+  const z = zoneOf(r.Score);
+  const mtf = TFS.map(t => { const x = get('Pair', name, t); return kv(TFL[t], x ? fS(x.Score) : 'N/A'); }).join('');
+  return '<h4>' + esc(name) + ' <span class="mut small">' + TFL[S.tf] + '</span></h4>' +
+    '<div class="tv" style="color:' + col(r.Score) + '">' + esc(r.Direction || 'N/A') + ' \u00b7 ' + fS(r.Score) + '</div>' +
+    '<div class="small" style="color:' + z.c + ';font-weight:700">' + z.t + '</div>' +
+    sec('STRENGTH', kv(r.Base, fS(r['Base Strength'])) + kv(r.Quote, fS(r['Quote Strength']))) +
+    sec('POSITIONING / MOMENTUM', kv('Positioning', fS(r['Positioning Divergence'])) + kv('Momentum', fS(r['Momentum Divergence'])) + kv('Acceleration', fSig(r['Acceleration Divergence (\u03c3)']))) +
+    sec('PRICE', kv('Price', esc(r['Price Direction'] || 'N/A')) + kv('COT / Price', esc(r['COT Price Relationship'] || 'N/A'))) +
+    sec('SIGNALS', kv('Extreme', esc(r.Extreme || 'No')) + kv('Reversal', esc(r.Reversal || 'No')) + kv('Alignment', esc(r['Alignment State'] || 'N/A') + ' ' + esc(r['Alignment Count'] || ''))) +
+    sec('MULTI TIMEFRAME', mtf) +
+    sec('DATES', kv('COT', fD(r['COT Date'])) + kv('Price', fD(r['Price Date']))) +
+    '<div class="sec mut small">Click for pair analysis</div>';
+}
+function instTip(name) {
+  const r = get('Instrument', name);
+  if (!r) return '<h4>' + esc(name) + '</h4>N/A';
+  return '<h4>' + esc(name) + ' <span class="mut small">' + TFL[S.tf] + '</span></h4>' +
+    '<div class="tv" style="color:' + col(r.Score) + '">' + esc(r.Direction || 'N/A') + ' \u00b7 Strength ' + fS(r.Score) + '</div>' +
+    sec('POSITIONING', kv('Net percentile', fP(r['Net Percentile'])) + kv('Momentum percentile', fP(r['Momentum Percentile'])) + kv('Momentum change', fS(r['Momentum Change'])) + kv('Acceleration', fSig(r['Normalised Acceleration']))) +
+    sec('SIGNALS', kv('Extreme', esc(r.Extreme || 'No')) + kv('Reversal', esc(r.Reversal || 'No'))) +
+    sec('PRICE', kv('Price', esc(r['Price Direction'] || 'N/A')) + kv('COT / Price', esc(r['COT Price Relationship'] || 'N/A'))) +
+    sec('DATES', kv('COT', fD(r['COT Date']))) +
+    '<div class="sec mut small">Click for instrument analysis</div>';
+}
+function gaugeTip(el, ev) {
+  const v = JSON.parse(el.dataset.v), x = JSON.parse(el.dataset.x || '{}');
+  const kind = el.dataset.g;
+  const svg = el.querySelector('svg'), rc = svg.getBoundingClientRect();
+  const cxp = rc.left + rc.width / 2, cyp = rc.top + rc.height * (122 / 170);
+  let hover = '';
+  if (ev && ev.clientY <= cyp + 4) {
+    const a = Math.atan2(ev.clientX - cxp, cyp - ev.clientY) * 180 / Math.PI;
+    const s = Math.max(-100, Math.min(100, a / 90 * 100));
+    hover = '<div class="sec"><b>POINTER POSITION</b>' + fS(s) + ' \u2192 ' + zoneOf(s).t + '</div>';
+  }
+  const d = DEF[kind === 'strength' ? 'strength' : 'score'];
+  return '<h4>' + esc(x.title || (kind === 'strength' ? 'Strength gauge' : 'Bias gauge')) + '</h4>' +
+    '<div class="tv" style="color:' + col(v) + '">' + fS(v) + '</div><div class="small" style="color:' + zoneOf(v).c + ';font-weight:700">' + zoneOf(v).t + '</div>' + hover +
+    '<div class="sec"><b>HOW TO READ</b>0 is at the top (neutral). Needle right = bullish, left = bearish, \u00b1100 at the ends. The grey arc (\u00b1' + cfg().neutral + ') is the neutral zone: low priority. Beyond \u00b1' + cfg().neutral + ' is a bias zone where a possible setup exists; beyond \u00b1' + cfg().strong + ' is strong.</div>' +
+    '<div class="sec"><b>WHAT IT MEASURES</b>' + esc(d.what) + '</div>';
+}
+document.addEventListener('mousemove', ev => {
+  const tip = $('tip');
+  const el = ev.target.closest && ev.target.closest('[data-k],[data-pt],[data-it],[data-g]');
+  if (!el) { tip.style.display = 'none'; return; }
+  let html = '';
+  try {
+    if (el.dataset.k) html = explain(el.dataset.k, JSON.parse(el.dataset.v), JSON.parse(el.dataset.x || '{}'));
+    else if (el.dataset.pt) html = pairTip(el.dataset.pt);
+    else if (el.dataset.it) html = instTip(el.dataset.it);
+    else if (el.dataset.g) html = gaugeTip(el, ev);
+  } catch (e) { html = '<h4>Details unavailable</h4>'; }
+  tip.innerHTML = html;
+  tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + 16, y = ev.clientY + 16;
+  if (x + w > innerWidth - 8) x = ev.clientX - w - 16;
+  if (y + h > innerHeight - 8) y = Math.max(8, innerHeight - h - 8);
+  tip.style.left = Math.max(8, x) + 'px'; tip.style.top = y + 'px';
+});
+document.addEventListener('mouseleave', () => { $('tip').style.display = 'none'; });
+document.addEventListener('click', ev => {
+  const el = ev.target.closest && ev.target.closest('[data-go]');
+  if (!el) return;
+  const [a, b] = el.dataset.go.split(':');
+  if (a === 'pair') { S.pair = b; S.page = 'pair'; }
+  else if (a === 'inst') { S.inst = b; S.page = 'inst'; }
+  else if (a === 'research') { S.pair = b; S.page = 'res'; S.resPair = b; }
+  else if (a === 'hist') { S.pair = b; S.page = 'hist'; }
+  else if (a === 'page') { S.page = b; }
+  $('tip').style.display = 'none';
+  render(); window.scrollTo(0, 0);
+});
+
+/* ============================== charts ============================== */
+function lineChart(vals, o) {
+  const W = 620, H = o.h || 110, pl = 40, pr = 8, pt = 8, pb = 16;
+  const pts = vals.map((v, i) => ({ v: num(v), i })).filter(p => p.v !== null);
+  if (pts.length < 2) return '<div class="mut small">' + esc(o.title || '') + ': no data</div>';
+  let lo = o.lo, hi = o.hi;
+  if (lo === undefined) { lo = Math.min.apply(null, pts.map(p => p.v)); hi = Math.max.apply(null, pts.map(p => p.v)); const pad = (hi - lo) * .08 || 1; lo -= pad; hi += pad; }
+  const X = i => pl + (W - pl - pr) * i / (vals.length - 1);
+  const Y = v => pt + (H - pt - pb) * (1 - (v - lo) / (hi - lo));
+  let g = '';
+  if (o.band) g += '<rect x="' + pl + '" y="' + Y(o.band) + '" width="' + (W - pl - pr) + '" height="' + (Y(-o.band) - Y(o.band)) + '" fill="rgba(140,149,160,.16)"/>';
+  if (o.zero !== undefined) g += '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + Y(o.zero) + '" y2="' + Y(o.zero) + '" stroke="#566" stroke-dasharray="3 3"/>';
+  const path = pts.map((p, k) => (k ? 'L' : 'M') + X(p.i).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
+  g += '<path d="' + path + '" fill="none" stroke="' + (o.color || '#6ea8fe') + '" stroke-width="1.6"/>';
+  g += pts.map(p => '<circle cx="' + X(p.i).toFixed(1) + '" cy="' + Y(p.v).toFixed(1) + '" r="4" fill="transparent"><title>' + esc(fD(o.dates[p.i]) + ': ' + (o.fmt ? o.fmt(p.v) : p.v.toFixed(2))) + '</title></circle>').join('');
+  g += '<text x="4" y="' + (pt + 8) + '" fill="#8b98a8" font-size="9">' + (o.fmt ? o.fmt(hi) : hi.toFixed(1)) + '</text><text x="4" y="' + (H - pb) + '" fill="#8b98a8" font-size="9">' + (o.fmt ? o.fmt(lo) : lo.toFixed(1)) + '</text>';
+  g += '<text x="' + pl + '" y="' + (H - 3) + '" fill="#8b98a8" font-size="9">' + fD(o.dates[0]) + '</text><text x="' + (W - pr) + '" y="' + (H - 3) + '" fill="#8b98a8" font-size="9" text-anchor="end">' + fD(o.dates[o.dates.length - 1]) + '</text>';
+  return '<div class="small mut" style="margin-top:6px">' + esc(o.title || '') + '</div><svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto">' + g + '</svg>';
+}
+function histCharts(item, kind) {
+  const h = P.hist[item + '|' + kind];
+  if (!h || h.length < 2) return '<div class="mut small">No history available.</div>';
+  const dates = h.map(r => r[0]);
+  let out = '';
+  const price = h.map(r => r[5]);
+  if (price.some(v => num(v) !== null)) out += lineChart(price, { title: 'PRICE (close at each COT release)', dates, color: '#8ab4f8', fmt: v => v.toFixed(4) });
+  else out += '<div class="mut small" style="margin-top:6px">PRICE: not available for this item</div>';
+  out += lineChart(h.map(r => r[1]), { title: (kind === 'Pair' ? 'COT PAIR SCORE' : 'COT STRENGTH') + ' (weekly, shaded = neutral zone)', dates, lo: -100, hi: 100, zero: 0, band: cfg().neutral, color: '#58c26d', fmt: v => fS(v), h: 120 });
+  if (kind === 'Instrument') {
+    out += lineChart(h.map(r => r[3]), { title: 'MOMENTUM PERCENTILE', dates, lo: 0, hi: 100, color: '#e8a33d', fmt: v => Math.round(v) + '%' });
+    out += lineChart(h.map(r => r[2]), { title: 'NET POSITIONING PERCENTILE', dates, lo: 0, hi: 100, color: '#b58cff', fmt: v => Math.round(v) + '%' });
+  }
+  return out;
+}
+
+/* ============================== small renderers ============================== */
+function badge(t, c) { return '<span class="badge" style="background:' + c + '33;color:' + c + ';border:1px solid ' + c + '66">' + esc(t) + '</span>'; }
+const relCol = r => r === 'ALIGNED' ? '#58c26d' : r === 'DIVERGING' ? '#f0624d' : '#8b98a8';
+function tile(r) {
+  const dim = passFilter(r) ? '' : 'dim';
+  const go = r.Kind === 'Pair' ? 'pair:' : 'inst:';
+  const attr = r.Kind === 'Pair' ? 'data-pt' : 'data-it';
+  return '<div class="tile ' + dim + '" style="background:' + col(r.Score) + '" ' + attr + '="' + esc(r.Item) + '" data-go="' + go + esc(r.Item) + '"><div class="tn">' + esc(r.Item) + '</div><div class="ts">' + fS(r.Score) + '</div><div class="td">' + esc(r.Direction || 'N/A') + '</div></div>';
+}
+function barRow(label, v, key, x, max) {
+  const m = max || 50, p = isNum(v) ? Math.max(-1, Math.min(1, v / m)) * 50 : 0;
+  const style = p >= 0 ? 'left:50%;width:' + p + '%;background:' + col(v) : 'left:' + (50 + p) + '%;width:' + (-p) + '%;background:' + col(v);
+  return '<div style="display:grid;grid-template-columns:130px 1fr 54px;gap:8px;align-items:center"><span class="small">' + label + '</span><div class="bar"><u></u><i style="' + style + '"></i></div><span style="text-align:right">' + N(v, key, x) + '</span></div>';
+}
+function tfStrip(item, kind) {
+  return '<div class="tfrow">' + TFS.map(t => {
+    const r = get(kind, item, t), v = r ? r.Score : null;
+    return '<div class="tfc" style="background:' + col(v) + '"><small>' + TFL[t].toUpperCase() + '</small><b>' + N(v, 'tfScore', { tf: t }) + '</b></div>';
+  }).join('') + '</div>';
+}
+function confList(r) {
+  if (!r['Confluence Detail']) return '<span class="mut">N/A</span>';
+  return r['Confluence Detail'].split(' | ').map(s => { const c = s.charAt(0); return '<div class="small" style="color:' + (c === '\u2713' ? '#58c26d' : c === '\u2715' ? '#f0624d' : '#8b98a8') + '">' + esc(s) + '</div>'; }).join('');
+}
+function alignBlock(r) {
+  return '<div>' + badge(r['Alignment State'] || 'N/A', r['Alignment State'] && /BULLISH/.test(r['Alignment State']) ? '#58c26d' : /BEARISH/.test(r['Alignment State'] || '') ? '#f0624d' : '#8b98a8') + ' <span class="small mut">' + N(null, 'align', { state: r['Alignment State'] }, r['Alignment Count'] || 'N/A') + '</span></div><div class="small mut" style="margin-top:4px">' + esc(r['Alignment Description'] || '') + '</div>';
+}
+function selectBox(id, list, cur) { return '<select id="' + id + '">' + list.map(x => '<option ' + (x === cur ? 'selected' : '') + '>' + esc(x) + '</option>').join('') + '</select>'; }
+
+/* ============================== pages ============================== */
+function chips() {
+  const s = P.status, l = P.live;
+  const dc = { 'CURRENT':'#58c26d','AWAITING NEW COT':'#e8a33d','PRICE DATA DELAYED':'#e8a33d','INCOMPLETE':'#f0624d' }[l.dataStatus] || '#8b98a8';
+  const c = (a, b) => '<div class="chip">' + a + '<b>' + b + '</b></div>';
+  $('chips').innerHTML = c('COT', fD(s['COT DATE'])) + c('PRICE', fD(s['PRICE DATE'])) + c('TIMEFRAME', TFL[S.tf].toUpperCase()) + c('MARKETS', P.insts.length) + c('PAIRS', P.pairs.length) + c('LAST UPDATED', fDT(s['LAST UPDATED'])) +
+    '<div class="chip">DATA STATUS<b style="color:' + dc + '">\u25cf ' + esc(l.dataStatus) + '</b></div>';
+}
+function nav() {
+  $('nav').innerHTML = PAGES.map(p => '<button class="' + (S.page === p[0] ? 'on' : '') + '" data-go="page:' + p[0] + '">' + p[1] + '</button>').join('');
+}
+function controls() {
+  const tfOn = ['home','pair','inst','pos'].indexOf(S.page) >= 0, fOn = ['home','pos'].indexOf(S.page) >= 0;
+  $('ctl').innerHTML =
+    (tfOn ? '<div class="grp"><label>TIMEFRAME</label>' + TFS.map(t => '<button class="btn ' + (S.tf === t ? 'on' : '') + '" data-tf="' + t + '">' + TFL[t].toUpperCase() + '</button>').join('') + '</div>' : '') +
+    (fOn ? '<div class="grp"><label>FILTER</label>' + FILTERS.map(f => '<button class="btn ' + (S.filter === f ? 'on' : '') + '" data-f="' + f + '">' + f + '</button>').join('') + '</div>' : '') +
+    '<div class="grp" style="margin-left:auto"><span class="small mut" id="live">\u25cf LIVE \u00b7 auto-updates</span><button class="btn" id="refresh">REFRESH</button></div>';
+  $('refresh').onclick = () => load(true);
+  document.querySelectorAll('[data-tf]').forEach(b => b.onclick = () => { S.tf = b.dataset.tf; render(); });
+  document.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { S.filter = b.dataset.f; render(); });
+}
+
+function pHome() {
+  const pr = rowsOf('Pair'), ins = rowsOf('Instrument');
+  const bull = pr.filter(r => sgn(r.Score) === 1).length, bear = pr.filter(r => sgn(r.Score) === -1).length;
+  const neu = pr.filter(r => sgn(r.Score) === 0).length;
+  const ext = ins.filter(r => r.Extreme && r.Extreme !== 'No').length, rev = ins.filter(r => r.Reversal && r.Reversal !== 'No').length;
+  const mom = ins.filter(r => r['Momentum Percentile'] >= 80 || r['Momentum Percentile'] <= 20).length;
+  const div = pr.filter(r => r['COT Price Relationship'] === 'DIVERGING').length;
+  const k = (v, key, l) => '<div class="kpi"><div class="v">' + N(v, key) + '</div><div class="l">' + l + '</div></div>';
+  const groups = ['FX USD pairs','FX crosses','Metal','Energy'];
+  const hm = groups.map(g => { const rs = pr.filter(r => r.Group === g); return rs.length ? '<div class="glabel">' + g.toUpperCase() + '</div><div class="hm">' + rs.map(tile).join('') + '</div>' : ''; }).join('');
+  const ccy = ins.filter(r => r.Group === 'Currency').slice().sort((a, b) => (b.Score || -999) - (a.Score || -999));
+  const com = ins.filter(r => r.Group !== 'Currency');
+  const ch = P.changes.slice(0, 12).map(c => '<li><span><b>' + esc(c.Item) + '</b> <span class="mut">' + esc(c.Metric) + '</span></span><span>' + N(Number(c.Change), 'chg', { metric: c.Item + ' ' + c.Metric }, (Number(c.Change) > 0 ? '+' : '') + (c.Unit === '\u03c3' ? Number(c.Change).toFixed(1) + '\u03c3' : Math.round(Number(c.Change)))) + '</span></li>').join('') || '<li class="mut">No meaningful changes.</li>';
+  const wt = P.watch.slice(0, 10).map(w => '<li data-go="' + (w.Kind === 'Pair' ? 'pair:' : 'inst:') + esc(w.Item) + '" style="cursor:pointer"><span><b>' + esc(w.Item) + '</b> <span class="mut small">' + esc(w.Reasons) + '</span></span><span style="color:' + col(Number(w.Score)) + ';font-weight:700">' + (w.Score === undefined ? 'N/A' : fS(Number(w.Score))) + '</span></li>').join('') || '<li class="mut">Nothing flagged.</li>';
+  const exl = ins.filter(r => r.Extreme !== 'No' || r.Reversal !== 'No').map(r => '<tr class="click" data-go="inst:' + esc(r.Item) + '"><td><b>' + esc(r.Item) + '</b></td><td>' + N(r['Net Percentile'], 'netPctl') + '</td><td>' + esc(r.Extreme) + '</td><td>' + esc(r.Reversal) + '</td></tr>').join('') || '<tr><td colspan="4" class="mut">None.</td></tr>';
+  const dvl = pr.concat(ins).filter(r => r['COT Price Relationship'] === 'DIVERGING').slice(0, 10).map(r => '<tr class="click" data-go="' + (r.Kind === 'Pair' ? 'pair:' : 'inst:') + esc(r.Item) + '"><td><b>' + esc(r.Item) + '</b></td><td>' + esc(r['Divergence Type']) + '</td><td>' + esc(r['Price Direction']) + '</td></tr>').join('') || '<tr><td colspan="3" class="mut">None.</td></tr>';
+  const sel = get('Pair', S.pair);
+  const dq = P.status;
+  return '<div class="panel"><h2>Market regime \u00b7 ' + TFL[S.tf] + '</h2><div class="kpis">' + k(bull, 'nBull', 'BULLISH PAIRS') + k(bear, 'nBear', 'BEARISH PAIRS') + k(neu, 'nNeutral', 'NEUTRAL PAIRS') + k(ext, 'nExtreme', 'EXTREME POSITIONING') + k(rev, 'nReversal', 'REVERSAL CONDITIONS') + k(mom, 'nMomentum', 'STRONG MOMENTUM') + k(div, 'nDiverge', 'COT / PRICE DIVERGENCES') + k(P.live.daysSince, 'daysSince', 'DAYS SINCE COT') + '</div></div>' +
+    '<div class="panel"><h2>Pair heatmap \u00b7 hover for intelligence, click for analysis</h2>' + hm + '</div>' +
+    '<div class="row r2"><div class="panel"><h2>What changed since last COT report</h2><ul class="l">' + ch + '</ul></div><div class="panel"><h2>Markets to watch \u00b7 monitoring only</h2><ul class="l">' + wt + '</ul></div></div>' +
+    '<div class="row r2"><div class="panel"><h2>Currency strength</h2><div class="ct">' + ccy.map(tile).join('') + '</div></div><div class="panel"><h2>Commodity strength</h2><div class="ct">' + com.map(tile).join('') + '</div></div></div>' +
+    '<div class="row r2"><div class="panel"><h2>Extremes / reversals</h2><table><tr><th>INSTRUMENT</th><th>PERCENTILE</th><th>EXTREME</th><th>REVERSAL</th></tr>' + exl + '</table></div><div class="panel"><h2>COT / price divergences</h2><table><tr><th>MARKET</th><th>TYPE</th><th>PRICE</th></tr>' + dvl + '</table></div></div>' +
+    '<div class="panel"><h2>Selected market</h2><div style="margin-bottom:8px">' + selectBox('hp', P.pairs, S.pair) + ' <button class="btn" data-go="pair:' + esc(S.pair) + '">OPEN FULL ANALYSIS</button></div>' + (sel ? '<div class="gauges">' + gauge(sel.Score, { title: S.pair + ' BIAS', kind: 'bias' }) + gauge(sel['Base Strength'], { title: sel.Base + ' STRENGTH', kind: 'strength', sm: true }) + gauge(sel['Quote Strength'], { title: sel.Quote + ' STRENGTH', kind: 'strength', sm: true }) + '</div>' : '') + '</div>' +
+    '<div class="panel"><h2>Data quality</h2><div class="row r3"><div class="small">COT status<br><b>' + esc(P.live.cotStatus) + '</b></div><div class="small">Price status<br><b>' + esc(P.live.priceStatus) + '</b></div><div class="small">Missing instruments<br><b>' + esc(dq['MISSING INSTRUMENTS'] || 0) + '</b></div><div class="small">Pairs without price<br><b>' + esc(dq['PAIRS WITHOUT PRICE'] || 0) + '</b></div><div class="small">Last successful update<br><b>' + fDT(dq['LAST SUCCESSFUL UPDATE']) + '</b></div><div class="small">Last error<br><b>' + esc(dq['LAST ERROR'] || 'None') + '</b></div></div></div>';
+}
+
+function pPair() {
+  const r = get('Pair', S.pair);
+  if (!r) return '<div class="panel">No data for this pair.</div>';
+  const x = { item: r.Item };
+  return '<div class="panel"><h2>Pair analysis</h2>' + selectBox('pp', P.pairs, S.pair) + ' <button class="btn" data-go="hist:' + esc(S.pair) + '">HISTORICAL CONTEXT</button> <button class="btn" data-go="research:' + esc(S.pair) + '">RESEARCH HISTORICAL BEHAVIOUR</button>' +
+    '<div class="gauges" style="margin-top:12px">' + gauge(r.Score, { title: r.Item + ' BIAS \u00b7 ' + TFL[S.tf].toUpperCase(), kind: 'bias' }) + gauge(r['Base Strength'], { title: r.Base + ' STRENGTH', kind: 'strength', sm: true }) + gauge(r['Quote Strength'], { title: r.Quote + ' STRENGTH', kind: 'strength', sm: true }) + '</div></div>' +
+    '<div class="row r2"><div class="panel"><h2>Why this score \u00b7 component breakdown</h2>' + barRow('Positioning (50%)', r['Positioning Component'], 'posC', x) + barRow('Momentum (30%)', r['Momentum Component'], 'momC', x) + barRow('Acceleration (20%)', r['Acceleration Component'], 'accC', x) +
+    '<div class="note">Total = ' + N(r.Score, 'score') + '. Base \u2212 quote strength = ' + N((r['Base Strength'] - r['Quote Strength']) / 2, 'score') + ' (identical by construction).</div>' +
+    '<h3>Underlying differences</h3><table><tr><td>Positioning divergence</td><td>' + N(r['Positioning Divergence'], 'posDiv') + '</td><td>Momentum divergence</td><td>' + N(r['Momentum Divergence'], 'momDiv') + '</td></tr><tr><td>Acceleration difference</td><td>' + N(r['Acceleration Divergence (\u03c3)'], 'accDiv') + '</td><td>Momentum change</td><td>' + N(r['Momentum Change'], 'momChange') + '</td></tr><tr><td>' + esc(r.Base) + ' net / momentum percentile</td><td>' + N(r['Base Net Pctl'], 'netPctl') + ' / ' + N(r['Base Mom Pctl'], 'momPctl') + '</td><td>' + esc(r.Quote) + ' net / momentum percentile</td><td>' + N(r['Quote Net Pctl'], 'netPctl') + ' / ' + N(r['Quote Mom Pctl'], 'momPctl') + '</td></tr></table></div>' +
+    '<div class="panel"><h2>Multi timeframe alignment</h2>' + tfStrip(S.pair, 'Pair') + '<div style="margin-top:10px">' + alignBlock(r) + '</div><h3>Confluence ' + N(r['Confluence Count'], 'conf', { total: r['Confluence Total'] }, (r['Confluence Count'] === undefined ? 'N/A' : r['Confluence Count'] + ' / ' + r['Confluence Total'])) + '</h3>' + confList(r) + '</div></div>' +
+    '<div class="row r2"><div class="panel"><h2>Signals and price</h2><table><tr><td>Extreme</td><td>' + esc(r.Extreme || 'No') + '</td></tr><tr><td>Reversal</td><td>' + esc(r.Reversal || 'No') + '</td></tr><tr><td>Scanner bias</td><td>' + esc(r['Pair Bias (Scanner)'] || 'N/A') + '</td></tr><tr><td>Price direction</td><td>' + esc(r['Price Direction'] || 'N/A') + ' ' + N(r['Price Return %'], 'priceRet') + '</td></tr><tr><td>COT / Price</td><td>' + badge(r['COT Price Relationship'] || 'N/A', relCol(r['COT Price Relationship'])) + ' <span class="small mut">' + esc(r['Divergence Type'] || '') + '</span></td></tr><tr><td>Previous score \u2192 now</td><td>' + fS(r['Previous Score']) + ' \u2192 ' + fS(r.Score) + ' (' + N(r['Score Change'], 'scoreChange') + ')</td></tr><tr><td>Bias age</td><td>' + N(r['Bias Age Weeks'], 'age', { since: r['Bias Since'] }, (isNum(r['Bias Age Weeks']) ? r['Bias Age Weeks'] + ' wk' : 'N/A')) + ' <span class="mut small">since ' + fD(r['Bias Since']) + '</span></td></tr><tr><td>COT date / price date</td><td>' + fD(r['COT Date']) + ' / ' + fD(r['Price Date']) + '</td></tr></table></div><div class="panel"><h2>Price vs COT</h2>' + histCharts(S.pair, 'Pair') + '</div></div>';
+}
+
+function pInst() {
+  const r = get('Instrument', S.inst);
+  if (!r) return '<div class="panel">No data for this instrument.</div>';
+  const pairFor = ['XAU','XAG','WTI','Brent'].indexOf(S.inst) >= 0 ? S.inst + '/USD' : null;
+  return '<div class="panel"><h2>Instrument analysis</h2>' + selectBox('ip', P.insts, S.inst) + (pairFor ? ' <button class="btn" data-go="hist:' + pairFor + '">HISTORICAL CONTEXT</button>' : '') +
+    '<div class="gauges" style="margin-top:12px">' + gauge(r.Score, { title: S.inst + ' STRENGTH \u00b7 ' + TFL[S.tf].toUpperCase(), kind: 'strength' }) + '</div></div>' +
+    '<div class="row r2"><div class="panel"><h2>Positioning detail</h2><table><tr><td>Net position</td><td>' + N(r['Net Position'], 'netPos') + '</td></tr><tr><td>Net percentile</td><td>' + N(r['Net Percentile'], 'netPctl') + '</td></tr><tr><td>Momentum (4W) / percentile</td><td>' + fInt(r['4W Momentum']) + ' / ' + N(r['Momentum Percentile'], 'momPctl') + '</td></tr><tr><td>Momentum change</td><td>' + N(r['Momentum Change'], 'momChange') + '</td></tr><tr><td>Acceleration</td><td>' + N(r['Normalised Acceleration'], 'normAccel') + '</td></tr><tr><td>Classification</td><td>' + esc(r['Positioning Class'] || 'N/A') + '</td></tr><tr><td>Extreme / reversal</td><td>' + esc(r.Extreme) + ' / ' + esc(r.Reversal) + '</td></tr><tr><td>Price</td><td>' + esc(r['Price Direction'] || 'N/A') + ' ' + N(r['Price Return %'], 'priceRet') + '</td></tr><tr><td>COT / Price</td><td>' + badge(r['COT Price Relationship'] || 'N/A', relCol(r['COT Price Relationship'])) + '</td></tr><tr><td>Strength change</td><td>' + N(r['Score Change'], 'scoreChange') + '</td></tr><tr><td>Bias age / extreme age</td><td>' + N(r['Bias Age Weeks'], 'age', { since: r['Bias Since'] }, isNum(r['Bias Age Weeks']) ? r['Bias Age Weeks'] + ' wk' : 'N/A') + ' / ' + (isNum(r['Extreme Age Weeks']) ? r['Extreme Age Weeks'] + ' wk' : 'n/a') + '</td></tr></table>' +
+    '<h3>Strength components</h3>' + barRow('Positioning', r['Positioning Component'], 'posC', {}, 100) + barRow('Momentum', r['Momentum Component'], 'momC', {}, 100) + barRow('Acceleration', r['Acceleration Component'], 'accC', {}, 100) + '</div>' +
+    '<div class="panel"><h2>Multi timeframe strength</h2>' + tfStrip(S.inst, 'Instrument') + '<div style="margin-top:10px">' + alignBlock(r) + '</div><h3>Confluence ' + N(r['Confluence Count'], 'conf', { total: r['Confluence Total'] }, (r['Confluence Count'] === undefined ? 'N/A' : r['Confluence Count'] + ' / ' + r['Confluence Total'])) + '</h3>' + confList(r) + '<h3>History</h3>' + histCharts(S.inst, 'Instrument') + '</div></div>';
+}
+
+function pPos() {
+  const ins = rowsOf('Instrument'), pr = rowsOf('Pair');
+  const t = (rows, hdr, fn) => '<table><tr>' + hdr.map(h => '<th>' + h + '</th>').join('') + '</tr>' + (rows.map(fn).join('') || '<tr><td colspan="' + hdr.length + '" class="mut">None.</td></tr>') + '</table>';
+  const go = r => 'data-go="inst:' + esc(r.Item) + '"';
+  const dim = r => passFilter(r) ? '' : ' style="opacity:.25"';
+  const ex = ins.filter(r => r.Extreme !== 'No');
+  const rv = ins.filter(r => r.Reversal !== 'No');
+  const ac = ins.slice().sort((a, b) => Math.abs(b['Normalised Acceleration'] || 0) - Math.abs(a['Normalised Acceleration'] || 0));
+  const mc = ins.slice().sort((a, b) => Math.abs(b['Momentum Change'] || 0) - Math.abs(a['Momentum Change'] || 0));
+  const dv = pr.concat(ins).filter(r => r['COT Price Relationship'] === 'DIVERGING');
+  return '<div class="row r2"><div class="panel"><h2>Extremes</h2>' + t(ex, ['INSTRUMENT','PERCENTILE','DIRECTION','MOMENTUM','MOM CHANGE','REVERSAL'], r => '<tr class="click" ' + go(r) + dim(r) + '><td><b>' + esc(r.Item) + '</b></td><td>' + N(r['Net Percentile'], 'netPctl') + '</td><td>' + esc(r.Extreme) + '</td><td>' + N(r['Momentum Percentile'], 'momPctl') + '</td><td>' + N(r['Momentum Change'], 'momChange') + '</td><td>' + esc(r.Reversal) + '</td></tr>') + '</div>' +
+    '<div class="panel"><h2>Potential reversals (conditions, not guarantees)</h2>' + t(rv, ['INSTRUMENT','CONDITION','PERCENTILE','MOM CHANGE'], r => '<tr class="click" ' + go(r) + dim(r) + '><td><b>' + esc(r.Item) + '</b></td><td>' + esc(r.Reversal) + '</td><td>' + N(r['Net Percentile'], 'netPctl') + '</td><td>' + N(r['Momentum Change'], 'momChange') + '</td></tr>') + '</div></div>' +
+    '<div class="row r2"><div class="panel"><h2>Acceleration (largest first)</h2>' + t(ac, ['INSTRUMENT','ACCELERATION','NET CHANGE CLASS'], r => '<tr class="click" ' + go(r) + dim(r) + '><td><b>' + esc(r.Item) + '</b></td><td>' + N(r['Normalised Acceleration'], 'normAccel') + '</td><td>' + esc(r['Positioning Class']) + '</td></tr>') + '</div>' +
+    '<div class="panel"><h2>Momentum changes (largest first)</h2>' + t(mc, ['INSTRUMENT','MOM PERCENTILE','CHANGE'], r => '<tr class="click" ' + go(r) + dim(r) + '><td><b>' + esc(r.Item) + '</b></td><td>' + N(r['Momentum Percentile'], 'momPctl') + '</td><td>' + N(r['Momentum Change'], 'momChange') + '</td></tr>') + '</div></div>' +
+    '<div class="panel"><h2>COT / price divergences \u00b7 conditions needing investigation, not signals</h2>' + t(dv, ['MARKET','TYPE','COT DIRECTION','PRICE','POSITIONING','TIMEFRAME'], r => '<tr class="click" data-go="' + (r.Kind === 'Pair' ? 'pair:' : 'inst:') + esc(r.Item) + '"' + dim(r) + '><td><b>' + esc(r.Item) + '</b></td><td>' + esc(r['Divergence Type']) + '</td><td>' + esc(r.Direction) + '</td><td>' + esc(r['Price Direction']) + '</td><td>' + (r.Kind === 'Pair' ? N(r['Positioning Divergence'], 'posDiv') : N(r['Net Percentile'], 'netPctl')) + '</td><td>' + TFL[S.tf] + '</td></tr>') + '</div>';
+}
+
+/* research helpers */
+function statRow(label, s) {
+  if (!s || !s.n) return '<tr><td>' + label + '</td><td colspan="6" class="mut">INSUFFICIENT SAMPLE</td></tr>';
+  return '<tr><td>' + label + '</td><td>' + N(s.n, 'rN') + '</td><td>' + N(s.mean, 'rMean') + '</td><td>' + N(s.median, 'rMedian') + '</td><td>' + N(s.hit, 'rHit') + '</td><td>' + N(s.sd, 'rSd') + '</td><td>' + N(s.t, 'rT') + '</td></tr>';
+}
+function researchHTML(res) {
+  if (res.error) return '<div class="note">' + esc(res.error) + '</div>';
+  const rows = res.results.map(h => '<tr><td colspan="7" style="color:#e8a33d;font-weight:700;padding-top:10px">' + h.horizon + ' FORWARD RETURN</td></tr>' + statRow('All observations', h.all) + statRow('Non-overlapping', h.nonOverlap)).join('');
+  return '<div class="warn"><b>HISTORICAL BACKTEST</b> \u00b7 not current market conditions, not a forecast. Sample period ' + fD(res.from) + ' to ' + fD(res.to) + ' \u00b7 ' + res.matched + ' matching observations \u00b7 returns are ' + (res.directional ? 'direction-adjusted (positive = the signal worked; bearish signals sign-flipped)' : 'raw price changes') + '.</div>' +
+    '<table><tr><th>GROUP</th><th>N</th><th>MEAN</th><th>MEDIAN</th><th>POSITIVE %</th><th>ST. DEV.</th><th>T-STAT</th></tr>' + rows + '</table>' +
+    '<div class="note"><b>Signal definition:</b> Pair Scanner score filters as selected. <b>Entry:</b> first close after the Friday release. <b>Exit:</b> last close on or before entry + 1, 2 or 4 weeks.<br><b>Limitations:</b> overlapping 2W/4W windows and shared currency legs overstate significance; small samples are unstable; statistics are historical association, not forecasts.' + (res.notes && res.notes.length ? '<br><span class="mut">' + res.notes.map(esc).join('<br>') + '</span>' : '') + '</div>';
+}
+function runResearch(params, target) {
+  $(target).innerHTML = '<div class="mut">Running query\u2026</div>';
+  google.script.run.withSuccessHandler(res => { $(target).innerHTML = researchHTML(res); }).withFailureHandler(e => { $(target).innerHTML = '<div class="warn">' + esc(e.message || e) + '</div>'; }).cotWebResearch(params);
+}
+
+function pHist() {
+  const r = get('Pair', S.pair);
+  if (!r) return '<div class="panel">No data.</div>';
+  return '<div class="panel"><h2>Historical context \u00b7 has something similar happened before?</h2>' + selectBox('hcp', P.pairs, S.pair) +
+    '<div class="note">Current setup: <b>' + esc(S.pair) + '</b> weekly score ' + N(r['Weekly Score'], 'score') + ', ' + esc(r.Direction) + '. Comparable history = same pair, weekly score within \u00b110 of today\'s, from the stored backtest.</div></div>' +
+    '<div class="panel"><div id="hctx" class="mut">Loading comparable history\u2026</div><div id="hgauge" style="margin-top:10px"></div></div>' +
+    '<div class="panel"><h2>Current positioning percentiles</h2><table><tr><td>' + esc(r.Base) + ' net / momentum percentile</td><td>' + N(r['Base Net Pctl'], 'netPctl') + ' / ' + N(r['Base Mom Pctl'], 'momPctl') + '</td></tr><tr><td>' + esc(r.Quote) + ' net / momentum percentile</td><td>' + N(r['Quote Net Pctl'], 'netPctl') + ' / ' + N(r['Quote Mom Pctl'], 'momPctl') + '</td></tr><tr><td>Acceleration difference</td><td>' + N(r['Acceleration Divergence (\u03c3)'], 'accDiv') + '</td></tr></table></div>';
+}
+function afterHist() {
+  const r = get('Pair', S.pair); if (!r) return;
+  const w = r['Weekly Score'];
+  if (!isNum(w)) { $('hctx').innerHTML = '<div class="note">No weekly score available.</div>'; return; }
+  const dir = sgn(w) !== 0;
+  google.script.run.withSuccessHandler(res => {
+    $('hctx').innerHTML = researchHTML(res);
+    if (!res.error && dir) {
+      const h = res.results[2] && res.results[2].all;
+      if (h && h.n >= 30) $('hgauge').innerHTML = '<h2 class="mut small" style="letter-spacing:.14em">HISTORICAL SETUP GAUGE (4W, comparable setups)</h2>' + gauge((h.hit - 50) * 2, { title: 'HISTORICAL HIT-RATE GAUGE', kind: 'bias' }) + '<div class="note">Definition: (positive outcome frequency \u2212 50) \u00d7 2 over ' + h.n + ' comparable observations. It is not a probability.</div>';
+      else $('hgauge').innerHTML = '<div class="note">Historical gauge hidden: needs a direction and at least 30 comparable observations.</div>';
+    }
+  }).withFailureHandler(e => { $('hctx').innerHTML = '<div class="warn">' + esc(e.message || e) + '</div>'; })
+    .cotWebResearch({ pair: S.pair, scoreMin: Math.round(w - 10), scoreMax: Math.round(w + 10), directional: dir, bias: 'any', pos: 'any', mom: 'any', acc: 'any' });
+}
+
+function pRes() {
+  const pairs = ['ALL'].concat(P.pairs);
+  const cur = S.resPair || 'ALL';
+  const sel = (id, opts, d) => '<select id="' + id + '">' + opts.map(o => '<option value="' + esc(o[0]) + '" ' + (o[0] === d ? 'selected' : '') + '>' + esc(o[1]) + '</option>').join('') + '</select>';
+  const cond = [['any','Any'],['ge20','\u2265 +20'],['le-20','\u2264 \u221220'],['gt0','> 0'],['lt0','< 0']];
+  return '<div class="warn"><b>RESEARCH / BACKTEST</b> \u00b7 a separate research branch. It reads the stored backtest results only, never changes live data, and the backtest is rebuilt automatically each time the data updates.' + (P.hasBacktest ? '' : ' <b>No backtest data found yet.</b>') + '</div>' +
+    '<div class="panel"><h2>Query</h2><div class="form">' +
+    '<div><label>PAIR</label>' + sel('rp', pairs.map(p => [p, p]), cur) + '</div>' +
+    '<div><label>BIAS LABEL</label>' + sel('rb', [['any','Any'],['Bullish','Bullish'],['Bullish but momentum fading','Bullish but fading'],['Neutral','Neutral'],['Bearish but momentum fading','Bearish but fading'],['Bearish','Bearish']], 'any') + '</div>' +
+    '<div><label>SCORE MIN</label><input id="rsmin" type="number" placeholder="-100"></div><div><label>SCORE MAX</label><input id="rsmax" type="number" placeholder="100"></div>' +
+    '<div><label>POSITIONING DIV</label>' + sel('rpos', cond, 'any') + '</div><div><label>MOMENTUM DIV</label>' + sel('rmom', cond, 'any') + '</div><div><label>ACCELERATION DIV</label>' + sel('racc', cond, 'any') + '</div>' +
+    '<div><label>RETURNS</label>' + sel('rdir', [['1','Direction-adjusted'],['0','Raw']], '1') + '</div>' +
+    '<div><label>FROM</label><input id="rfrom" type="date"></div><div><label>TO</label><input id="rto" type="date"></div>' +
+    '<div><button class="btn on" id="rrun" style="padding:8px 16px">RUN QUERY</button></div></div>' +
+    '<div class="small mut" style="margin-top:8px">Direction-adjusted needs |score| \u2265 ' + cfg().neutral + ' (neutral-zone rows are excluded) and flips bearish returns. Horizons 1, 2 and 4 weeks are always shown.</div></div>' +
+    '<div class="panel"><h2>Results</h2><div id="rout" class="mut">Choose filters and run the query.</div></div>';
+}
+function afterRes() {
+  $('rrun').onclick = () => runResearch({
+    pair: $('rp').value, bias: $('rb').value, scoreMin: $('rsmin').value, scoreMax: $('rsmax').value,
+    pos: $('rpos').value, mom: $('rmom').value, acc: $('racc').value, directional: $('rdir').value === '1',
+    from: $('rfrom').value, to: $('rto').value
+  }, 'rout');
+  if (S.resPair) { S.resPair = null; $('rrun').click(); }
+}
+
+/* glossary + methodology */
+const GLOSS = [
+ ['NAVIGATION',[
+  ['MARKET COMMAND CENTRE','Home page: regime counts, pair heatmap, what changed, markets to watch, currency and commodity strength, extremes, divergences and a selected-market gauge panel. Answers "what is happening?".'],
+  ['PAIR ANALYSIS','Detail for one pair: bias gauge, base and quote strength gauges, component breakdown, multi timeframe strip, confluence, price vs COT charts. Answers "why?".'],
+  ['INSTRUMENT ANALYSIS','Detail for one currency or commodity: strength gauge, positioning detail, multi timeframe strength, history charts.'],
+  ['POSITIONING','Analytical lists: extremes, reversals, acceleration, momentum changes, COT/price divergences.'],
+  ['HISTORICAL CONTEXT','Looks up comparable past setups for the selected pair from the stored backtest and shows how they resolved.'],
+  ['RESEARCH / BACKTEST','Separate research branch. Filters the stored backtest results. Never changes live data.'],
+  ['GLOSSARY / METHODOLOGY','This page and the calculation notes.']]],
+ ['CONTROLS',[
+  ['Timeframe buttons','DAILY, WEEKLY (default), MONTHLY, QUARTERLY, 6 MONTH, ANNUAL. Changes the window used for scores and the price horizon. COT is weekly, so DAILY reuses the latest weekly COT with daily price behaviour; no daily COT is invented.'],
+  ['Filter ALL','Shows every market at full strength.'],
+  ['Filter BULLISH / BEARISH','Highlights pairs or instruments whose score is in the bullish (\u2265 +' + 20 + ') or bearish (\u2264 \u2212' + 20 + ') zone. Others dim.'],
+  ['Filter EXTREME','Positioning percentile \u2265 80 or \u2264 20 (pairs: either leg).'],
+  ['Filter REVERSAL','Extreme positioning that has started to turn (either leg).'],
+  ['Filter DIVERGENCE','COT bias and price disagree over the timeframe horizon.'],
+  ['Filter ACCELERATING','Absolute normalised acceleration \u2265 1\u03c3 (pairs: difference between legs).'],
+  ['Filter MULTI TF ALIGNED','All five distinct COT windows point the same way.'],
+  ['REFRESH button','Reloads the data now. The page also checks every minute and reloads itself when new data is published.'],
+  ['Dropdowns','Choose the pair or instrument on analysis pages.'],
+  ['RUN QUERY','Runs the research filter against the stored backtest.']]],
+ ['VISUALS',[
+  ['Heatmap tile','Colour and number = score. Grey = neutral zone, orange/red = bearish, light/dark green = bullish. Hover for intelligence, click for analysis.'],
+  ['Bias gauge','Semicircle from \u2212100 (left) through 0 at the very top (neutral) to +100 (right). Needle right and green = bullish, left and red = bearish. Used for pair scores.'],
+  ['Strength gauge','Same shape for one instrument\'s own strength.'],
+  ['Neutral zone (\u00b1' + 20 + ')','The grey arc around the top. Inside it COT offers little directional edge; this is where not to spend time.'],
+  ['Bias zone (\u00b1' + 20 + ' to \u00b1' + 50 + ')','A possible setup exists. Worth checking price, alignment, extremes and confluence.'],
+  ['Strong zone (beyond \u00b1' + 50 + ')','A very one-sided COT picture. Check extremes and reversal risk as well.'],
+  ['Gauge hover','Shows the value, the zone and, as you move across the arc, what each position would mean.'],
+  ['Number hover','Every underlined number shows what it is, why it matters and what it means for a trade plan (as context).'],
+  ['Component bars','Points that each of positioning, momentum and acceleration contributes to the score.'],
+  ['Timeframe strip','Score for each timeframe, same colour scale.'],
+  ['Charts','Price and COT on aligned dates. Shaded band = neutral zone. Hover points for exact values.'],
+  ['Alignment state','ALIGNED / MOSTLY / MIXED / CONFLICTING across Weekly, Monthly, Quarterly, 6M, Annual.'],
+  ['Confluence','Count of agreeing conditions (\u2713 agrees, \u2715 does not, \u2013 not available).'],
+  ['COT / Price','ALIGNED (same direction), DIVERGING (opposite), MIXED (one side neutral), INSUFFICIENT DATA.'],
+  ['What changed','Only meaningful changes since the previous COT report.'],
+  ['Markets to watch','Markets with at least one measurable condition. Reasons are listed; it is a monitoring list, not trade ideas.'],
+  ['Data status chip','CURRENT, AWAITING NEW COT, PRICE DATA DELAYED or INCOMPLETE.'],
+  ['LIVE indicator','Page checks for new data every minute and refreshes when new data lands.']]]
+];
+function pGloss() {
+  const q = (S.gq || '').toLowerCase();
+  const ok = (a, b) => !q || (a + ' ' + b).toLowerCase().indexOf(q) >= 0;
+  let h = '<div class="panel"><h2>Glossary</h2><input id="gq" placeholder="Search\u2026" value="' + esc(S.gq || '') + '" style="width:260px"><dl class="gl">';
+  GLOSS.forEach(g => {
+    const items = g[1].filter(i => ok(i[0], i[1]));
+    if (items.length) h += '<div class="gh">' + g[0] + '</div>' + items.map(i => '<dt>' + esc(i[0]) + '</dt><dd>' + esc(i[1]) + '</dd>').join('');
+  });
+  const nums = Object.keys(DEF).filter(k => ok(DEF[k].n, DEF[k].what + DEF[k].why + DEF[k].plan));
+  if (nums.length) h += '<div class="gh">NUMBERS (hover any underlined number for these)</div>' + nums.map(k => '<dt>' + esc(DEF[k].n) + (DEF[k].u ? ' <span class="mut small">(' + esc(DEF[k].u) + ')</span>' : '') + '</dt><dd><b>What:</b> ' + esc(DEF[k].what) + '<br><b>Why it matters:</b> ' + esc(DEF[k].why) + '<br><b>For your plan:</b> ' + esc(DEF[k].plan) + '</dd>').join('');
+  return h + '</dl></div>';
+}
+function pMeth() {
+  const w = cfg().weights || { positioning: .5, momentum: .3, acceleration: .2 };
+  const p = t => '<p>' + t + '</p>';
+  return '<div class="panel"><h2>Methodology</h2>' +
+    p('<b>What COT is.</b> The CFTC Commitments of Traders report (legacy, futures only) published every Friday for positions held the previous Tuesday. This dashboard uses non-commercial (speculator) positions only. It is weekly data; there are no daily observations.') +
+    p('<b>Net position</b> = non-commercial long \u2212 short. <b>Net percentile</b> = share of weeks since 2021 (up to the measured date only) with a net position at or below today\'s.') +
+    p('<b>Momentum</b> = net position minus the average of the latest four weeks (including the current one). <b>Momentum percentile</b> ranks it against its own history; <b>momentum change</b> is this week\'s percentile minus last week\'s, both ranked against the same history.') +
+    p('<b>Acceleration</b> = this week\'s net change minus last week\'s net change. <b>Normalised</b> = divided by the standard deviation of that history, so it is shown in \u03c3.') +
+    p('<b>Pair score</b> = ' + Math.round(w.positioning * 100) + '% positioning difference + ' + Math.round(w.momentum * 100) + '% momentum difference + ' + Math.round(w.acceleration * 100) + '% acceleration difference (base minus quote; acceleration capped at 3\u03c3 and rescaled to \u00b150). Bullish \u2265 +' + cfg().neutral + ', bearish \u2264 \u2212' + cfg().neutral + ', otherwise neutral. USD is the Dollar Index (net long = long USD).') +
+    p('<b>Instrument strength</b> = the same blend for one instrument, doubled to a \u00b1100 scale, so pair score = (base strength \u2212 quote strength) / 2.') +
+    p('<b>Zones.</b> Neutral \u00b1' + cfg().neutral + ' (the existing scanner threshold), bias zone up to \u00b1' + cfg().strong + ', strong beyond. The \u00b1' + cfg().strong + ' line is a display choice, not a tested threshold. Use Research / Backtest to see whether the zones have historically mattered.') +
+    p('<b>Timeframes.</b> Weekly = latest weekly point-in-time score. Monthly, Quarterly, 6 Month, Annual = average of the weekly point-in-time scores over 4, 13, 26 and 52 weeks. Daily = the latest weekly COT score with daily price behaviour. Percentiles, momentum, acceleration, extreme and reversal always come from the latest COT report.') +
+    p('<b>Price direction.</b> Price change over the horizon (1 session, 7, 30, 91, 182, 365 days) versus a neutral band of 0.25 \u00d7 the typical move over that horizon (from trailing one-year daily volatility). Currency price direction averages the FX pairs it appears in; commodities use their USD pair.') +
+    p('<b>COT / price.</b> ALIGNED if COT bias and price direction agree, DIVERGING if they oppose, MIXED if either is neutral, INSUFFICIENT DATA without price.') +
+    p('<b>Point in time.</b> Every historical value is computed with only data up to that week. Backtest entries are the first close after the Friday release.') +
+    p('<b>Limitations.</b> COT positions are up to 10 days old when published. Speculator positioning is not price. Overlapping windows and shared currency legs overstate statistical significance. Nothing here is a recommendation; the trader makes the decision.') + '</div>';
+}
+
+/* ============================== render loop ============================== */
+function render() {
+  if (!P) return;
+  chips(); nav(); controls();
+  const pages = { home: pHome, pair: pPair, inst: pInst, pos: pPos, hist: pHist, res: pRes, gloss: pGloss, meth: pMeth };
+  try { $('page').innerHTML = pages[S.page](); }
+  catch (e) { $('page').innerHTML = '<div class="warn">Render error: ' + esc(e.message) + '</div>'; }
+  const on = (id, fn) => { const el = $(id); if (el) el.onchange = fn; };
+  on('hp', e => { S.pair = e.target.value; render(); });
+  on('pp', e => { S.pair = e.target.value; render(); });
+  on('ip', e => { S.inst = e.target.value; render(); });
+  on('hcp', e => { S.pair = e.target.value; render(); });
+  const gq = $('gq'); if (gq) gq.oninput = e => { S.gq = e.target.value; const pos = e.target.selectionStart; render(); const n = $('gq'); n.focus(); n.setSelectionRange(pos, pos); };
+  if (S.page === 'hist') afterHist();
+  if (S.page === 'res') afterRes();
+  requestAnimationFrame(() => requestAnimationFrame(animateNeedles));
+}
+
+function load(manual) {
+  google.script.run
+    .withSuccessHandler(p => { P = p; index(); render(); if (manual && $('live')) $('live').textContent = '\u25cf Updated ' + new Date().toLocaleTimeString(); })
+    .withFailureHandler(e => { $('page').innerHTML = '<div class="warn">Could not load data: ' + esc(e.message || e) + '<br>Run the \u201cUpdate dashboard\u201d workflow on GitHub (Actions tab), then reload.</div>'; })
+    .cotWebPayload();
+}
+setInterval(() => {
+  google.script.run.withSuccessHandler(stamp => {
+    if (P && stamp && stamp !== P.stamp) load(true);
+    else if ($('live')) $('live').textContent = '\u25cf LIVE \u00b7 checked ' + new Date().toLocaleTimeString();
+  }).cotWebStamp();
+}, 60000);
+load(false);
+setTimeout(function () {
+  if (typeof P === 'undefined' || !P) {
+    var m = document.getElementById('page');
+    if (m && m.textContent.indexOf('Loading dashboard data') !== -1) {
+      m.innerHTML = '<div class="warn">data.json did not load after 25 seconds. Check your connection, then run the \u201cUpdate dashboard\u201d workflow on GitHub (Actions tab).</div>';
+    }
+  }
+}, 25000);
+</script>
+</body>
+</html>
