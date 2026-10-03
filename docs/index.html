@@ -84,6 +84,49 @@ select,input{background:var(--panel2);color:var(--text);border:1px solid var(--l
 .gl dt{font-weight:700;margin-top:10px}.gl dd{margin:2px 0 0;color:#c3cedb}
 .gl .gh{font-size:10px;letter-spacing:.14em;color:var(--acc);margin-top:18px;border-bottom:1px solid var(--line);padding-bottom:3px}
 svg text{font-family:inherit}
+.kpi.click{cursor:pointer;position:relative;border:1px solid transparent;transition:border-color .12s,transform .12s}
+.kpi.click:hover,.kpi.click:focus-visible{border-color:var(--acc);transform:translateY(-1px);outline:0}
+.kpi.click::after{content:"i";position:absolute;top:7px;right:8px;width:15px;height:15px;border-radius:50%;border:1px solid #3a4a5f;color:var(--mut);font-size:10px;font-weight:700;line-height:13px;text-align:center;font-style:italic;font-family:Georgia,serif}
+.kpi.click:hover::after{border-color:var(--acc);color:var(--acc)}
+.chip.click{cursor:pointer}.chip.click:hover{border-color:var(--acc)}
+.n{cursor:pointer}.gwrap{cursor:pointer}
+.bchip{display:inline-block;vertical-align:middle;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;letter-spacing:.06em;color:#0a0e14;text-shadow:none}
+#tip .hint{color:var(--acc);font-size:11px}
+#info{position:fixed;inset:0;z-index:40;display:none;background:rgba(4,7,11,.72);align-items:flex-start;justify-content:center;padding:5vh 14px}
+#info.open{display:flex}
+#infoBody{position:relative;width:100%;max-width:600px;max-height:90vh;overflow:auto;background:var(--panel);border:1px solid #3a4a5f;border-radius:12px;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.7);font-size:14px;line-height:1.5}
+.ix{position:absolute;top:12px;right:12px;background:var(--panel2);border:1px solid var(--line);color:var(--mut);border-radius:6px;width:30px;height:30px;font-size:14px;cursor:pointer}
+.ix:hover{color:var(--text);border-color:var(--acc)}
+.ih{padding-right:40px;margin-bottom:12px}
+.in{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.iv{font-size:34px;font-weight:700;line-height:1.2;margin-top:2px}
+.iv .of{font-size:15px;font-weight:500;color:var(--mut)}
+.now{background:var(--panel2);border-left:4px solid var(--acc);border-radius:6px;padding:10px 12px;margin-bottom:6px}
+.now b{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:2px}
+.ib{margin-top:16px}
+.ib h5{margin:0 0 6px;font-size:13px;color:var(--text)}
+.ib p{margin:0 0 8px;color:#c3cedb}
+details.ib{border-top:1px solid var(--line);padding-top:10px}
+details.ib summary{cursor:pointer;color:var(--acc);font-size:12px;font-weight:600}
+details.ib p{margin-top:8px}
+.scale{position:relative;margin:4px 0 30px}
+.sbs{display:flex;gap:2px;height:22px}
+.sb{position:relative;min-width:0;opacity:.45;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sb:first-child{border-radius:5px 0 0 5px}.sb:last-child{border-radius:0 5px 5px 0}
+.sb.on{opacity:1}
+.sb span{font-size:9px;font-weight:700;letter-spacing:.06em;color:#0a0e14;white-space:nowrap}
+.sm{position:absolute;top:-4px;transform:translateX(-50%);text-align:center;pointer-events:none}
+.sm i{display:block;width:3px;height:30px;margin:0 auto;background:#fff;border-radius:2px;box-shadow:0 0 0 1px #0a0e14}
+.sm b{display:block;font-size:11px;margin-top:2px;white-space:nowrap}
+.br{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:8px 10px;border-radius:6px;border:1px solid transparent}
+.br.on{background:var(--panel2);border-color:#3a4a5f}
+.bt{font-size:11px;font-weight:700;letter-spacing:.06em}
+.bt i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
+.bt small{display:block;font-weight:500;letter-spacing:0;color:var(--mut);margin:2px 0 0 15px;font-size:11px}
+.bm{color:#c3cedb;font-size:13px}
+.bm em{font-style:normal;color:var(--acc);font-weight:700;font-size:11px;white-space:nowrap}
+.ifoot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--mut)}
+@media(max-width:520px){.br{grid-template-columns:1fr;gap:3px}.iv{font-size:28px}#infoBody{padding:16px}}
 </style>
 </head>
 <body>
@@ -95,6 +138,7 @@ svg text{font-family:inherit}
 <div id="ctl"></div>
 <main id="page"><div class="loading">Loading dashboard data…</div></main>
 <div id="tip"></div>
+<div id="info"><div id="infoBody" role="dialog" aria-modal="true"></div></div>
 
 <script src="engine.js"></script>
 <script src="research.js"></script>
@@ -195,24 +239,519 @@ const DEF = {
  hg: { n:'Historical setup gauge', f:fS, u:'-100 to +100', what:'(Positive outcome frequency \u2212 50) \u00d7 2 for comparable past setups, in the direction of the current bias. NOT a probability.', why:'A quick read of how often similar setups moved with the bias.', plan:'Needs a reasonable sample (30+) to mean anything.', read:v=>!isNum(v)?'':v>=20?'Comparable setups mostly moved with the bias.':v<=-20?'Comparable setups mostly moved against the bias.':'No clear tendency.', signed:true }
 };
 
-function explain(k, v, x) {
-  const d = DEF[k];
-  if (!d) return '<h4>' + esc(k) + '</h4>';
-  const val = d.f(v);
-  const cls = d.signed && isNum(v) ? (v > 0 ? 'pos' : v < 0 ? 'neg' : '') : '';
-  const rd = d.read ? d.read(v, x || {}) : '';
-  return '<h4>' + esc(d.n) + (d.u ? ' <span class="mut small">(' + esc(d.u) + ')</span>' : '') + '</h4>' +
-    '<div class="tv ' + cls + '">' + esc(val) + '</div>' +
-    (rd ? '<div class="sec"><b>THIS READING</b>' + esc(rd) + '</div>' : '') +
-    '<div class="sec"><b>WHAT IT IS</b>' + esc(d.what) + '</div>' +
-    '<div class="sec"><b>WHY IT MATTERS</b>' + esc(d.why) + '</div>' +
-    '<div class="sec"><b>FOR YOUR TRADE PLAN</b>' + esc(d.plan) + ' <span class="mut">(context only, not a recommendation)</span></div>';
+/* ============================== plain-English explanations (click any number) ============================== */
+/* Every number on the page can be clicked. PLAIN holds the beginner wording: what it is, why it matters,
+   and what a low, middle or high reading means. The cut-offs come from the model where it has one
+   (neutral zone, strong zone, 20/80 percentiles); where it has none, the entry is marked rule:true. */
+const B = (t, r, m, a, b, c, is) => ({ t: t, r: r, m: m, a: a, b: b, c: c, is: is });
+const C_LOW = '#f0624d', C_MID = '#8c95a0', C_HIGH = '#58c26d', C_AMB = '#e8a33d', C_BLUE = '#6ea8fe', C_DIM = '#4b5a70';
+
+function scoreBands(t) {
+  const n = cfg().neutral, s = cfg().strong;
+  return [
+    B('VERY LOW', '−100 to −' + s, t[0], -100, -s, col(-85), v => v <= -s),
+    B('LOW', '−' + s + ' to −' + n, t[1], -s, -n, col(-38), v => v > -s && v <= -n),
+    B('MIDDLE', '−' + n + ' to +' + n, t[2], -n, n, C_MID, v => v > -n && v < n),
+    B('HIGH', '+' + n + ' to +' + s, t[3], n, s, col(38), v => v >= n && v < s),
+    B('VERY HIGH', '+' + s + ' to +100', t[4], s, 100, col(85), v => v >= s)
+  ];
 }
+function pctBands(t) {
+  return [
+    B('LOW', '0 to 20', t[0], 0, 20, C_LOW, v => v <= 20),
+    B('MIDDLE', '20 to 80', t[1], 20, 80, C_MID, v => v > 20 && v < 80),
+    B('HIGH', '80 to 100', t[2], 80, 100, C_HIGH, v => v >= 80)
+  ];
+}
+function symBands(cut, lim, unit, t) {
+  return [
+    B('LOW', 'below −' + cut + unit, t[0], -lim, -cut, C_LOW, v => v <= -cut),
+    B('MIDDLE', '−' + cut + unit + ' to +' + cut + unit, t[1], -cut, cut, C_MID, v => v > -cut && v < cut),
+    B('HIGH', 'above +' + cut + unit, t[2], cut, lim, C_HIGH, v => v >= cut)
+  ];
+}
+function signBands(t, labels) {
+  const l = labels || ['LOW', 'MIDDLE', 'HIGH'];
+  return [
+    B(l[0], 'below zero', t[0], undefined, undefined, C_LOW, v => v < 0),
+    B(l[1], 'at or very near zero', t[1], undefined, undefined, C_MID, v => v === 0),
+    B(l[2], 'above zero', t[2], undefined, undefined, C_HIGH, v => v > 0)
+  ];
+}
+function countBands(total, unit, t, colours) {
+  const tot = total || 0, lo = Math.floor(tot / 4), mid = Math.floor(tot / 2), c = colours || [C_DIM, C_BLUE, C_AMB];
+  return [
+    B('LOW', '0 to ' + lo + ' of ' + tot + ' ' + unit, t[0], 0, lo + 0.5, c[0], v => v <= lo),
+    B('MIDDLE', (lo + 1) + ' to ' + mid + ' of ' + tot + ' ' + unit, t[1], lo + 0.5, mid + 0.5, c[1], v => v > lo && v <= mid),
+    B('HIGH', (mid + 1) + ' to ' + tot + ' of ' + tot + ' ' + unit, t[2], mid + 0.5, tot, c[2], v => v > mid)
+  ];
+}
+
+const PLAIN = {
+  score: {
+    simple: 'One number from −100 to +100 that says which way the big speculators are leaning on this pair. Plus means they favour the first currency in the pair (the pair going up). Minus means they favour the second one (the pair going down).',
+    care: 'It turns a page of trader-positioning figures into a single read: up, down, or nothing going on. The further from zero, the more one-sided the big money is.',
+    bands: () => scoreBands([
+      'Strongly bearish. Big traders are leaning hard towards this pair falling. Very one-sided, so also check whether it is overcrowded.',
+      'Bearish. Big traders lean towards this pair falling. A possible setup, worth a closer look.',
+      'Neutral. No clear lean either way. Low priority: there is little to act on here.',
+      'Bullish. Big traders lean towards this pair rising. A possible setup, worth a closer look.',
+      'Strongly bullish. Big traders are leaning hard towards this pair rising. Very one-sided, so also check whether it is overcrowded.'
+    ])
+  },
+  strength: {
+    simple: 'The same −100 to +100 idea, but for one currency or commodity on its own instead of a pair. Plus means big speculators are buying it, minus means they are selling it.',
+    care: 'A pair is two things pulling against each other. This shows which side is actually strong or weak, so you can pair a strong one against a weak one.',
+    bands: () => scoreBands([
+      'Very weak. Speculators are selling this heavily.',
+      'Weak. Speculators lean towards selling it.',
+      'Neutral. No clear lean. It is not driving anything right now.',
+      'Strong. Speculators lean towards buying it.',
+      'Very strong. Speculators are buying this heavily.'
+    ])
+  },
+  tfScore: {
+    simple: 'The same bias score, averaged over a longer or shorter stretch of time (one week, a month, a quarter, six months, a year).',
+    care: 'It tells you whether this week’s lean is part of a long-running trend or something that only just started.',
+    bands: () => scoreBands([
+      'Strongly bearish over this period.',
+      'Bearish over this period.',
+      'Neutral over this period: no clear lean.',
+      'Bullish over this period.',
+      'Strongly bullish over this period.'
+    ])
+  },
+  posDiv: {
+    simple: 'Compares how heavily speculators have bought each side of the pair, each measured against its own past. Plus means the first currency is the more heavily bought one.',
+    care: 'It is the biggest ingredient in the bias score (half of it). It shows where the big money is actually parked.',
+    bands: () => symBands(10, 100, '', [
+      'The second currency in the pair is the more heavily bought one. This pulls the score down (bearish for the pair).',
+      'Both sides are positioned about the same. This adds little to the score either way.',
+      'The first currency in the pair is the more heavily bought one. This pushes the score up (bullish for the pair).'
+    ])
+  },
+  momDiv: {
+    simple: 'Compares how fast speculators have been adding to each side of the pair over the last month. Plus means the first currency is gaining buyers faster.',
+    care: 'Positioning says where the money is. Momentum says where it is heading. It makes up 30% of the bias score.',
+    bands: () => symBands(17, 100, '', [
+      'Money is moving towards the second currency faster. This pulls the score down.',
+      'Both sides are moving at a similar pace. This adds little either way.',
+      'Money is moving towards the first currency faster. This pushes the score up.'
+    ])
+  },
+  accDiv: {
+    simple: 'Shows whether the shift in positioning is speeding up or slowing down on one side compared with the other. It is measured in “σ” (sigma): 1σ is a normal-sized wobble, 2σ is unusually large.',
+    care: 'It is the earliest warning that something is changing, but also the least reliable part. It makes up 20% of the bias score.',
+    bands: () => symBands(1, 3, 'σ', [
+      'The shift is accelerating against the first currency. Beyond −2σ is unusually sharp.',
+      'Ordinary week-to-week wobble. Nothing notable.',
+      'The shift is accelerating in favour of the first currency. Beyond +2σ is unusually sharp.'
+    ])
+  },
+  posC: {
+    simple: 'How many points of the bias score come from positioning (where the money is parked). It can add up to 50 points either way.',
+    care: 'It tells you WHY the score is what it is. A score built mostly on positioning is the sturdiest kind.',
+    bands: () => symBands(5, 50, ' pts', [
+      'Positioning is dragging the score down (towards bearish).',
+      'Positioning is not really moving the score.',
+      'Positioning is lifting the score (towards bullish).'
+    ])
+  },
+  momC: {
+    simple: 'How many points of the bias score come from momentum (where the money is heading). It can add up to 30 points either way.',
+    care: 'It tells you whether recent buying or selling is backing up the overall lean.',
+    bands: () => symBands(5, 30, ' pts', [
+      'Momentum is dragging the score down.',
+      'Momentum is not really moving the score.',
+      'Momentum is lifting the score.'
+    ])
+  },
+  accC: {
+    simple: 'How many points of the bias score come from acceleration (how quickly things are changing). It can add up to 20 points either way.',
+    care: 'A score that leans mostly on this part is the least durable, because acceleration comes and goes quickly.',
+    bands: () => symBands(5, 20, ' pts', [
+      'Acceleration is dragging the score down.',
+      'Acceleration is not really moving the score.',
+      'Acceleration is lifting the score.'
+    ])
+  },
+  netPctl: {
+    simple: 'A ranking from 0 to 100 of how heavily speculators are betting on this market compared with every week since 2021. 90 means they are more bought-in than in 90% of past weeks. 10 means they are more sold-out than in 90% of past weeks.',
+    care: 'It shows when a bet has become crowded. When nearly everyone is already on one side, there are few people left to push it further, and a turn-around becomes more likely.',
+    bands: () => pctBands([
+      'Extreme low. Speculators are about as negative on this market as they have been in years. Crowded on the sell side.',
+      'Normal range. Positioning is not stretched in either direction.',
+      'Extreme high. Speculators are about as positive on this market as they have been in years. Crowded on the buy side.'
+    ])
+  },
+  momPctl: {
+    simple: 'A ranking from 0 to 100 of how fast speculators have been buying or selling this market over the last month, compared with its own past. High means unusually fast buying, low means unusually fast selling.',
+    care: 'It tells you whether money is flowing in or out right now, and whether that flow is unusual.',
+    bands: () => pctBands([
+      'Unusually fast selling compared with history.',
+      'Ordinary pace. Nothing unusual about the recent flow.',
+      'Unusually fast buying compared with history.'
+    ])
+  },
+  momChange: {
+    simple: 'How much the momentum ranking moved since last week’s report. Plus means buying picked up, minus means it faded.',
+    care: 'It is the quickest way to see whether a move is gaining strength or running out of steam.',
+    bands: () => symBands(10, 100, '', [
+      'Momentum dropped sharply since last week.',
+      'Little change since last week.',
+      'Momentum jumped sharply since last week.'
+    ])
+  },
+  normAccel: {
+    simple: 'How much faster or slower speculators changed their bets this week compared with a normal week. It is measured in “σ” (sigma): 1σ is a normal-sized wobble, 2σ is unusually large.',
+    care: 'A big reading means something made traders move in a hurry. It says the change was large, not that it will carry on.',
+    bands: () => symBands(1, 3, 'σ', [
+      'Selling sped up more than usual. Beyond −2σ is rare.',
+      'An ordinary week. Nothing notable.',
+      'Buying sped up more than usual. Beyond +2σ is rare.'
+    ])
+  },
+  netPos: {
+    simple: 'The raw count: how many contracts speculators hold betting on a rise, minus how many they hold betting on a fall.',
+    care: 'This is the raw material everything else is built from. On its own it is hard to judge, because every market has a different normal size. Use the percentile to judge whether it is big or small.',
+    bands: () => signBands([
+      'Net short: more speculators are betting on a fall than on a rise.',
+      'Balanced: bets on a rise and on a fall roughly cancel out.',
+      'Net long: more speculators are betting on a rise than on a fall.'
+    ], ['NEGATIVE', 'AROUND ZERO', 'POSITIVE'])
+  },
+  scoreChange: {
+    simple: 'How many points the score moved since last week’s report.',
+    care: 'A score that is moving tells you something new is happening. A score that is standing still is old news.',
+    bands: () => symBands(10, 100, '', [
+      'A big drop since last week: the picture turned more bearish.',
+      'A small move. Nothing much changed since last week.',
+      'A big rise since last week: the picture turned more bullish.'
+    ])
+  },
+  chg: {
+    simple: 'How much this measure moved since last week’s report. Only moves big enough to matter are listed; small wobbles are left out on purpose.',
+    care: 'It is the shortcut to what is new this week, so you do not have to re-read everything that stayed the same.',
+    bands: () => signBands([
+      'It went down since last week (less buying, or more selling).',
+      'No change. Small moves are hidden from this list.',
+      'It went up since last week (more buying, or less selling).'
+    ], ['DOWN', 'UNCHANGED', 'UP'])
+  },
+  priceRet: {
+    simple: 'How much the actual market price went up or down over the selected time period, in percent.',
+    care: 'Positioning shows what traders are betting on. Price shows what actually happened. When both point the same way, the story is consistent. When they disagree, something needs a closer look.',
+    noMark: true,
+    bands: () => signBands([
+      'Price fell over the period. The label next to it says “Bearish” only if the fall was bigger than that market’s normal wobble.',
+      'Price barely moved: the change is smaller than the market’s normal wobble, so it is labelled “Neutral”.',
+      'Price rose over the period. The label next to it says “Bullish” only if the rise was bigger than that market’s normal wobble.'
+    ], ['FELL', 'FLAT', 'ROSE'])
+  },
+  conf: {
+    simple: 'A checklist score. The dashboard checks up to six things (positioning, momentum, acceleration, price, longer timeframes, extremes) and counts how many agree with the direction of the bias.',
+    care: 'One thing pointing a direction can be chance. Several separate things pointing the same way make a more believable story.',
+    rule: true,
+    bands: (v, x) => { const t = Number(x.total) || 6, a = Math.floor(t / 3), b = Math.floor(2 * t / 3); return [
+      B('LOW', '0 to ' + a + ' of ' + t, 'Few things agree. The bias rests on very little.', 0, a + 0.5, C_LOW, n => n <= a),
+      B('MIDDLE', (a + 1) + ' to ' + b + ' of ' + t, 'Some things agree and some do not. A mixed picture.', a + 0.5, b + 0.5, C_AMB, n => n > a && n <= b),
+      B('HIGH', (b + 1) + ' to ' + t + ' of ' + t, 'Most things agree. The story is consistent (which still does not guarantee it works).', b + 0.5, t, C_HIGH, n => n > b)
+    ]; }
+  },
+  align: {
+    simple: 'Out of five time windows (week, month, quarter, six months, year), how many show the same bullish or bearish lean.',
+    care: 'If every window agrees, the lean has lasted a long time. If they disagree, the market is probably in the middle of changing direction.',
+    noMark: true, rule: true,
+    bands: () => [
+      B('LOW', '0 or 1 of 5 agree', 'The windows disagree or show nothing. No lasting theme.', undefined, undefined, C_LOW),
+      B('MIDDLE', '2 or 3 of 5 agree', 'Partly lined up. Often the short term has turned while the long term has not (or the other way round).', undefined, undefined, C_AMB),
+      B('HIGH', '4 or 5 of 5 agree', 'Lined up across short and long windows: a persistent theme.', undefined, undefined, C_HIGH)
+    ]
+  },
+  age: {
+    simple: 'How many weeks in a row the bias has pointed the same way.',
+    care: 'It tells you whether you are looking at something brand new or something that has been going for a long time. Neither is better; it is context.',
+    rule: true,
+    bands: () => [
+      B('LOW', '1 to 3 weeks', 'Fresh. The lean only just appeared and could still flip back.', 0, 3.5, C_BLUE, v => v <= 3),
+      B('MIDDLE', '4 to 12 weeks', 'Established. It has held for a month or more.', 3.5, 12.5, C_MID, v => v > 3 && v <= 12),
+      B('HIGH', '13 weeks or more', 'Mature. It has held for a quarter or longer, so plenty of traders are already in it.', 12.5, 26, C_AMB, v => v > 12)
+    ]
+  },
+  nBull: {
+    simple: 'How many of the pairs on this page currently show big speculators leaning towards the pair going UP (a score of +20 or more).',
+    care: 'It is a headcount of the mood. Lots of bullish pairs means the big money is leaning one way across the board.',
+    rule: true, unit: 'pairs', list: 'bull', filter: 'BULLISH',
+    bands: (v, x) => countBands(x.total, 'pairs', [
+      'Few pairs are bullish. Buying interest is thin or limited to a handful of markets.',
+      'A fair number of pairs are bullish. There are several places to look.',
+      'More than half the pairs are bullish. The lean is broad, often because one currency is being sold against everything else.'
+    ], [C_DIM, C_BLUE, C_HIGH])
+  },
+  nBear: {
+    simple: 'How many of the pairs on this page currently show big speculators leaning towards the pair going DOWN (a score of −20 or less).',
+    care: 'It is a headcount of the mood. Lots of bearish pairs means the big money is leaning one way across the board.',
+    rule: true, unit: 'pairs', list: 'bear', filter: 'BEARISH',
+    bands: (v, x) => countBands(x.total, 'pairs', [
+      'Few pairs are bearish. Selling interest is thin or limited to a handful of markets.',
+      'A fair number of pairs are bearish. There are several places to look.',
+      'More than half the pairs are bearish. The lean is broad, which usually means one currency is being bought or sold everywhere.'
+    ], [C_DIM, C_BLUE, C_LOW])
+  },
+  nNeutral: {
+    simple: 'How many pairs show no clear lean either way (a score between −20 and +20).',
+    care: 'These are the pairs you can skip for now. The more there are, the less the positioning data is telling you this week.',
+    rule: true, unit: 'pairs', list: 'neutral',
+    bands: (v, x) => countBands(x.total, 'pairs', [
+      'Few pairs are neutral. Most of the market has a clear lean, so there is plenty to look at.',
+      'A fair share of pairs are neutral. The picture is mixed.',
+      'More than half the pairs are neutral. Positioning is giving little direction right now; be patient.'
+    ], [C_HIGH, C_BLUE, C_MID])
+  },
+  nExtreme: {
+    simple: 'How many currencies and commodities have speculators piled in about as far as they ever go, either buying (top 20% of history) or selling (bottom 20%).',
+    care: 'A crowded bet is fragile. When nearly everyone is already on one side, it takes little to make them all head for the exit together.',
+    rule: true, unit: 'markets', list: 'extreme', filter: 'EXTREME',
+    bands: (v, x) => countBands(x.total, 'markets', [
+      'Few markets are stretched. Positioning is mostly in its normal range.',
+      'Several markets are stretched. Check each one before trusting its trend.',
+      'More than half the markets are stretched. Crowding is widespread, so sharp turn-arounds are more likely than usual.'
+    ])
+  },
+  nReversal: {
+    simple: 'How many markets are both crowded AND have started moving back the other way this week.',
+    care: 'It is an early warning that a crowded bet may be starting to unwind. It is a flag to investigate, not a promise that the turn has come.',
+    rule: true, unit: 'markets', list: 'reversal', filter: 'REVERSAL',
+    bands: (v, x) => countBands(x.total, 'markets', [
+      'None or very few. Crowded bets are holding for now.',
+      'Several crowded bets are starting to back off. Worth checking each one.',
+      'More than half the markets are backing off from extremes. A broad change of direction may be under way.'
+    ])
+  },
+  nMomentum: {
+    simple: 'How many currencies and commodities are seeing unusually fast buying or unusually fast selling right now, compared with their own past.',
+    care: 'It shows where the money is moving fastest this week, which is often where the action is.',
+    rule: true, unit: 'markets', list: 'momentum',
+    bands: (v, x) => countBands(x.total, 'markets', [
+      'Few markets are moving fast. A quiet week for flows.',
+      'Several markets are moving fast. Traders are actively repositioning.',
+      'More than half the markets are moving fast. Something big is making traders reshuffle everywhere.'
+    ])
+  },
+  nDiverge: {
+    simple: 'How many pairs have traders betting one way while the price has actually gone the other way.',
+    care: 'When the bets and the price disagree, one of them is wrong. Either price is about to catch up with the traders, or the traders are about to give up. Both are worth knowing about.',
+    rule: true, unit: 'pairs', list: 'diverge', filter: 'DIVERGENCE',
+    bands: (v, x) => countBands(x.total, 'pairs', [
+      'Few disagreements. Price and positioning mostly tell the same story.',
+      'Several disagreements. Check those pairs before relying on their score.',
+      'More than half the pairs disagree. Positioning is a poor guide to price right now; be cautious.'
+    ])
+  },
+  daysSince: {
+    simple: 'How old the trader-positioning data is. The report describes positions held on a Tuesday, and it is only published on the Friday after.',
+    care: 'This data is never live. The older it gets, the more the real positions may have moved on since it was collected.',
+    bands: () => [
+      B('LOW', '0 to 4 days', 'Fresh. This is as new as the data ever gets.', 0, 4.5, C_HIGH, v => v <= 4),
+      B('MIDDLE', '5 to 10 days', 'Normal. This is the usual gap while waiting for the next Friday report.', 4.5, 10.5, C_MID, v => v > 4 && v <= 10),
+      B('HIGH', '11 days or more', 'Stale. A report is late or was missed. Treat every score with extra caution.', 10.5, 14, C_LOW, v => v > 10)
+    ]
+  },
+  rN: {
+    simple: 'How many past examples the backtest found that match your filter.',
+    care: 'An average from a handful of examples is close to meaningless. The more examples, the more you can trust the other numbers.',
+    bands: () => [
+      B('LOW', 'under 30', 'Too few. Treat every figure next to it as a story, not evidence.', 0, 30, C_LOW, v => v < 30),
+      B('MIDDLE', '30 to 100', 'Usable, with caution.', 30, 100, C_AMB, v => v >= 30 && v < 100),
+      B('HIGH', '100 or more', 'A solid sample (though examples that overlap in time count for less than they look).', 100, 300, C_HIGH, v => v >= 100)
+    ], rule: true
+  },
+  rMean: {
+    simple: 'The average price move that followed this kind of setup in the past, in percent.',
+    care: 'It shows whether, on average, the setup was followed by a move in the expected direction.',
+    bands: () => signBands([
+      'On average, price went against the setup.',
+      'On average, nothing happened.',
+      'On average, price went with the setup.'
+    ], ['NEGATIVE', 'ZERO', 'POSITIVE'])
+  },
+  rMedian: {
+    simple: 'The middle outcome: half of the past examples did better than this and half did worse.',
+    care: 'Unlike the average, it is not thrown off by one or two huge moves. If it disagrees with the average, trust this one more.',
+    bands: () => signBands([
+      'The typical example went against the setup.',
+      'The typical example went nowhere.',
+      'The typical example went with the setup.'
+    ], ['NEGATIVE', 'ZERO', 'POSITIVE'])
+  },
+  rHit: {
+    simple: 'Out of every 100 past examples, how many ended up moving the expected way.',
+    care: 'It tells you how often it worked, regardless of how big the wins and losses were. 50% is the same as flipping a coin.',
+    bands: () => [
+      B('LOW', '45% or less', 'It went the wrong way more often than not.', 0, 45, C_LOW, v => v <= 45),
+      B('MIDDLE', '45% to 55%', 'About a coin flip. No real edge.', 45, 55, C_MID, v => v > 45 && v < 55),
+      B('HIGH', '55% or more', 'It went the expected way more often than not.', 55, 100, C_HIGH, v => v >= 55)
+    ]
+  },
+  rSd: {
+    simple: 'How spread out the past results were. A big number means the outcomes were all over the place.',
+    care: 'If the spread is much bigger than the average, the average is mostly noise.',
+    noMark: true, rule: true,
+    bands: () => [
+      B('LOW', 'smaller than the average move', 'Results were tightly bunched. The average is a fair guide.', undefined, undefined, C_HIGH),
+      B('MIDDLE', 'about the same as the average move', 'Results varied a fair bit. Expect surprises.', undefined, undefined, C_AMB),
+      B('HIGH', 'several times the average move', 'Results were scattered. The average tells you very little about any single trade.', undefined, undefined, C_LOW)
+    ]
+  },
+  rT: {
+    simple: 'A rough test of whether the average result is real or could just be luck. The further from zero, the less likely it is luck.',
+    care: 'It stops you getting excited about an average that only looks good by chance.',
+    bands: () => [
+      B('LOW', 'between −2 and +2', 'Could easily be luck.', 0, 2, C_LOW, v => Math.abs(v) < 2),
+      B('MIDDLE', '2 to 3 (either sign)', 'Suggestive, but not convincing for this kind of data.', 2, 3, C_AMB, v => Math.abs(v) >= 2 && Math.abs(v) < 3),
+      B('HIGH', '3 or more (either sign)', 'Unlikely to be pure luck. Still check the sample size.', 3, 6, C_HIGH, v => Math.abs(v) >= 3)
+    ], abs: true
+  },
+  hg: {
+    simple: 'A quick gauge of how often similar past setups moved the way the current bias points. Zero means a coin flip. It is NOT a probability of winning.',
+    care: 'It puts today’s setup next to its own track record.',
+    bands: () => symBands(20, 100, '', [
+      'Similar setups mostly moved AGAINST the bias.',
+      'No clear tendency either way.',
+      'Similar setups mostly moved WITH the bias.'
+    ])
+  },
+  cCot: { n: 'COT date', simple: 'The date the trader positions were counted. It is always a Tuesday. The report itself comes out on the Friday after.', care: 'Everything on this page describes positions as they were on this date, not today.' },
+  cPrice: { n: 'Price date', simple: 'The most recent day of market prices the dashboard has.', care: 'Price is used to check whether the market is actually moving the way traders are betting.' },
+  cTf: { n: 'Timeframe', simple: 'The stretch of time the page is currently looking at. Change it with the TIMEFRAME buttons below. Weekly is the latest single report; the longer ones average several weeks.', care: 'A short window shows what is new. A long window shows the lasting trend.' },
+  cMarkets: { n: 'Markets', simple: 'How many individual currencies and commodities are tracked: eight currencies (including the US dollar), plus gold, silver and two kinds of oil.', care: 'Each one gets its own strength score. Pairs are built by matching two of them against each other.' },
+  cPairs: { n: 'Pairs', simple: 'How many tradable pairs are scored, such as EUR/USD or gold against the dollar.', care: 'Each tile on the heatmap is one of these pairs.' },
+  cUpdated: { n: 'Last updated', simple: 'When the dashboard last downloaded data and re-did its sums.', care: 'It updates by itself every Friday night after the new report, with a price refresh on weekdays. If this is more than a few days old, something has gone wrong.' },
+  cStatus: { n: 'Data status', simple: 'A health check on the data behind the page.', care: 'If the data is late or incomplete, the scores are less trustworthy.',
+    states: [['CURRENT', 'Everything is up to date.', C_HIGH], ['AWAITING NEW COT', 'A newer report should be out but has not been picked up yet.', C_AMB], ['PRICE DATA DELAYED', 'Positions are up to date but prices are more than five days old.', C_AMB], ['INCOMPLETE', 'One or more markets are missing from the latest report.', C_LOW]] }
+};
+
+const BASICS = [
+  ['What is the COT report?', 'Every Friday a US regulator (the CFTC) publishes how many contracts different groups of traders hold in each market. COT stands for Commitments of Traders.'],
+  ['Who are “speculators”?', 'Big funds and money managers who trade to make a profit. This dashboard follows them because they tend to move as a crowd.'],
+  ['Bullish and bearish', 'Bullish means expecting the price to go up. Bearish means expecting it to go down.'],
+  ['Reading a pair', 'In EUR/USD the first name (EUR) is what you are buying or selling and the second (USD) is what you price it in. The pair going up means the euro is gaining on the dollar.'],
+  ['Important', 'This shows what traders were doing a few days ago. It is background information, not a prediction and not advice to buy or sell.']
+];
+
+function bandOf(k, v, x) {
+  const p = PLAIN[k];
+  if (!p || !p.bands) return null;
+  const bands = p.bands(v, x || {});
+  let act = -1;
+  if (!p.noMark && isNum(v)) bands.forEach((b, i) => { if (act < 0 && b.is && b.is(v)) act = i; });
+  return { bands: bands, act: act };
+}
+
+function scaleBar(k, v, bo) {
+  const p = PLAIN[k], bands = bo.bands;
+  const numeric = bands.every(b => isNum(b.a) && isNum(b.b));
+  const lo = numeric ? bands[0].a : 0, hi = numeric ? bands[bands.length - 1].b : bands.length;
+  const span = (hi - lo) || 1;
+  let segs = '', pos = null;
+  bands.forEach((b, i) => {
+    const w = numeric ? (b.b - b.a) / span * 100 : 100 / bands.length;
+    segs += '<div class="sb ' + (i === bo.act ? 'on' : '') + '" style="width:' + w + '%;background:' + b.c + '"><span>' + esc(b.t) + '</span></div>';
+  });
+  if (bo.act >= 0) {
+    if (numeric) { const vv = p.abs ? Math.abs(v) : v; pos = (Math.max(lo, Math.min(hi, vv)) - lo) / span * 100; }
+    else pos = (bo.act + 0.5) / bands.length * 100;
+  }
+  return '<div class="scale"><div class="sbs">' + segs + '</div>' +
+    (pos !== null ? '<div class="sm" style="left:' + pos.toFixed(1) + '%"><i></i><b>' + esc((DEF[k] && DEF[k].f ? DEF[k].f(v) : v)) + '</b></div>' : '') + '</div>';
+}
+
+function kpiRows(kind) {
+  const pr = rowsOf('Pair'), ins = rowsOf('Instrument');
+  const byScore = (a, b) => (b.Score || 0) - (a.Score || 0);
+  const go = r => (r.Kind === 'Pair' ? 'pair:' : 'inst:') + esc(r.Item);
+  const sc = r => '<b style="color:' + col(r.Score) + '">' + fS(r.Score) + '</b>';
+  const row = (r, cells) => '<tr class="click" data-go="' + go(r) + '"><td><b>' + esc(r.Item) + '</b></td>' + cells.map(c => '<td>' + c + '</td>').join('') + '</tr>';
+  const tbl = (head, rows) => rows.length ? '<table><tr>' + head.map(h => '<th>' + h + '</th>').join('') + '</tr>' + rows.join('') + '</table>' : '<div class="mut small">None right now.</div>';
+  if (kind === 'bull') return tbl(['PAIR', 'SCORE', 'READ'], pr.filter(r => sgn(r.Score) === 1).sort(byScore).map(r => row(r, [sc(r), esc(r.Direction || '')])));
+  if (kind === 'bear') return tbl(['PAIR', 'SCORE', 'READ'], pr.filter(r => sgn(r.Score) === -1).sort((a, b) => -byScore(a, b)).map(r => row(r, [sc(r), esc(r.Direction || '')])));
+  if (kind === 'neutral') return tbl(['PAIR', 'SCORE', 'READ'], pr.filter(r => sgn(r.Score) === 0).sort(byScore).map(r => row(r, [sc(r), 'Neutral'])));
+  if (kind === 'extreme') return tbl(['MARKET', 'RANK vs HISTORY', 'WHICH SIDE'], ins.filter(r => r.Extreme && r.Extreme !== 'No').map(r => row(r, [fP(r['Net Percentile']), r['Net Percentile'] >= 80 ? 'Crowded buying' : 'Crowded selling'])));
+  if (kind === 'reversal') return tbl(['MARKET', 'RANK vs HISTORY', 'WHAT IS HAPPENING'], ins.filter(r => r.Reversal && r.Reversal !== 'No').map(r => row(r, [fP(r['Net Percentile']), esc(r.Reversal)])));
+  if (kind === 'momentum') return tbl(['MARKET', 'SPEED RANK', 'WHICH WAY'], ins.filter(r => r['Momentum Percentile'] >= 80 || r['Momentum Percentile'] <= 20).sort((a, b) => b['Momentum Percentile'] - a['Momentum Percentile']).map(r => row(r, [fP(r['Momentum Percentile']), r['Momentum Percentile'] >= 80 ? 'Fast buying' : 'Fast selling'])));
+  if (kind === 'diverge') return tbl(['PAIR', 'TRADERS LEAN', 'PRICE WENT'], pr.filter(r => r['COT Price Relationship'] === 'DIVERGING').map(r => row(r, [sc(r) + ' ' + esc(r.Direction || ''), esc(r['Price Direction'] || 'N/A') + (isNum(r['Price Return %']) ? ' (' + fRet(r['Price Return %']) + ')' : '')])));
+  return '';
+}
+
+/* Short hover card. The full version opens on click. */
+function explain(k, v, x) {
+  const d = DEF[k], p = PLAIN[k];
+  if (!d && !p) return '<h4>' + esc(k) + '</h4>';
+  const name = d ? d.n : p.n;
+  const val = (x && x.txt) || (d ? d.f(v) : '');
+  const bo = bandOf(k, v, x);
+  const act = bo && bo.act >= 0 ? bo.bands[bo.act] : null;
+  const rd = !act && d && d.read ? d.read(v, x || {}) : '';
+  return '<h4>' + esc(name) + '</h4>' +
+    '<div class="tv">' + esc(val) + (act ? ' <span class="bchip" style="background:' + act.c + '">' + esc(act.t) + '</span>' : '') + '</div>' +
+    (act ? '<div class="sec"><b>THIS READING</b>' + esc(act.m) + '</div>' : rd ? '<div class="sec"><b>THIS READING</b>' + esc(rd) + '</div>' : '') +
+    (p ? '<div class="sec"><b>IN PLAIN ENGLISH</b>' + esc(p.simple) + '</div>' : '<div class="sec"><b>WHAT IT IS</b>' + esc(d.what) + '</div>') +
+    '<div class="sec hint">Click for the full explanation</div>';
+}
+
+/* Full click-through panel. */
+function infoHTML(k, v, x) {
+  const d = DEF[k], p = PLAIN[k] || {};
+  x = x || {};
+  const name = (x.title ? x.title + ' · ' : '') + (d ? d.n : p.n || k);
+  const val = x.txt || (d ? d.f(v) : '');
+  const bo = bandOf(k, v, x);
+  const act = bo && bo.act >= 0 ? bo.bands[bo.act] : null;
+  const tot = x.total ? ' <span class="of">of ' + esc(x.total) + ' ' + esc(p.unit || '') + '</span>' : '';
+  let h = '<button class="ix" data-close="1" aria-label="Close">✕</button>' +
+    '<div class="ih"><div class="in">' + esc(name) + (d && d.u ? ' <span class="mut small">(' + esc(d.u) + ')</span>' : '') + '</div>' +
+    '<div class="iv">' + esc(val) + tot + (act ? ' <span class="bchip" style="background:' + act.c + '">' + esc(act.t) + '</span>' : '') + '</div>' +
+    (x.sub ? '<div class="mut small">' + esc(x.sub) + '</div>' : '') + '</div>';
+  const blk = (t, inner) => '<div class="ib"><h5>' + t + '</h5>' + inner + '</div>';
+  if (act) h += '<div class="now" style="border-color:' + act.c + '"><b>What this reading means right now</b>' + esc(act.m) + '</div>';
+  else if (d && d.read && d.read(v, x)) h += '<div class="now"><b>What this reading means right now</b>' + esc(d.read(v, x)) + '</div>';
+  if (p.simple) h += blk('What is it?', '<p>' + esc(p.simple) + '</p>');
+  if (p.care) h += blk('Why does it matter?', '<p>' + esc(p.care) + '</p>');
+  if (p.states) h += blk('What each status means', p.states.map(s => '<div class="br ' + (x.txt && x.txt.indexOf(s[0]) >= 0 ? 'on' : '') + '"><span class="bt" style="color:' + s[2] + '">' + s[0] + '</span><span class="bm">' + esc(s[1]) + '</span></div>').join(''));
+  if (bo) {
+    h += blk('Low, middle or high?', scaleBar(k, v, bo) +
+      bo.bands.map((b, i) => '<div class="br ' + (i === bo.act ? 'on' : '') + '"><span class="bt"><i style="background:' + b.c + '"></i>' + esc(b.t) + '<small>' + esc(b.r) + '</small></span><span class="bm">' + esc(b.m) + (i === bo.act ? ' <em>← you are here</em>' : '') + '</span></div>').join('') +
+      (p.rule ? '<p class="mut small">These cut-offs are a rule of thumb to help you read the number. They are not tested trading thresholds.</p>' : ''));
+  }
+  if (p.list) {
+    h += blk('Which ones are they? <span class="mut small">(' + TFL[S.tf] + ' view · click a row to open it)</span>', kpiRows(p.list) +
+      (p.filter ? '<div style="margin-top:10px"><button class="btn" data-setf="' + p.filter + '">HIGHLIGHT THESE ON THE HEATMAP</button></div>' : ''));
+  }
+  if (k === 'daysSince') h += blk('The dates', '<div class="br"><span class="bt">Positions counted</span><span class="bm">' + fD(P.status['COT DATE']) + ' (a Tuesday)</span></div><div class="br"><span class="bt">Report status</span><span class="bm">' + esc(P.live.cotStatus) + '</span></div><div class="br"><span class="bt">Next update</span><span class="bm">The dashboard checks for a new report every Friday at 23:00 UK time.</span></div>');
+  if (d && d.plan) h += blk('How to use it', '<p>' + esc(d.plan) + '</p>');
+  if (d) h += '<details class="ib"><summary>The exact definition (technical)</summary><p>' + esc(d.what) + '</p><p>' + esc(d.why) + '</p></details>';
+  h += '<details class="ib"><summary>New to this? The 30-second basics</summary>' + BASICS.map(b => '<p><b>' + esc(b[0]) + '</b><br>' + esc(b[1]) + '</p>').join('') + '</details>';
+  h += '<div class="ifoot">Background information only. Not a forecast and not advice to buy or sell.</div>';
+  return h;
+}
+function openInfo(k, v, x) {
+  if (!DEF[k] && !PLAIN[k]) return;
+  $('tip').style.display = 'none';
+  $('infoBody').innerHTML = infoHTML(k, v, x);
+  $('info').classList.add('open');
+  $('infoBody').scrollTop = 0;
+}
+function closeInfo() { $('info').classList.remove('open'); }
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape') { closeInfo(); return; }
+  if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('kpi')) { ev.preventDefault(); ev.target.click(); }
+});
 
 function N(v, key, x, txt) {
   const d = DEF[key];
   const t = txt !== undefined ? txt : (d && d.f ? d.f(v) : (isNum(v) ? String(Math.round(v)) : 'N/A'));
-  return '<span class="n" data-k="' + key + '" data-v="' + esc(JSON.stringify(v === undefined ? null : v)) + '" data-x="' + esc(JSON.stringify(x || {})) + '">' + esc(t) + '</span>';
+  const xx = Object.assign({}, x || {}); if (txt !== undefined) xx.txt = String(txt);
+  return '<span class="n" data-k="' + key + '" data-v="' + esc(JSON.stringify(v === undefined ? null : v)) + '" data-x="' + esc(JSON.stringify(xx)) + '">' + esc(t) + '</span>';
 }
 
 /* ============================== data access ============================== */
@@ -329,7 +868,8 @@ function gaugeTip(el, ev) {
   return '<h4>' + esc(x.title || (kind === 'strength' ? 'Strength gauge' : 'Bias gauge')) + '</h4>' +
     '<div class="tv" style="color:' + col(v) + '">' + fS(v) + '</div><div class="small" style="color:' + zoneOf(v).c + ';font-weight:700">' + zoneOf(v).t + '</div>' + hover +
     '<div class="sec"><b>HOW TO READ</b>0 is at the top (neutral). Needle right = bullish, left = bearish, \u00b1100 at the ends. The grey arc (\u00b1' + cfg().neutral + ') is the neutral zone: low priority. Beyond \u00b1' + cfg().neutral + ' is a bias zone where a possible setup exists; beyond \u00b1' + cfg().strong + ' is strong.</div>' +
-    '<div class="sec"><b>WHAT IT MEASURES</b>' + esc(d.what) + '</div>';
+    '<div class="sec"><b>WHAT IT MEASURES</b>' + esc(d.what) + '</div>' +
+    '<div class="sec hint">Click for the full explanation</div>';
 }
 document.addEventListener('mousemove', ev => {
   const tip = $('tip');
@@ -352,8 +892,23 @@ document.addEventListener('mousemove', ev => {
 });
 document.addEventListener('mouseleave', () => { $('tip').style.display = 'none'; });
 document.addEventListener('click', ev => {
-  const el = ev.target.closest && ev.target.closest('[data-go]');
+  const t = ev.target;
+  if (!t.closest) return;
+  if (t.id === 'info' || t.closest('[data-close]')) { closeInfo(); return; }
+  const sf = t.closest('[data-setf]');
+  if (sf) { S.filter = sf.dataset.setf; S.page = 'home'; closeInfo(); render(); window.scrollTo(0, 0); return; }
+  const el = t.closest('[data-go]'), ke = t.closest('[data-k]'), ge = t.closest('[data-g]');
+  // Any explainable number opens its explanation, even inside a row that would otherwise navigate.
+  if (ke && !(el && ke.contains(el))) {
+    try { openInfo(ke.dataset.k, JSON.parse(ke.dataset.v), JSON.parse(ke.dataset.x || '{}')); } catch (e) {}
+    return;
+  }
+  if (ge && !el) {
+    try { openInfo(ge.dataset.g === 'strength' ? 'strength' : 'score', JSON.parse(ge.dataset.v), JSON.parse(ge.dataset.x || '{}')); } catch (e) {}
+    return;
+  }
   if (!el) return;
+  closeInfo();
   const [a, b] = el.dataset.go.split(':');
   if (a === 'pair') { S.pair = b; S.page = 'pair'; }
   else if (a === 'inst') { S.inst = b; S.page = 'inst'; }
@@ -432,9 +987,9 @@ function selectBox(id, list, cur) { return '<select id="' + id + '">' + list.map
 function chips() {
   const s = P.status, l = P.live;
   const dc = { 'CURRENT':'#58c26d','AWAITING NEW COT':'#e8a33d','PRICE DATA DELAYED':'#e8a33d','INCOMPLETE':'#f0624d' }[l.dataStatus] || '#8b98a8';
-  const c = (a, b) => '<div class="chip">' + a + '<b>' + b + '</b></div>';
-  $('chips').innerHTML = c('COT', fD(s['COT DATE'])) + c('PRICE', fD(s['PRICE DATE'])) + c('TIMEFRAME', TFL[S.tf].toUpperCase()) + c('MARKETS', P.insts.length) + c('PAIRS', P.pairs.length) + c('LAST UPDATED', fDT(s['LAST UPDATED'])) +
-    '<div class="chip">DATA STATUS<b style="color:' + dc + '">\u25cf ' + esc(l.dataStatus) + '</b></div>';
+  const c = (a, b, key) => '<div class="chip click" data-k="' + key + '" data-v="null" data-x="' + esc(JSON.stringify({ txt: String(b) })) + '">' + a + '<b>' + b + '</b></div>';
+  $('chips').innerHTML = c('COT', fD(s['COT DATE']), 'cCot') + c('PRICE', fD(s['PRICE DATE']), 'cPrice') + c('TIMEFRAME', TFL[S.tf].toUpperCase(), 'cTf') + c('MARKETS', P.insts.length, 'cMarkets') + c('PAIRS', P.pairs.length, 'cPairs') + c('LAST UPDATED', fDT(s['LAST UPDATED']), 'cUpdated') +
+    '<div class="chip click" data-k="cStatus" data-v="null" data-x="' + esc(JSON.stringify({ txt: l.dataStatus })) + '">DATA STATUS<b style="color:' + dc + '">\u25cf ' + esc(l.dataStatus) + '</b></div>';
 }
 function nav() {
   $('nav').innerHTML = PAGES.map(p => '<button class="' + (S.page === p[0] ? 'on' : '') + '" data-go="page:' + p[0] + '">' + p[1] + '</button>').join('');
@@ -457,7 +1012,8 @@ function pHome() {
   const ext = ins.filter(r => r.Extreme && r.Extreme !== 'No').length, rev = ins.filter(r => r.Reversal && r.Reversal !== 'No').length;
   const mom = ins.filter(r => r['Momentum Percentile'] >= 80 || r['Momentum Percentile'] <= 20).length;
   const div = pr.filter(r => r['COT Price Relationship'] === 'DIVERGING').length;
-  const k = (v, key, l) => '<div class="kpi"><div class="v">' + N(v, key) + '</div><div class="l">' + l + '</div></div>';
+  const k = (v, key, l) => { const tot = PLAIN[key] && PLAIN[key].unit ? (PLAIN[key].unit === 'pairs' ? pr.length : ins.length) : 0;
+    return '<div class="kpi click" tabindex="0" role="button" data-k="' + key + '" data-v="' + esc(JSON.stringify(v)) + '" data-x="' + esc(JSON.stringify(tot ? { total: tot, sub: TFL[S.tf] + ' view' } : {})) + '"><div class="v">' + esc(DEF[key].f(v)) + '</div><div class="l">' + l + '</div></div>'; };
   const groups = ['FX USD pairs','FX crosses','Metal','Energy'];
   const hm = groups.map(g => { const rs = pr.filter(r => r.Group === g); return rs.length ? '<div class="glabel">' + g.toUpperCase() + '</div><div class="hm">' + rs.map(tile).join('') + '</div>' : ''; }).join('');
   const ccy = ins.filter(r => r.Group === 'Currency').slice().sort((a, b) => (b.Score || -999) - (a.Score || -999));
@@ -468,7 +1024,7 @@ function pHome() {
   const dvl = pr.concat(ins).filter(r => r['COT Price Relationship'] === 'DIVERGING').slice(0, 10).map(r => '<tr class="click" data-go="' + (r.Kind === 'Pair' ? 'pair:' : 'inst:') + esc(r.Item) + '"><td><b>' + esc(r.Item) + '</b></td><td>' + esc(r['Divergence Type']) + '</td><td>' + esc(r['Price Direction']) + '</td></tr>').join('') || '<tr><td colspan="3" class="mut">None.</td></tr>';
   const sel = get('Pair', S.pair);
   const dq = P.status;
-  return '<div class="panel"><h2>Market regime \u00b7 ' + TFL[S.tf] + '</h2><div class="kpis">' + k(bull, 'nBull', 'BULLISH PAIRS') + k(bear, 'nBear', 'BEARISH PAIRS') + k(neu, 'nNeutral', 'NEUTRAL PAIRS') + k(ext, 'nExtreme', 'EXTREME POSITIONING') + k(rev, 'nReversal', 'REVERSAL CONDITIONS') + k(mom, 'nMomentum', 'STRONG MOMENTUM') + k(div, 'nDiverge', 'COT / PRICE DIVERGENCES') + k(P.live.daysSince, 'daysSince', 'DAYS SINCE COT') + '</div></div>' +
+  return '<div class="panel"><h2>Market regime \u00b7 ' + TFL[S.tf] + ' \u00b7 hover for a quick read, click for the full explanation</h2><div class="kpis">' + k(bull, 'nBull', 'BULLISH PAIRS') + k(bear, 'nBear', 'BEARISH PAIRS') + k(neu, 'nNeutral', 'NEUTRAL PAIRS') + k(ext, 'nExtreme', 'EXTREME POSITIONING') + k(rev, 'nReversal', 'REVERSAL CONDITIONS') + k(mom, 'nMomentum', 'STRONG MOMENTUM') + k(div, 'nDiverge', 'COT / PRICE DIVERGENCES') + k(P.live.daysSince, 'daysSince', 'DAYS SINCE COT') + '</div></div>' +
     '<div class="panel"><h2>Pair heatmap \u00b7 hover for intelligence, click for analysis</h2>' + hm + '</div>' +
     '<div class="row r2"><div class="panel"><h2>What changed since last COT report</h2><ul class="l">' + ch + '</ul></div><div class="panel"><h2>Markets to watch \u00b7 monitoring only</h2><ul class="l">' + wt + '</ul></div></div>' +
     '<div class="row r2"><div class="panel"><h2>Currency strength</h2><div class="ct">' + ccy.map(tile).join('') + '</div></div><div class="panel"><h2>Commodity strength</h2><div class="ct">' + com.map(tile).join('') + '</div></div></div>' +
@@ -636,7 +1192,7 @@ function pGloss() {
     if (items.length) h += '<div class="gh">' + g[0] + '</div>' + items.map(i => '<dt>' + esc(i[0]) + '</dt><dd>' + esc(i[1]) + '</dd>').join('');
   });
   const nums = Object.keys(DEF).filter(k => ok(DEF[k].n, DEF[k].what + DEF[k].why + DEF[k].plan));
-  if (nums.length) h += '<div class="gh">NUMBERS (hover any underlined number for these)</div>' + nums.map(k => '<dt>' + esc(DEF[k].n) + (DEF[k].u ? ' <span class="mut small">(' + esc(DEF[k].u) + ')</span>' : '') + '</dt><dd><b>What:</b> ' + esc(DEF[k].what) + '<br><b>Why it matters:</b> ' + esc(DEF[k].why) + '<br><b>For your plan:</b> ' + esc(DEF[k].plan) + '</dd>').join('');
+  if (nums.length) h += '<div class="gh">NUMBERS (click any underlined number on the dashboard for a plain-English version)</div>' + nums.map(k => '<dt>' + esc(DEF[k].n) + (DEF[k].u ? ' <span class="mut small">(' + esc(DEF[k].u) + ')</span>' : '') + '</dt><dd><b>What:</b> ' + esc(DEF[k].what) + '<br><b>Why it matters:</b> ' + esc(DEF[k].why) + '<br><b>For your plan:</b> ' + esc(DEF[k].plan) + '</dd>').join('');
   return h + '</dl></div>';
 }
 function pMeth() {
