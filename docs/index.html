@@ -39,6 +39,8 @@ main{padding:0 20px 40px}
 .tile{border-radius:8px;padding:9px 10px;cursor:pointer;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);transition:transform .12s,opacity .2s}
 .tile:hover{transform:translateY(-2px);outline:1px solid rgba(255,255,255,.5)}
 .tile.dim{opacity:.18}
+.hleg{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--mut);letter-spacing:.06em;margin-bottom:2px}
+.hleg i{flex:0 1 260px;height:8px;border-radius:4px}
 .tn{font-size:12px;font-weight:700}.ts{font-size:24px;font-weight:700;line-height:1.1}.td{font-size:10px;opacity:.9}
 .ct{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
 .ct .tile .ts{font-size:20px}
@@ -188,6 +190,20 @@ function col(s) {
   }
   return 'rgb(26,127,60)';
 }
+/* Heatmap tiles: one continuous ramp, red (bearish) through amber (flat) to green (bullish), no flat neutral band. */
+const HEAT = [[-100,[127,29,29]],[-60,[220,38,38]],[-30,[234,88,12]],[0,[202,138,4]],[30,[101,163,13]],[60,[22,163,74]],[100,[20,83,45]]];
+function heat(s) {
+  if (!isNum(s)) return '#3a4350';
+  s = Math.max(-100, Math.min(100, s));
+  for (let i = 1; i < HEAT.length; i++) {
+    if (s <= HEAT[i][0]) {
+      const a = HEAT[i-1], b = HEAT[i], t = (s - a[0]) / ((b[0] - a[0]) || 1);
+      return 'rgb(' + a[1].map((v,k) => Math.round(v + (b[1][k] - v) * t)).join(',') + ')';
+    }
+  }
+  return 'rgb(20,83,45)';
+}
+const heatLegend = () => '<div class="hleg"><span>\u2212100 bearish</span><i style="background:linear-gradient(90deg,' + HEAT.map(h => 'rgb(' + h[1].join(',') + ') ' + ((h[0] + 100) / 2) + '%').join(',') + ')"></i><span>+100 bullish</span></div>';
 const cfg = () => P.cfg;
 const sgn = s => !isNum(s) ? null : s >= cfg().neutral ? 1 : s <= -cfg().neutral ? -1 : 0;
 function zoneOf(s) {
@@ -961,7 +977,7 @@ function tile(r) {
   const dim = passFilter(r) ? '' : 'dim';
   const go = r.Kind === 'Pair' ? 'pair:' : 'inst:';
   const attr = r.Kind === 'Pair' ? 'data-pt' : 'data-it';
-  return '<div class="tile ' + dim + '" style="background:' + col(r.Score) + '" ' + attr + '="' + esc(r.Item) + '" data-go="' + go + esc(r.Item) + '"><div class="tn">' + esc(r.Item) + '</div><div class="ts">' + fS(r.Score) + '</div><div class="td">' + esc(r.Direction || 'N/A') + '</div></div>';
+  return '<div class="tile ' + dim + '" style="background:' + heat(r.Score) + '" ' + attr + '="' + esc(r.Item) + '" data-go="' + go + esc(r.Item) + '"><div class="tn">' + esc(r.Item) + '</div><div class="ts">' + fS(r.Score) + '</div><div class="td">' + esc(r.Direction || 'N/A') + '</div></div>';
 }
 function barRow(label, v, key, x, max) {
   const m = max || 50, p = isNum(v) ? Math.max(-1, Math.min(1, v / m)) * 50 : 0;
@@ -1025,7 +1041,7 @@ function pHome() {
   const sel = get('Pair', S.pair);
   const dq = P.status;
   return '<div class="panel"><h2>Market regime \u00b7 ' + TFL[S.tf] + ' \u00b7 hover for a quick read, click for the full explanation</h2><div class="kpis">' + k(bull, 'nBull', 'BULLISH PAIRS') + k(bear, 'nBear', 'BEARISH PAIRS') + k(neu, 'nNeutral', 'NEUTRAL PAIRS') + k(ext, 'nExtreme', 'EXTREME POSITIONING') + k(rev, 'nReversal', 'REVERSAL CONDITIONS') + k(mom, 'nMomentum', 'STRONG MOMENTUM') + k(div, 'nDiverge', 'COT / PRICE DIVERGENCES') + k(P.live.daysSince, 'daysSince', 'DAYS SINCE COT') + '</div></div>' +
-    '<div class="panel"><h2>Pair heatmap \u00b7 hover for intelligence, click for analysis</h2>' + hm + '</div>' +
+    '<div class="panel"><h2>Pair heatmap \u00b7 hover for intelligence, click for analysis</h2>' + heatLegend() + hm + '</div>' +
     '<div class="row r2"><div class="panel"><h2>What changed since last COT report</h2><ul class="l">' + ch + '</ul></div><div class="panel"><h2>Markets to watch \u00b7 monitoring only</h2><ul class="l">' + wt + '</ul></div></div>' +
     '<div class="row r2"><div class="panel"><h2>Currency strength</h2><div class="ct">' + ccy.map(tile).join('') + '</div></div><div class="panel"><h2>Commodity strength</h2><div class="ct">' + com.map(tile).join('') + '</div></div></div>' +
     '<div class="row r2"><div class="panel"><h2>Extremes / reversals</h2><table><tr><th>INSTRUMENT</th><th>PERCENTILE</th><th>EXTREME</th><th>REVERSAL</th></tr>' + exl + '</table></div><div class="panel"><h2>COT / price divergences</h2><table><tr><th>MARKET</th><th>TYPE</th><th>PRICE</th></tr>' + dvl + '</table></div></div>' +
