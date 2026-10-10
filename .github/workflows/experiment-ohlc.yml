@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node experiment/fetch-ohlc.js
+      - run: node experiment/fetch-ohlc.js 1d,1wk,1h
       - name: Commit candles to the experiment branch
         run: |
           git config user.name "cot-dashboard-bot"
