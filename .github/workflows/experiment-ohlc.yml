@@ -1,0 +1,33 @@
+# EXPERIMENT ONLY: runs on pushes to the "experiment" branch, never on main, never publishes the site.
+name: Experiment - fetch candles
+
+on:
+  push:
+    branches: [experiment]
+    paths:
+      - 'experiment/fetch-ohlc.js'
+      - '.github/workflows/experiment-ohlc.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: experiment
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node experiment/fetch-ohlc.js
+      - name: Commit candles to the experiment branch
+        run: |
+          git config user.name "cot-dashboard-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add experiment/data
+          git diff --cached --quiet || git commit -m "Experiment: candle history $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push origin HEAD:experiment
