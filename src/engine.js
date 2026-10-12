@@ -257,19 +257,33 @@ const PAIR_LIST = [
   ["USD/CHF", "USD", "CHF"],
   ["USD/CAD", "USD", "CAD"],
 
+  // Crosses, grouped by base currency. All 28 pairs of the eight tracked currencies are covered.
   ["EUR/GBP", "EUR", "GBP"],
   ["EUR/JPY", "EUR", "JPY"],
+  ["EUR/CHF", "EUR", "CHF"],
+  ["EUR/AUD", "EUR", "AUD"],
+  ["EUR/NZD", "EUR", "NZD"],
+  ["EUR/CAD", "EUR", "CAD"],
+
   ["GBP/JPY", "GBP", "JPY"],
+  ["GBP/CHF", "GBP", "CHF"],
+  ["GBP/AUD", "GBP", "AUD"],
+  ["GBP/NZD", "GBP", "NZD"],
+  ["GBP/CAD", "GBP", "CAD"],
 
   ["AUD/JPY", "AUD", "JPY"],
-  ["NZD/JPY", "NZD", "JPY"],
-  ["CAD/JPY", "CAD", "JPY"],
-
-  ["EUR/CHF", "EUR", "CHF"],
-  ["GBP/CHF", "GBP", "CHF"],
-
+  ["AUD/CHF", "AUD", "CHF"],
   ["AUD/CAD", "AUD", "CAD"],
   ["AUD/NZD", "AUD", "NZD"],
+
+  ["NZD/JPY", "NZD", "JPY"],
+  ["NZD/CHF", "NZD", "CHF"],
+  ["NZD/CAD", "NZD", "CAD"],
+
+  ["CAD/JPY", "CAD", "JPY"],
+  ["CAD/CHF", "CAD", "CHF"],
+
+  ["CHF/JPY", "CHF", "JPY"],
 
   ["XAU/USD", "XAU", "USD"],
   ["XAG/USD", "XAG", "USD"],

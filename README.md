@@ -1,6 +1,6 @@
 # COT Market Command Centre
 
-A dashboard built on the CFTC Commitments of Traders (COT) report. For 21 FX pairs, gold, silver and two oil benchmarks it shows who is bullish or bearish, how strong the signal is, and whether price agrees.
+A dashboard built on the CFTC Commitments of Traders (COT) report. For all 28 FX pairs of eight major currencies, plus gold, silver and two oil benchmarks it shows who is bullish or bearish, how strong the signal is, and whether price agrees.
 
 It runs entirely on GitHub, free:
 
