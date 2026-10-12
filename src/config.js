@@ -28,6 +28,10 @@ module.exports = {
     'AUD/JPY': 'AUDJPY=X', 'NZD/JPY': 'NZDJPY=X', 'CAD/JPY': 'CADJPY=X',
     'EUR/CHF': 'EURCHF=X', 'GBP/CHF': 'GBPCHF=X',
     'AUD/CAD': 'AUDCAD=X', 'AUD/NZD': 'AUDNZD=X',
+    'EUR/AUD': 'EURAUD=X', 'EUR/NZD': 'EURNZD=X', 'EUR/CAD': 'EURCAD=X',
+    'GBP/AUD': 'GBPAUD=X', 'GBP/NZD': 'GBPNZD=X', 'GBP/CAD': 'GBPCAD=X',
+    'AUD/CHF': 'AUDCHF=X', 'NZD/CHF': 'NZDCHF=X', 'NZD/CAD': 'NZDCAD=X',
+    'CAD/CHF': 'CADCHF=X', 'CHF/JPY': 'CHFJPY=X',
     'XAU/USD': 'GC=F', 'XAG/USD': 'SI=F', 'WTI/USD': 'CL=F', 'Brent/USD': 'BZ=F'
   },
   COMMODITY_PAIRS: ['XAU/USD', 'XAG/USD', 'WTI/USD', 'Brent/USD']
