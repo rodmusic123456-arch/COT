@@ -18,6 +18,7 @@ on:
       - 'docs/index.html'
       - 'docs/data-loader.js'
       - 'docs/macro-view.js'
+      - 'data/macro_notes.json'
       - 'src/**'
       - 'scripts/**'
       - '.github/workflows/update.yml'
