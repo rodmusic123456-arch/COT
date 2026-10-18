@@ -1,0 +1,32 @@
+{
+ "ff_xml": {
+  "status": 200,
+  "bytes": 30045,
+  "actualMentions": 0,
+  "head": "<?xml version=\"1.0\" encoding=\"windows-1252\"?>\n<weeklyevents>\n\t<event>\n\t\t<title>IMF Meetings</title>\n\t\t<country>All</country>\n\t\t<date><![CDATA[10-18-2026]]></date>\n\t\t<time><![CDATA[2:15pm]]></time>\n\t\t<"
+ },
+ "ff_csv": {
+  "status": 200,
+  "bytes": 10606,
+  "actualMentions": 0,
+  "head": "Title,Country,Date,Time,Impact,Forecast,Previous,URL\r\nIMF Meetings,All,10-18-2026,2:15pm,Low,,,https://www.forexfactory.com/calendar/461-imf-meetings\r\nBusinessNZ Services Index,NZD,10-18-2026,9:30pm,L"
+ },
+ "ff_event_ukcpi": {
+  "status": 403,
+  "bytes": 5769,
+  "actualMentions": 0,
+  "head": "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta nam"
+ },
+ "mm_event_ukcpi": {
+  "status": 403,
+  "bytes": 5767,
+  "actualMentions": 0,
+  "head": "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta nam"
+ },
+ "ff_calendar_week": {
+  "status": 200,
+  "bytes": 553282,
+  "actualMentions": 857,
+  "head": "<!DOCTYPE html> <html class=\"no-js\" lang=\"en\"> <head> <base href=\"https://www.forexfactory.com\"> <meta charset=\"windows-1252\"> <meta property=\"og:title\" content=\"Forex Calendar | Forex Factory\" /> <me"
+ }
+}
