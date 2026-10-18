@@ -17,8 +17,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: for f in experiment/probe-*.js; do node "$f"; done
-      - run: if [ -f experiment/macro-fetch.js ]; then node experiment/macro-fetch.js; fi
+      - run: node experiment/macro-fetch.js
+      - run: node experiment/macro-calendar.js
       - name: Commit results to the experiment branch
         run: |
           git config user.name "cot-dashboard-bot"
