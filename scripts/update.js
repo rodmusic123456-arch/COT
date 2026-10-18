@@ -16,6 +16,8 @@ const path = require('path');
 const cfg = require('../src/config');
 const cot = require('../src/cot');
 const prices = require('../src/prices');
+const calendar = require('../src/calendar');
+const macro = require('../src/macro');
 const { build } = require('../src/build');
 
 function log(msg) { console.log(msg); }
@@ -35,6 +37,16 @@ async function main() {
     const p = await prices.updatePrices(log);
     priceReport = p.report;
     log(p.added + ' new price row(s).');
+
+    // Macro inputs never block the COT build: a failed read keeps the stored history.
+    log('--- Economic calendar ---');
+    try {
+      const k = await calendar.updateCalendar(log);
+      log(k.added + ' new / ' + k.updated + ' updated release(s), ' + k.total + ' stored.' + (k.errors.length ? ' Problems: ' + k.errors.join('; ') : ''));
+    } catch (e) { log('Calendar update failed: ' + e.message); }
+
+    log('--- Bond yields ---');
+    try { await macro.updateYields(log); } catch (e) { log('Yield update failed: ' + e.message); }
   }
 
   log('--- Build ---');

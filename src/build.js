@@ -5,6 +5,7 @@
  *   docs/data.json      dashboard payload (same shape the Apps Script web app served)
  *   docs/backtest.json  backtest observations for the Research page
  *   docs/stamp.json     tiny file the page polls to detect new data
+ *   docs/macro.json     macro and news layer (calendar, central banks, yields, written notes)
  */
 
 const path = require('path');
@@ -12,7 +13,9 @@ const cfg = require('./config');
 const E = require('./engine');
 const cot = require('./cot');
 const prices = require('./prices');
-const { writeJSON, localKey } = require('./util');
+const calendar = require('./calendar');
+const macro = require('./macro');
+const { writeJSON, readJSON, localKey } = require('./util');
 
 /* ---------- table rows -> objects (empty cells dropped, dates as yyyy-MM-dd) ---------- */
 
@@ -229,13 +232,27 @@ function build(opts) {
   };
 
 
+  let macroOut = null;
+  try {
+    macroOut = macro.buildMacro({
+      events: calendar.loadEvents(),
+      priceStore: readJSON(prices.FILE, {}),
+      yields: macro.loadYields(),
+      notes: macro.loadNotes(),
+      now: now
+    });
+  } catch (e) {
+    console.error('Macro build failed: ' + e.message);
+  }
+
   if (opts.write !== false) {
     writeJSON(path.join(cfg.DOCS_DIR, 'data.json'), payload);
+    if (macroOut) writeJSON(path.join(cfg.DOCS_DIR, 'macro.json'), macroOut);
     writeJSON(path.join(cfg.DOCS_DIR, 'stamp.json'), { stamp: stamp });
     if (backtest) writeJSON(path.join(cfg.DOCS_DIR, 'backtest.json'), backtest);
   }
 
-  return { payload: payload, backtest: backtest, check: check };
+  return { payload: payload, backtest: backtest, check: check, macro: macroOut };
 }
 
 module.exports = { build, buildBacktest, validate, toObjects };
