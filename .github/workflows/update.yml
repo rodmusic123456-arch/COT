@@ -17,6 +17,7 @@ on:
     paths:
       - 'docs/index.html'
       - 'docs/data-loader.js'
+      - 'docs/macro-view.js'
       - 'src/**'
       - 'scripts/**'
       - '.github/workflows/update.yml'

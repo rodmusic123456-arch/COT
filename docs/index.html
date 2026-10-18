@@ -135,6 +135,48 @@ details.ib p{margin-top:8px}
 .bm em{font-style:normal;color:var(--acc);font-weight:700;font-size:11px;white-space:nowrap}
 .ifoot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--mut)}
 @media(max-width:520px){.br{grid-template-columns:1fr;gap:3px}.iv{font-size:28px}#infoBody{padding:16px}}
+/* ---- Macro & News layer (macro-view.js) ---- */
+.msub{margin-bottom:12px;gap:6px}
+.mthemes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.mtheme{background:var(--panel2);border-radius:8px;padding:10px 12px;border-left:3px solid var(--acc)}
+.mtheme b{display:block;margin-bottom:3px}.mtheme span{color:#c3cedb;font-size:13px}
+.mtw{overflow-x:auto}
+.mtw table td{vertical-align:top}
+.mnum{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mcell{display:inline-block;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;white-space:nowrap}
+.c-pos{background:rgba(88,194,109,.16);color:#58c26d}.c-neg{background:rgba(240,98,77,.16);color:#f0624d}
+.c-amb{background:rgba(232,163,61,.16);color:#e8a33d}.c-mut{background:var(--panel2);color:var(--mut)}
+.mtag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;border-radius:4px;padding:1px 6px;background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+.mph{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:10px 0}
+.mph h3{margin:0;font-size:18px}
+.mkv{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.mk{background:var(--panel2);border-radius:8px;padding:8px 10px;min-width:0}
+.mk .l{font-size:10px;letter-spacing:.08em;color:var(--mut)}
+.mk .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.mk .s{font-size:11px;color:#c3cedb}
+.mstory{background:#1a2230;border-left:3px solid var(--acc);border-radius:4px;padding:10px 14px;color:#c3cedb;margin-top:10px;max-width:110ch}
+.mstory b{color:var(--text)}
+.msoft{color:#c3cedb}
+.mspark{width:110px;height:26px;display:block;margin-top:2px}
+.mev{display:grid;grid-template-columns:96px 46px minmax(0,1fr) auto;gap:10px;align-items:start;padding:7px 4px;border-bottom:1px solid #1d2632;cursor:pointer;font-size:13px}
+.mev:hover,.mev:focus-visible{background:#1a2432;outline:0}
+.mev[aria-expanded="true"]{background:#1a2432}
+.mev.wide{grid-template-columns:150px 46px minmax(0,1fr) auto}
+.mev .t{font-variant-numeric:tabular-nums;color:var(--mut);font-size:12px}
+.mev .fp{font-size:12px;color:var(--mut);text-align:right;white-space:nowrap}.mev .fp b{color:var(--text)}
+.mimp{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.mimp.h{background:#f0624d}.mimp.m{background:#e8a33d}
+.mevd{background:var(--panel2);border-radius:8px;padding:10px 12px;margin:2px 0 8px;display:grid;gap:8px;font-size:13px}
+.mscen{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.mscen div{background:#151b24;border-radius:6px;padding:7px 10px}.mscen b{display:block;font-size:11px;letter-spacing:.04em}.mscen span{color:#c3cedb}
+.mdayh{font-size:11px;font-weight:700;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;padding:12px 4px 4px;border-bottom:1px solid var(--line)}
+.mvs{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;margin-top:12px}
+.mvs .mid{display:grid;place-items:center;color:var(--mut);font-weight:700}
+.mleg{background:var(--panel2);border-radius:8px;padding:10px 12px;display:grid;gap:6px;align-content:start}
+.mleg .mph{margin:0}
+.mlink{cursor:pointer}.mlink:hover{background:#1a2432}
+details.mhow{margin-bottom:8px;font-size:12px}details.mhow summary{cursor:pointer;color:var(--acc);font-weight:600}details.mhow p{color:#c3cedb;margin:6px 0 0;max-width:110ch}
+@media(max-width:640px){.mev,.mev.wide{grid-template-columns:78px 42px minmax(0,1fr)}.mev .fp{grid-column:3;text-align:left}.mvs{grid-template-columns:1fr}.mvs .mid{display:none}}
 </style>
 </head>
 <body>
@@ -151,6 +193,7 @@ details.ib p{margin-top:8px}
 <script src="engine.js"></script>
 <script src="research.js"></script>
 <script src="data-loader.js"></script>
+<script src="macro-view.js"></script>
 <script>
 window.onerror = function (msg, src, line, col) {
   var m = document.getElementById('page');
@@ -176,11 +219,11 @@ const fDT = s => { if (!s) return 'N/A'; const d = new Date(s); return isNaN(d) 
 const num = v => (v === undefined || v === null || v === '') ? null : Number(v);
 
 let P = null;
-let S = { page: 'home', tf: 'WEEKLY', filter: 'ALL', pair: 'EUR/USD', inst: 'EUR', gq: '', chi: '' };
+let S = { page: 'home', tf: 'WEEKLY', filter: 'ALL', pair: 'EUR/USD', inst: 'EUR', gq: '', chi: '', mv: 'overview', mc: 'USD', mev: null, mcf: 'ALL' };
 const TFS = ['DAILY','WEEKLY','MONTHLY','QUARTERLY','6 MONTH','ANNUAL'];
 const TFL = { 'DAILY':'Daily','WEEKLY':'Weekly','MONTHLY':'Monthly','QUARTERLY':'Quarterly','6 MONTH':'6 Month','ANNUAL':'Annual' };
 const FILTERS = ['ALL','BULLISH','BEARISH','EXTREME','REVERSAL','DIVERGENCE','ACCELERATING','MULTI TF ALIGNED'];
-const PAGES = [['home','MARKET COMMAND CENTRE'],['pair','PAIR ANALYSIS'],['inst','INSTRUMENT ANALYSIS'],['pos','POSITIONING'],['hist','HISTORICAL CONTEXT'],['res','RESEARCH / BACKTEST'],['gloss','GLOSSARY'],['meth','METHODOLOGY']];
+const PAGES = [['home','MARKET COMMAND CENTRE'],['pair','PAIR ANALYSIS'],['inst','INSTRUMENT ANALYSIS'],['macro','MACRO & NEWS'],['pos','POSITIONING'],['hist','HISTORICAL CONTEXT'],['res','RESEARCH / BACKTEST'],['gloss','GLOSSARY'],['meth','METHODOLOGY']];
 
 /* ============================== colour scale ============================== */
 /* One scale used everywhere: red -> orange -> grey (neutral zone) -> light green -> green */
@@ -917,6 +960,7 @@ document.addEventListener('click', ev => {
   const t = ev.target;
   if (!t.closest) return;
   if (t.id === 'info' || t.closest('[data-close]')) { closeInfo(); return; }
+  if (window.MacroView && MacroView.click(t)) { $('tip').style.display = 'none'; return; }
   const ci = t.closest('[data-chi]');
   if (ci) { S.chi = ci.dataset.chi; render(); return; }
   const sf = t.closest('[data-setf]');
@@ -1080,6 +1124,7 @@ function pHome() {
   const sel = get('Pair', S.pair);
   const dq = P.status;
   return '<div class="panel"><h2>Market regime \u00b7 ' + TFL[S.tf] + ' \u00b7 hover for a quick read, click for the full explanation</h2><div class="kpis">' + k(bull, 'nBull', 'BULLISH PAIRS') + k(bear, 'nBear', 'BEARISH PAIRS') + k(neu, 'nNeutral', 'NEUTRAL PAIRS') + k(ext, 'nExtreme', 'EXTREME POSITIONING') + k(rev, 'nReversal', 'REVERSAL CONDITIONS') + k(mom, 'nMomentum', 'STRONG MOMENTUM') + k(div, 'nDiverge', 'COT / PRICE DIVERGENCES') + k(P.live.daysSince, 'daysSince', 'DAYS SINCE COT') + '</div></div>' +
+    (window.MacroView ? MacroView.homePanels() : '') +
     '<div class="panel"><h2>Pair heatmap \u00b7 hover for intelligence, click for analysis</h2>' + heatLegend() + hm + '</div>' +
     '<div class="row r2"><div class="panel"><h2>What changed since last COT report</h2>' + chPicker() + (S.chi ? cotHistory(S.chi) : '<ul class="l">' + ch + '</ul>') + '</div><div class="panel"><h2>Markets to watch \u00b7 monitoring only</h2><ul class="l">' + wt + '</ul></div></div>' +
     '<div class="row r2"><div class="panel"><h2>Currency strength</h2><div class="ct">' + ccy.map(tile).join('') + '</div></div><div class="panel"><h2>Commodity strength</h2><div class="ct">' + com.map(tile).join('') + '</div></div></div>' +
@@ -1094,6 +1139,7 @@ function pPair() {
   const x = { item: r.Item };
   return '<div class="panel"><h2>Pair analysis</h2>' + selectBox('pp', P.pairs, S.pair) + ' <button class="btn" data-go="hist:' + esc(S.pair) + '">HISTORICAL CONTEXT</button> <button class="btn" data-go="research:' + esc(S.pair) + '">RESEARCH HISTORICAL BEHAVIOUR</button>' +
     '<div class="gauges" style="margin-top:12px">' + gauge(r.Score, { title: r.Item + ' BIAS \u00b7 ' + TFL[S.tf].toUpperCase(), kind: 'bias' }) + gauge(r['Base Strength'], { title: r.Base + ' STRENGTH', kind: 'strength', sm: true }) + gauge(r['Quote Strength'], { title: r.Quote + ' STRENGTH', kind: 'strength', sm: true }) + '</div></div>' +
+    (window.MacroView ? MacroView.pairPanel(S.pair) : '') +
     '<div class="row r2"><div class="panel"><h2>Why this score \u00b7 component breakdown</h2>' + barRow('Positioning (50%)', r['Positioning Component'], 'posC', x) + barRow('Momentum (30%)', r['Momentum Component'], 'momC', x) + barRow('Acceleration (20%)', r['Acceleration Component'], 'accC', x) +
     '<div class="note">Total = ' + N(r.Score, 'score') + '. Base \u2212 quote strength = ' + N((r['Base Strength'] - r['Quote Strength']) / 2, 'score') + ' (identical by construction).</div>' +
     '<h3>Underlying differences</h3><table><tr><td>Positioning divergence</td><td>' + N(r['Positioning Divergence'], 'posDiv') + '</td><td>Momentum divergence</td><td>' + N(r['Momentum Divergence'], 'momDiv') + '</td></tr><tr><td>Acceleration difference</td><td>' + N(r['Acceleration Divergence (\u03c3)'], 'accDiv') + '</td><td>Momentum change</td><td>' + N(r['Momentum Change'], 'momChange') + '</td></tr><tr><td>' + esc(r.Base) + ' net / momentum percentile</td><td>' + N(r['Base Net Pctl'], 'netPctl') + ' / ' + N(r['Base Mom Pctl'], 'momPctl') + '</td><td>' + esc(r.Quote) + ' net / momentum percentile</td><td>' + N(r['Quote Net Pctl'], 'netPctl') + ' / ' + N(r['Quote Mom Pctl'], 'momPctl') + '</td></tr></table></div>' +
@@ -1107,6 +1153,7 @@ function pInst() {
   const pairFor = ['XAU','XAG','WTI','Brent'].indexOf(S.inst) >= 0 ? S.inst + '/USD' : null;
   return '<div class="panel"><h2>Instrument analysis</h2>' + selectBox('ip', P.insts, S.inst) + (pairFor ? ' <button class="btn" data-go="hist:' + pairFor + '">HISTORICAL CONTEXT</button>' : '') +
     '<div class="gauges" style="margin-top:12px">' + gauge(r.Score, { title: S.inst + ' STRENGTH \u00b7 ' + TFL[S.tf].toUpperCase(), kind: 'strength' }) + '</div></div>' +
+    (window.MacroView ? MacroView.instPanel(S.inst) : '') +
     '<div class="row r2"><div class="panel"><h2>Positioning detail</h2><table><tr><td>Net position</td><td>' + N(r['Net Position'], 'netPos') + '</td></tr><tr><td>Net percentile</td><td>' + N(r['Net Percentile'], 'netPctl') + '</td></tr><tr><td>Momentum (4W) / percentile</td><td>' + fInt(r['4W Momentum']) + ' / ' + N(r['Momentum Percentile'], 'momPctl') + '</td></tr><tr><td>Momentum change</td><td>' + N(r['Momentum Change'], 'momChange') + '</td></tr><tr><td>Acceleration</td><td>' + N(r['Normalised Acceleration'], 'normAccel') + '</td></tr><tr><td>Classification</td><td>' + esc(r['Positioning Class'] || 'N/A') + '</td></tr><tr><td>Extreme / reversal</td><td>' + esc(r.Extreme) + ' / ' + esc(r.Reversal) + '</td></tr><tr><td>Price</td><td>' + esc(r['Price Direction'] || 'N/A') + ' ' + N(r['Price Return %'], 'priceRet') + '</td></tr><tr><td>COT / Price</td><td>' + badge(r['COT Price Relationship'] || 'N/A', relCol(r['COT Price Relationship'])) + '</td></tr><tr><td>Strength change</td><td>' + N(r['Score Change'], 'scoreChange') + '</td></tr><tr><td>Bias age / extreme age</td><td>' + N(r['Bias Age Weeks'], 'age', { since: r['Bias Since'] }, isNum(r['Bias Age Weeks']) ? r['Bias Age Weeks'] + ' wk' : 'N/A') + ' / ' + (isNum(r['Extreme Age Weeks']) ? r['Extreme Age Weeks'] + ' wk' : 'n/a') + '</td></tr></table>' +
     '<h3>Strength components</h3>' + barRow('Positioning', r['Positioning Component'], 'posC', {}, 100) + barRow('Momentum', r['Momentum Component'], 'momC', {}, 100) + barRow('Acceleration', r['Acceleration Component'], 'accC', {}, 100) + '</div>' +
     '<div class="panel"><h2>Multi timeframe strength</h2>' + tfStrip(S.inst, 'Instrument') + '<div style="margin-top:10px">' + alignBlock(r) + '</div><h3>Confluence ' + N(r['Confluence Count'], 'conf', { total: r['Confluence Total'] }, (r['Confluence Count'] === undefined ? 'N/A' : r['Confluence Count'] + ' / ' + r['Confluence Total'])) + '</h3>' + confList(r) + '<h3>History</h3>' + histCharts(S.inst, 'Instrument') + '</div></div>';
@@ -1272,7 +1319,7 @@ function pMeth() {
 function render() {
   if (!P) return;
   chips(); nav(); controls();
-  const pages = { home: pHome, pair: pPair, inst: pInst, pos: pPos, hist: pHist, res: pRes, gloss: pGloss, meth: pMeth };
+  const pages = { home: pHome, pair: pPair, inst: pInst, macro: () => window.MacroView ? MacroView.page() : '', pos: pPos, hist: pHist, res: pRes, gloss: pGloss, meth: pMeth };
   try { $('page').innerHTML = pages[S.page](); }
   catch (e) { $('page').innerHTML = '<div class="warn">Render error: ' + esc(e.message) + '</div>'; }
   const on = (id, fn) => { const el = $(id); if (el) el.onchange = fn; };
@@ -1281,6 +1328,7 @@ function render() {
   on('pp', e => { S.pair = e.target.value; render(); });
   on('ip', e => { S.inst = e.target.value; render(); });
   on('hcp', e => { S.pair = e.target.value; render(); });
+  on('mpp', e => { S.pair = e.target.value; S.mev = null; render(); });
   const gq = $('gq'); if (gq) gq.oninput = e => { S.gq = e.target.value; const pos = e.target.selectionStart; render(); const n = $('gq'); n.focus(); n.setSelectionRange(pos, pos); };
   if (S.page === 'hist') afterHist();
   if (S.page === 'res') afterRes();

@@ -18,7 +18,11 @@
 
   var api = {
     cotWebPayload: function () {
-      return getJSON('data.json').then(function (p) {
+      // The macro layer is optional: if macro.json is missing the rest of the page still works.
+      var macro = getJSON('macro.json').catch(function () { return null; });
+      return Promise.all([getJSON('data.json'), macro]).then(function (both) {
+        var p = both[0];
+        p.macro = both[1];
         var s = p.status || {};
         // Recomputed in the browser so "awaiting new COT" is correct even if the file is a few days old.
         p.live = E.cotDashStatus(
