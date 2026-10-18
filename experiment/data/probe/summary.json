@@ -1,0 +1,77 @@
+{
+ "dbn_bis_policy": {
+  "status": 200,
+  "bytes": 204727,
+  "head": "{\"_meta\":{\"args\":{\"align_periods\":false,\"dataset_code\":\"WS_CBPOL\",\"dimensions\":{\"FREQ\":[\"M\"],\"REF_AREA\":[\"US\",\"XM\",\"GB\",\"JP\",\"CA\",\"AU\",\"NZ\",\"CH\"]},\"facets\":false,\"format\":\"json\",\"limit\":1000,\"metadata\":true,\"observations\":true,\"offset\":0,\"provider_code\":\"BIS\",\"q\":\"\",\"series_code\":null},\"version\":\"22"
+ },
+ "dbn_kei_dataset": {
+  "status": 400,
+  "bytes": 145,
+  "head": "{\"_meta\":{\"args\":{\"format\":[\"json\"]},\"version\":\"22.1.17\"},\"message\":\"Invalid value {'format': 'json'} (dict): additional properties: ['format']\"}"
+ },
+ "dbn_kei_gbr": {
+  "status": 200,
+  "bytes": 1285531,
+  "head": "{\"_meta\":{\"args\":{\"align_periods\":false,\"dataset_code\":\"DSD_KEI@DF_KEI\",\"dimensions\":{\"FREQ\":[\"M\"],\"REF_AREA\":[\"GBR\"]},\"facets\":false,\"format\":\"json\",\"limit\":100,\"metadata\":true,\"observations\":true,\"offset\":0,\"provider_code\":\"OECD\",\"q\":\"\",\"series_code\":null},\"version\":\"22.1.17\"},\"dataset\":{\"attribut"
+ },
+ "dbn_search_kei": {
+  "status": 400,
+  "bytes": 239,
+  "head": "{\"_meta\":{\"args\":{\"format\":[\"json\"],\"limit\":[\"10\"],\"q\":[\"key economic indicators\"]},\"version\":\"22.1.17\"},\"message\":\"Invalid value {'q': 'key economic indicators', 'limit': '10', 'format': 'json'} (dict): additional properties: ['format']\"}"
+ },
+ "oecd_kei_gbr": {
+  "status": 500,
+  "bytes": 21,
+  "head": "Internal server error"
+ },
+ "fred_us10y": {
+  "status": 200,
+  "bytes": 269075,
+  "head": "observation_date,DGS10\n1962-01-02,4.06\n1962-01-03,4.03\n1962-01-04,3.99\n1962-01-05,4.02\n1962-01-08,4.03\n1962-01-09,4.05\n1962-01-10,4.07\n1962-01-11,4.08\n1962-01-12,4.08\n1962-01-15,4.10\n1962-01-16,4.13\n1962-01-17,4.12\n1962-01-18,4.11\n1962-01-19,4.11\n1962-01-22,4.09\n1962-01-23,4.11\n1962-01-24,4.10\n1962-"
+ },
+ "fred_uk10y": {
+  "status": 200,
+  "bytes": 14641,
+  "head": "observation_date,IRLTLT01GBM156N\n1960-01-01,5.3300\n1960-02-01,5.4000\n1960-03-01,5.5900\n1960-04-01,5.6700\n1960-05-01,5.6900\n1960-06-01,6.0400\n1960-07-01,6.0100\n1960-08-01,6.0300\n1960-09-01,6.1000\n1960-10-01,6.1000\n1960-11-01,6.1400\n1960-12-01,6.1700\n1961-01-01,6.1500\n1961-02-01,6.0000\n1961-03-01,6.06"
+ },
+ "fred_ukcpi": {
+  "status": 200,
+  "bytes": 25890,
+  "head": "observation_date,CPALTT01GBM659N\n1956-01-01,5.08166999999999991\n1956-02-01,5.08166999999999991\n1956-03-01,6.44773100000000010\n1956-04-01,7.33447599999999866\n1956-05-01,7.31916799999999856\n1956-06-01,5.03029300000000035\n1956-07-01,4.25066200000000016\n1956-08-01,5.30079999999999973\n1956-09-01,4.445052"
+ },
+ "fred_fedfunds": {
+  "status": 200,
+  "bytes": 104282,
+  "head": "observation_date,DFEDTARU\n2008-12-16,0.25\n2008-12-17,0.25\n2008-12-18,0.25\n2008-12-19,0.25\n2008-12-20,0.25\n2008-12-21,0.25\n2008-12-22,0.25\n2008-12-23,0.25\n2008-12-24,0.25\n2008-12-25,0.25\n2008-12-26,0.25\n2008-12-27,0.25\n2008-12-28,0.25\n2008-12-29,0.25\n2008-12-30,0.25\n2008-12-31,0.25\n2009-01-01,0.25\n20"
+ },
+ "ecb_dfr": {
+  "status": 200,
+  "bytes": 1339,
+  "head": "KEY,FREQ,REF_AREA,CURRENCY,PROVIDER_FM,INSTRUMENT_FM,PROVIDER_FM_ID,DATA_TYPE_FM,TIME_PERIOD,OBS_VALUE,OBS_STATUS,OBS_CONF,OBS_PRE_BREAK,OBS_COM,TIME_FORMAT,BREAKS,COLLECTION,COMPILING_ORG,DISS_ORG,DOM_SER_IDS,FM_CONTRACT_TIME,FM_COUPON_RATE,FM_IDENTIFIER,FM_LOT_SIZE,FM_MATURITY,FM_OUTS_AMOUNT,FM_PU"
+ },
+ "ecb_hicp": {
+  "status": 200,
+  "bytes": 2335,
+  "head": "KEY,FREQ,REF_AREA,ADJUSTMENT,ICP_ITEM,STS_INSTITUTION,ICP_SUFFIX,TIME_PERIOD,OBS_VALUE,OBS_STATUS,OBS_CONF,OBS_PRE_BREAK,OBS_COM,TIME_FORMAT,BREAKS,COLLECTION,COMPILING_ORG,DATA_COMP,DISS_ORG,DOM_SER_IDS,PUBL_ECB,PUBL_MU,PUBL_PUBLIC,UNIT_INDEX_BASE,COMPILATION,COVERAGE,DECIMALS,SOURCE_AGENCY,TITLE,T"
+ },
+ "ff_week": {
+  "status": 200,
+  "bytes": 11596,
+  "head": "[{\"title\":\"IMF Meetings\",\"country\":\"All\",\"date\":\"2026-10-18T10:15:00-04:00\",\"impact\":\"Low\",\"forecast\":\"\",\"previous\":\"\"},{\"title\":\"BusinessNZ Services Index\",\"country\":\"NZD\",\"date\":\"2026-10-18T17:30:00-04:00\",\"impact\":\"Low\",\"forecast\":\"\",\"previous\":\"51.2\"},{\"title\":\"Trade Balance\",\"country\":\"NZD\",\"da"
+ },
+ "ff_next": {
+  "status": 404,
+  "bytes": 146,
+  "head": "<html>\r\n<head><title>404 Not Found</title></head>\r\n<body>\r\n<center><h1>404 Not Found</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n"
+ },
+ "statcan_cpi": {
+  "status": 200,
+  "bytes": 1526,
+  "head": "[{\"status\":\"SUCCESS\",\"object\":{\"responseStatusCode\":0,\"productId\":18100004,\"coordinate\":\"2.2.0.0.0.0.0.0.0.0\",\"vectorId\":41690973,\"vectorDataPoint\":[{\"refPer\":\"2026-03-01\",\"refPer2\":\"\",\"refPerRaw\":\"2026-03-01\",\"refPerRaw2\":\"\",\"value\":167.4,\"decimals\":1,\"scalarFactorCode\":0,\"symbolCode\":0,\"statusCode"
+ },
+ "yahoo_us10y": {
+  "status": 200,
+  "bytes": 3582,
+  "head": "{\"chart\":{\"result\":[{\"meta\":{\"currency\":\"USD\",\"symbol\":\"^TNX\",\"exchangeName\":\"CGI\",\"fullExchangeName\":\"Cboe Indices\",\"instrumentType\":\"INDEX\",\"firstTradeDate\":-252326400,\"regularMarketTime\":1792177195,\"hasPrePostMarketData\":false,\"gmtoffset\":-18000,\"timezone\":\"CDT\",\"exchangeTimezoneName\":\"America/Ch"
+ }
+}

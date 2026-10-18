@@ -1,0 +1,1 @@
+{"_meta":{"args":{"format":["json"],"limit":["10"],"q":["key economic indicators"]},"version":"22.1.17"},"message":"Invalid value {'q': 'key economic indicators', 'limit': '10', 'format': 'json'} (dict): additional properties: ['format']"}
