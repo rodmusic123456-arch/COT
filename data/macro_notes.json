@@ -1,98 +1,102 @@
 {
- "asOf": "2026-10-19",
- "written": "Written 19 Oct 2026. Figures in the tables update automatically; these summaries are refreshed separately.",
+ "asOf": "2026-10-24",
+ "written": "Written 24 Oct 2026. Figures in the tables update automatically; these summaries are refreshed separately.",
  "themes": [
   [
-   "An energy shock is lifting inflation",
-   "Brent oil is around $106 and WTI near $98 after attacks on tankers near the Strait of Hormuz and strikes in the Gulf. Headline inflation is up almost everywhere: US 3.7%, euro area 3.8%, Australia 4.0%, New Zealand 4.1%, UK 3.1% (3.4% expected)."
+   "The oil shock has flared up again",
+   "Brent hit $113 on 22 Oct, its highest close since early May, and WTI is near $99. Houthi drone and missile strikes on Saudi energy sites, Iranian claims of attacks on four tankers in the Gulf and Saudi limits on fuel exports drove the jump."
   ],
   [
-   "Central banks have turned to raising rates",
-   "In six weeks the RBNZ (2 Sep), ECB (10 Sep), Fed (16 Sep), BoJ (18 Sep) and RBA (29 Sep) all raised rates. The Bank of England held but is split, while the Bank of Canada and SNB are holding."
+   "Inflation is still rising in most places",
+   "September inflation: UK 3.5% (3.4% expected), Canada 3.1%, US 3.7%, euro area 3.8%, Japan core 2.1% (first time above 2% in nine months) and Switzerland 1.0%, a two-year high. New Zealand was the exception, easing to 3.7% as petrol fell during the quarter."
   ],
   [
-   "Growth is cooling underneath",
-   "Hiring is weakening: US payrolls +29,000 in September, Canada −68,300, Australia −39,300. Consumers are gloomy (US sentiment 46.3), even where they are still spending."
+   "Decision week: mostly holds now, rises later",
+   "The RBNZ, Bank of Canada and Fed decide on 28 Oct, the ECB on 29 Oct and the BoJ on 30 Oct. Most are expected to hold this time, but a Reuters poll found all 100 economists expect a Fed rise in December. An RBNZ rise is widely expected, and Canada is a close call."
   ],
   [
-   "Decision week is coming",
-   "RBNZ, Bank of Canada and the Fed on 28 Oct, the ECB on 29 Oct and the BoJ on 30 Oct, plus Australia’s CPI, US GDP and core PCE inflation, the UK Autumn Forecast Statement and Canada’s budget."
+   "Next up: Australia and the UK",
+   "The RBA decides on 3 Nov, with markets split close to 50/50 on a rise. The Bank of England decides on 5 Nov, and markets put the chance of a rise to 4% above 90% after the inflation jump."
   ],
   [
-   "Higher real rates are hurting gold and silver",
-   "With US 10-year yields near 5.1% (about 2.8% after inflation), gold is down about 15% in six months and silver about 30%, despite record central bank gold buying."
+   "Consumers are feeling the squeeze",
+   "UK consumer confidence fell to −24 from −13 and retail sales dropped 0.4% in September. Euro-area services surveys slipped to 51.7 and investor mood (ZEW) to 18.5. Higher fuel bills and borrowing costs are the common complaint."
+  ],
+  [
+   "Gold and silver keep falling",
+   "Higher oil means more inflation worry and more expected rate rises, which keeps real yields high (the US 10-year near 5%, about 2.6% after inflation). Gold briefly fell below $4,000 on 23 Oct, its lowest since early August, and is down about 15% in six months; silver is down about 30%."
   ]
  ],
  "cb": {
   "USD": {
    "bank": "Federal Reserve",
    "target": 2,
-   "note": "Raised on 16 Sep, the first rise since 2023. Officials pencil in one more rise this year."
+   "note": "Raised on 16 Sep to 3.75–4.00%, the first rise since 2023. Expected to hold on 28 Oct; economists widely expect another rise in December."
   },
   "EUR": {
    "bank": "European Central Bank",
    "target": 2,
-   "note": "Raised in June and on 10 Sep. Says inflation will stay well above target for an extended period."
+   "note": "Raised in June and on 10 Sep (deposit rate 2.50%) and says inflation will stay above target for some time. Expected to hold on 29 Oct and judge a further rise in December, with new forecasts."
   },
   "GBP": {
    "bank": "Bank of England",
    "target": 2,
    "leaning": "raise",
-   "note": "Held on 17 Sep for the sixth meeting in a row, but 3 of 9 members voted to raise to 4%."
+   "note": "Held at 3.75% on 17 Sep, but 3 of 9 members voted to raise to 4%. After September inflation came in at 3.5%, markets see a rise on 5 Nov as very likely."
   },
   "JPY": {
    "bank": "Bank of Japan",
    "target": 2,
-   "note": "Raised on 18 Sep to the highest since 1995. Two members dissented and the Governor gave no clear signal of more, so the yen fell."
+   "note": "Raised on 18 Sep to the highest since 1995. Governor Ueda says rates will keep rising, but markets expect a hold on 30 Oct and see December as more likely for the next move."
   },
   "CAD": {
    "bank": "Bank of Canada",
    "target": 2,
    "cpiYoy": [
-    3,
-    "Aug"
+    3.1,
+    "Sep"
    ],
-   "note": "On hold for six meetings while others hike: underlying inflation is near target and jobs are being lost."
+   "note": "On hold at 2.25% at every meeting this year. Underlying inflation is below 2%, but high oil prices make the 28 Oct decision a close call."
   },
   "AUD": {
    "bank": "Reserve Bank of Australia",
    "target": 2.5,
-   "note": "Raised on 29 Sep, unanimously, and said it could go further if needed."
+   "note": "Raised to 4.60% on 29 Sep, unanimously, and said it could go further. Markets see the 3 Nov decision as close to a coin flip."
   },
   "NZD": {
    "bank": "Reserve Bank of New Zealand",
    "target": 2,
    "cpiYoy": [
-    4.1,
-    "Q2"
+    3.7,
+    "Q3"
    ],
-   "note": "Raised twice (to 2.75% on 2 Sep), but signalled a more measured pace, which knocked NZD lower."
+   "note": "Raised twice (to 2.75% on 2 Sep) but signalled a more measured pace. A rise to 3.00% on 28 Oct is widely expected, though softer Q3 inflation gives it room to wait."
   },
   "CHF": {
    "bank": "Swiss National Bank",
    "target": 1,
    "cpiYoy": [
-    0.8,
-    "Aug"
+    1.0,
+    "Sep"
    ],
-   "note": "Held at 0% on 24 Sep and stands ready to sell francs if needed."
+   "note": "Held at 0% on 24 Sep and stands ready to sell francs if needed. Inflation has crept up to the 1% mid-point of its 0–2% range."
   },
   "CNY": {
    "bank": "People’s Bank of China",
    "target": 3,
-   "note": "Lending rates unchanged; growth support comes mostly from the government."
+   "note": "Lending rates unchanged again on 20 Oct (1-year 3.00%); growth support comes mostly from the government."
   }
  },
  "stories": {
-  "USD": "Inflation has turned back up: consumer prices rose 3.7% on a year in September and producer prices jumped 1.3% in a single month. So the Fed raised rates on 16 September for the first time since 2023. Underneath, hiring has slowed sharply (only 29,000 jobs added in September, unemployment 4.2%) and households are gloomy (sentiment 46.3), yet they keep spending (retail sales +0.8%). Borrowing costs are high: the 10-year yield is about 5.1%, and about 2.8% after inflation. Next: Fed decision 28 Oct, GDP and the Fed’s preferred inflation measure 29 Oct.",
-  "EUR": "Energy has pushed euro-area inflation to 3.8% (2.5% without food and energy), and the ECB has raised rates twice to a 2.50% deposit rate. Growth is holding up (GDP +0.6% in Q2, services surveys at 53), but investors are gloomier (ZEW 25.8, down from 31.4), consumers are downbeat (−17) and the trade balance has swung to a deficit (−€6.8bn) as the energy import bill grows. Next: flash business surveys 23 Oct, ECB 29 Oct.",
-  "GBP": "Inflation is rising again: 3.1% in August, with 3.4% expected for September, mostly from fuel. The Bank of England is close to raising rates: it held at 3.75% on 17 September, but three of nine members voted for 4%. UK data have recently beaten forecasts more than anyone else’s (GDP +0.1% in August against −0.1% expected, retail sales +0.5%), though unemployment is 4.9% and pay growth is cooling (3.9%). Government borrowing costs are high (10-year gilt about 5.2%). The Autumn Forecast Statement on 28 Oct sets out the government’s tax and spending plans, a big moment for the pound.",
-  "JPY": "The Bank of Japan raised rates to 1.25% on 18 September, the highest since 1995, but the yen still fell because the decision was split and gave no clear hint of more. With US rates near 4%, the interest-rate gap still favours the dollar (USD/JPY around 158). Price pressure is building: Tokyo’s core inflation jumped to 2.7% in September. Households are cutting back (spending −3.1% on a year), while big manufacturers are confident (Tankan +24). Next: BoJ 30 Oct.",
-  "CAD": "The Bank of Canada has held at 2.25% for six meetings while others raise rates. Underlying inflation is near target (median 2.0%, trimmed 1.9%), even though headline inflation is 3.0% because of petrol. Jobs are going fast: 68,300 lost in September after 41,700 in August, and unemployment is 6.5%. High oil prices help Canada’s exports (trade surplus C$4.2bn). Next: CPI 19 Oct, federal budget 27 Oct, BoC 28 Oct.",
-  "AUD": "The RBA raised rates to 4.60% on 29 September and said it could go further, with inflation at 4.0% and households expecting 5.3%. But the economy is softening: 39,300 jobs lost in September, unemployment up to 4.7%, household spending flat and business confidence negative (NAB −13). Australian data have mostly missed forecasts this month. China, Australia’s biggest customer, is slowing (4.3% growth) with weak shoppers. Next: September CPI 28 Oct.",
-  "NZD": "The RBNZ has raised rates twice, to 2.75%, after inflation hit 4.1% in Q2 on petrol and diesel. In September it said further rises would come at a more measured pace, and NZD fell. The economy is weak: GDP +0.2% in Q2, unemployment 5.6%, retail volumes down and a wide trade deficit (NZ$1.97bn in September). Next: Q3 CPI 21 Oct (UK evening), RBNZ 28 Oct.",
-  "CHF": "Switzerland is the outlier: inflation is only 0.8% (August), and the SNB holds at 0% and stands ready to sell francs if needed. The franc is a safe haven that tends to gain when global worries rise. The economy is strong: GDP jumped 1.5% in Q2 (1.9% including big sporting events), factories are still expanding (PMI 55.3), shoppers are spending (retail +3.2% on a year) and unemployment is low at 3.1%.",
-  "CNY": "China is shown because it drives AUD, NZD and commodity demand. Growth slowed to 4.3% in Q2, shoppers are weak (retail sales +0.4% on a year) and inflation is low (0.9%), while exports are strong (trade surplus $133.5bn in September). Factory surveys sit just above 50."
+  "USD": "Inflation is running at 3.7% and producer prices jumped in September, so the Fed, which raised rates to 3.75–4.00% in September, is expected to raise again in December (all 100 economists in a Reuters poll agree), though probably not on 28 October. Hiring has slowed sharply (only 29,000 jobs in September, unemployment 4.2%) and housing starts fell 5.2%, yet shoppers keep spending (retail sales +0.8%) and sentiment edged up to 48.0. The 10-year yield is near 5%, about 2.6% after inflation. Next: Fed 28 Oct, Q3 GDP (3.2% expected) and the Fed’s preferred inflation measure (core PCE) 29 Oct, wage costs 30 Oct, October jobs report 6 Nov.",
+  "EUR": "Euro-area inflation is 3.8%, the highest in three years, but only 2.5% without food and energy, so the energy shock has not yet spread widely. The ECB has raised its deposit rate twice to 2.50%. The mood is souring: October business surveys slipped (services 51.7 from 53.0, factories 52.4), investor mood (ZEW) fell to 18.5 from 25.8 and consumer confidence dropped to −18. The trade balance has swung into deficit (−€6.8bn) as energy imports cost more. Unemployment is steady at 6.4%. Next: ECB 29 Oct (a hold is expected), German inflation, euro-area Q3 GDP and unemployment 30 Oct.",
+  "GBP": "Inflation jumped to 3.5% in September, above the 3.4% expected, as petrol and diesel prices rose almost 30% on a year. Core inflation is 2.8% and services 3.7%. The Bank of England held at 3.75% in September with three members voting for 4%, and markets now see a rise on 5 November as very likely. Activity is mixed: business surveys jumped (services 53.1) and unemployment fell to 4.7%, but pay growth is cooling (3.7%), retail sales fell 0.4% and consumer confidence slumped to −24, a six-month low, on fuel bills and tax worries. Next: Autumn Budget 28 Oct, Bank of England 5 Nov.",
+  "JPY": "The Bank of Japan raised rates to 1.25% on 18 September, the highest since 1995, and Governor Ueda says more rises are coming, but markets expect it to wait until after 30 October. National core inflation rose to 2.1% in September, above the 2% target for the first time in nine months, and Tokyo’s early reading is 2.7%. Households are still cutting back (spending −3.1% on a year) and dearer energy has pushed the trade balance to a deficit (−¥0.70tn). The interest-rate gap still favours the dollar (USD/JPY around 158). Next: Tokyo inflation and jobs 29 Oct (UK evening), BoJ with new forecasts 30 Oct.",
+  "CAD": "Headline inflation rose to 3.1% in September, driven by petrol (+27.8% on a year), but underlying measures eased (median 1.9%, trimmed 1.8%) and grocery inflation slowed to 1.7%. The Bank of Canada has held at 2.25% all year, and the 28 October decision is seen as a close call: oil keeps inflation high while jobs are disappearing (68,300 lost in September, unemployment 6.5%). Shoppers held up in August (retail sales +1.2%), and high oil prices help Canada’s exports (trade surplus C$4.2bn). Next: Bank of Canada with new forecasts 28 Oct, GDP 30 Oct, federal budget 5 Nov.",
+  "AUD": "The RBA raised rates to 4.60% on 29 September and said it could go further, with inflation at 4.0% and households expecting 5.3%. Markets now see the 3 November decision as close to a coin flip, so this week’s inflation figure matters a lot. The economy is softening: 39,300 jobs lost in September, unemployment up to 4.7%, household spending flat and business confidence negative (NAB −13). China, Australia’s biggest customer, grew a little faster in Q3 (4.5%), which helps. Next: September CPI 28 Oct (4.2% expected), RBA 3 Nov.",
+  "NZD": "Inflation eased to 3.7% in the year to September, from 4.1%, below the 3.8% expected and the RBNZ’s own 3.9% forecast, because petrol fell 6.5% during the quarter. It is still above the 1–3% target band, core inflation is 2.9% and price rises are spreading across more items. The RBNZ has raised rates twice to 2.75%, and a rise to 3.00% on 28 October was widely expected before the data; the softer figure gives it room to wait. The economy is weak (GDP +0.2% in Q2, unemployment 5.6%, trade deficit NZ$1.97bn in September). Next: RBNZ 28 Oct (UK 01:00), ANZ business confidence 29 Oct.",
+  "CHF": "Switzerland is the outlier: inflation is only 1.0% (September, a two-year high on heating oil and fuel), and the SNB holds at 0% and stands ready to sell francs if needed. The franc is a safe haven that tends to gain when global worries rise. The economy is strong: GDP jumped 1.5% in Q2 (1.9% including big sporting events), factories are still expanding (PMI 55.3), shoppers are spending (retail +3.2% on a year) and unemployment is low at 3.1%. Next: no big Swiss releases on the calendar in the coming week; the next SNB decision is in December.",
+  "CNY": "China is shown because it drives AUD, NZD and commodity demand. Growth picked up to 4.5% on a year in Q3, from 4.3%, beating forecasts and meeting the 4.5–5% target, thanks mostly to exports (trade surplus $133.5bn in September). Factory output rose 5.5%, but home demand is weak: retail sales grew only 1.1% and investment is down 7.2% so far this year as the property slump continues. Inflation is low (0.9%) and lending rates were left at 3.00%. Next: official factory and services surveys 31 Oct."
  },
  "commodities": {
   "oil": {
@@ -106,7 +110,7 @@
     "Brent"
    ],
    "what": "The price of crude oil. Brent is the global benchmark, WTI the US one.",
-   "now": "Up about 17% in six months. The Middle East conflict is the main driver: tanker attacks near Oman and the Strait of Hormuz and strikes on Saudi targets in early October raised fears for supply. Any easing, or more output from OPEC+, would pull prices back.",
+   "now": "Brent is up about 11% in six months and WTI about 7%, and Brent hit $113 on 22 Oct, its highest close since early May. The Middle East conflict is the driver: Houthi strikes on Saudi energy sites, Iranian claims of attacks on tankers in the Gulf and Saudi limits on fuel exports. Any easing, or more output from OPEC+, would pull prices back.",
    "links": "High oil helps oil exporters (CAD) and hurts importers (JPY, EUR). It feeds straight into inflation, which is why central banks have turned to raising rates."
   },
   "gold": {
@@ -118,7 +122,7 @@
     "XAU"
    ],
    "what": "Gold priced in US dollars. It pays no interest, so it competes with what investors can earn elsewhere.",
-   "now": "Down about 15% in six months. Rising real interest rates (the US 10-year yield after inflation is near a multi-year high) and a firmer dollar are the headwinds. Central banks buying record amounts (288.9 tonnes in Q2) and safe-haven demand during the conflict are the support.",
+   "now": "Down about 15% in six months, and briefly below $4,000 on 23 Oct, its lowest since early August. Higher oil feeds inflation worries and bets on more Fed rate rises, which keeps real interest rates high (US 10-year after inflation near 2.6%). Central banks buying record amounts (288.9 tonnes in Q2) and safe-haven demand during the conflict are the support.",
    "links": "Gold tends to rise when real yields fall, the dollar weakens or fear spikes. It often moves with CHF and JPY as a safe haven, and with AUD, since Australia is a big producer."
   },
   "silver": {
@@ -130,7 +134,7 @@
     "XAG"
    ],
    "what": "Half precious metal, half industrial metal (solar panels, electronics), so it swings more than gold.",
-   "now": "Down about 30% in six months, roughly double gold’s fall: the same rate headwind, plus worries about factory demand as growth slows.",
+   "now": "Down about 30% in six months, roughly double gold’s fall, with another drop of about 3.6% on 23 Oct: the same rate headwind, plus worries about factory demand as growth slows.",
    "links": "Follows gold in direction but with bigger swings; weaker Chinese industry weighs on it."
   }
  }
