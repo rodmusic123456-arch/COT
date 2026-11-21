@@ -232,7 +232,6 @@ function build(opts) {
     watch: toObjects(['Item', 'Kind', 'Score', 'Direction', 'Reasons', 'Reason Count', 'Primary Reason'], out.watch),
     hist: hist,
     cot: cot.loadRecentReports(183),
-    scorecard: score,
     hasBacktest: !!backtest,
     stamp: stamp,
     serverTime: isoNow
@@ -255,12 +254,13 @@ function build(opts) {
   if (opts.write !== false) {
     writeJSON(path.join(cfg.DOCS_DIR, 'data.json'), payload);
     scorecard.save(callStore);
+    writeJSON(path.join(cfg.DOCS_DIR, 'scorecard.json'), score);
     if (macroOut) writeJSON(path.join(cfg.DOCS_DIR, 'macro.json'), macroOut);
     writeJSON(path.join(cfg.DOCS_DIR, 'stamp.json'), { stamp: stamp });
     if (backtest) writeJSON(path.join(cfg.DOCS_DIR, 'backtest.json'), backtest);
   }
 
-  return { payload: payload, backtest: backtest, check: check, macro: macroOut };
+  return { payload: payload, backtest: backtest, check: check, macro: macroOut, scorecard: score };
 }
 
 module.exports = { build, buildBacktest, validate, toObjects };

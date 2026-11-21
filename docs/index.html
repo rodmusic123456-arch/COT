@@ -188,7 +188,8 @@ details.mhow{margin-bottom:8px;font-size:12px}details.mhow summary{cursor:pointe
 .scchip{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:5px 9px;font-size:12px;cursor:pointer}
 .scchip:hover{border-color:var(--acc)}
 .panel h3.pos{color:#58c26d}.panel h3.neg{color:#f0624d}
-.scnews li{align-items:center}.scnews .mtag{margin:0 4px}
+.scnews li{align-items:center}
+.scctl{display:grid;gap:8px;margin-bottom:12px}.scctl .grp label{min-width:62px}.scctl select{padding:4px 6px}.scnews .mtag{margin:0 4px}
 </style>
 </head>
 <body>
@@ -1344,6 +1345,7 @@ function render() {
   on('ip', e => { S.inst = e.target.value; render(); });
   on('hcp', e => { S.pair = e.target.value; render(); });
   on('scw', e => { S.sw = e.target.value; render(); });
+  if (S.page === 'score' && window.ScoreView) ScoreView.after();
   on('mpp', e => { S.pair = e.target.value; S.mev = null; render(); });
   const gq = $('gq'); if (gq) gq.oninput = e => { S.gq = e.target.value; const pos = e.target.selectionStart; render(); const n = $('gq'); n.focus(); n.setSelectionRange(pos, pos); };
   if (S.page === 'hist') afterHist();

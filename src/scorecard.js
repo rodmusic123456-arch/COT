@@ -21,7 +21,7 @@ const E = require('./engine');
 const { readJSON, writeJSON } = require('./util');
 
 const FILE = path.join(cfg.DATA_DIR, 'calls.json');
-const WEEKS = 26;
+const WEEKS = Infinity; // every week with enough history (COT from 2021, so calls from early 2022)
 
 const leg = c => (c === 'USD' ? 'Dollar Index' : c);
 
@@ -38,6 +38,7 @@ function rebuildCalls(histories, weeks) {
       const i = d.findIndex(r => r.dateKey === wk);
       if (i >= E.BACKTEST_WARMUP_WEEKS) m[n] = E.computeCOTMetricsAt(d, i);
     });
+    if (Object.keys(m).length < names.length) return; // not enough history yet for every market
     const calls = [];
     E.PAIR_LIST.forEach(function (p) {
       const a = m[leg(p[1])], b = m[leg(p[2])];
@@ -54,11 +55,10 @@ function rebuildCalls(histories, weeks) {
 function recordCalls(store, fresh, nowIso) {
   store.weeks = store.weeks || {};
   let added = 0;
-  const keys = Object.keys(fresh).sort(), newest = keys[keys.length - 1];
-  keys.forEach(function (wk) {
+  Object.keys(fresh).sort().forEach(function (wk) {
     if (store.weeks[wk]) return;
     // When recording starts, older weeks are rebuilt from history; from then on each week is recorded as it happens.
-    store.weeks[wk] = { calls: fresh[wk], recorded: nowIso, rebuilt: !store.started && wk !== newest };
+    store.weeks[wk] = { calls: fresh[wk], recorded: nowIso };
     added++;
   });
   if (!store.started) store.started = nowIso;
@@ -113,9 +113,16 @@ function newsTilt(pair, dir, news) {
   return t * dir;
 }
 
+// A week counts as recorded live when its calls were saved within six days of the Friday release;
+// anything saved later was rebuilt from history (same rules, only the data available at the time).
+function isRebuilt(wk, recorded) {
+  if (!recorded) return true;
+  return Date.parse(recorded) > (E.cotDayNumber(wk) + 3 + 6) * 86400000;
+}
+
 function buildScorecard(store, priceStore, now, events) {
   const nowS = Math.floor(now.getTime() / 1000);
-  const weeks = Object.keys(store.weeks || {}).sort().slice(-WEEKS);
+  const weeks = Object.keys(store.weeks || {}).sort();
   const out = { asOf: now.toISOString(), neutral: E.PAIR_BIAS_THRESHOLD, strong: E.COT_DASH_STRONG, started: store.started || null, weeks: [] };
   weeks.forEach(function (wk) {
     const rec = store.weeks[wk];
@@ -132,7 +139,7 @@ function buildScorecard(store, priceStore, now, events) {
     const status = st.indexOf('final') >= 0 ? 'final' : st.indexOf('running') >= 0 ? 'running' : 'pending';
     const news = weekNews(events, wk);
     calls.forEach(function (c) { c.push(newsTilt(c[0], c[2], news)); });
-    out.weeks.push({ week: wk, release: E.cotDayToKey(E.cotDayNumber(wk) + 3), rebuilt: !!rec.rebuilt, status: status, calls: calls, news: news });
+    out.weeks.push({ week: wk, release: E.cotDayToKey(E.cotDayNumber(wk) + 3), rebuilt: isRebuilt(wk, rec.recorded), status: status, calls: calls, news: news });
   });
   return out;
 }
@@ -140,4 +147,4 @@ function buildScorecard(store, priceStore, now, events) {
 function load() { return readJSON(FILE, { weeks: {} }); }
 function save(store) { writeJSON(FILE, store); }
 
-module.exports = { weekNews, newsTilt, rebuildCalls, recordCalls, buildScorecard, outcome, latest, load, save, FILE, WEEKS };
+module.exports = { isRebuilt, weekNews, newsTilt, rebuildCalls, recordCalls, buildScorecard, outcome, latest, load, save, FILE, WEEKS };

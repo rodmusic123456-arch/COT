@@ -16,14 +16,14 @@ function series(from, vals) {
   return { d: d, c: vals.slice() };
 }
 
-test('recorded calls are never rewritten, and only the first seed is marked rebuilt', function () {
+test('recorded calls are never rewritten; weeks saved long after release count as rebuilt', function () {
   const store = { weeks: {} };
   sc.recordCalls(store, { '2026-11-03': [['EUR/USD', -30]], '2026-11-10': [['EUR/USD', -40]] }, '2026-11-12T00:00:00Z');
-  assert.equal(store.weeks['2026-11-03'].rebuilt, true);
-  assert.equal(store.weeks['2026-11-10'].rebuilt, false);
+  assert.equal(sc.isRebuilt('2026-11-03', '2026-11-13T00:00:00Z'), true);  // saved a week after the 6 Nov release
+  assert.equal(sc.isRebuilt('2026-11-10', '2026-11-14T00:00:00Z'), false); // saved the day after release
   sc.recordCalls(store, { '2026-11-10': [['EUR/USD', 55]], '2026-11-17': [['GBP/USD', 25]] }, '2026-11-19T00:00:00Z');
   assert.deepEqual(store.weeks['2026-11-10'].calls, [['EUR/USD', -40]]);
-  assert.equal(store.weeks['2026-11-17'].rebuilt, false);
+
 });
 
 test('a call is tracked from the first price after the Friday release to one week later', function () {
