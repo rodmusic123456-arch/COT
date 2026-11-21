@@ -34,9 +34,10 @@
       '<td><span class="' + (c[2] > 0 ? 'pos' : 'neg') + '">' + (c[2] > 0 ? '▲ Up (bullish)' : '▼ Down (bearish)') + '</span></td>' +
       '<td class="scn"><b style="color:' + col(c[1]) + '">' + sgn(c[1]) + '</b></td>' +
       '<td class="scn">' + pct(c[5]) + '</td>' +
-      '<td class="scn"><b class="' + (fav > 0 ? 'pos' : fav < 0 ? 'neg' : '') + '">' + pct(fav) + '</b></td></tr>';
+      '<td class="scn"><b class="' + (fav > 0 ? 'pos' : fav < 0 ? 'neg' : '') + '">' + pct(fav) + '</b></td>' +
+      '<td>' + (c[9] > 0 ? '<span class="mcell c-pos" title="More of that week\u2019s big releases favoured this call">\u2714 backed</span>' : c[9] < 0 ? '<span class="mcell c-neg" title="More of that week\u2019s big releases went against this call">\u2718 against</span>' : '<span class="mcell c-mut" title="No clear lean from that week\u2019s big releases">mixed</span>') + '</td></tr>';
   }
-  const callTable = (list, empty) => list.length ? '<div class="sctw"><table><tr><th>PAIR</th><th>CALL</th><th class="scn">COT SCORE</th><th class="scn">PRICE MOVE</th><th class="scn">FOR THE CALL</th></tr>' + list.map(callRow).join('') + '</table></div>' : '<div class="mut small">' + empty + '</div>';
+  const callTable = (list, empty) => list.length ? '<div class="sctw"><table><tr><th>PAIR</th><th>CALL</th><th class="scn">COT SCORE</th><th class="scn">PRICE MOVE</th><th class="scn">FOR THE CALL</th><th>NEWS</th></tr>' + list.map(callRow).join('') + '</table></div>' : '<div class="mut small">' + empty + '</div>';
 
   function kpi(v, l, c, sub) { return '<div class="kpi"><div class="v"' + (c ? ' style="color:' + c + '"' : '') + '>' + v + '</div><div class="l">' + l + '</div>' + (sub ? '<div class="small mut">' + sub + '</div>' : '') + '</div>'; }
 
@@ -52,7 +53,29 @@
       kpi(ss.n ? ss.won + ' / ' + ss.n : '–', 'STRONG CALLS THAT WORKED', ss.n ? hitCol(ss.hit) : null, 'score beyond ±' + SC().strong) + '</div>' +
       (running ? '<div class="note">This week is still running: moves are measured to the latest price and will change until Friday’s close.</div>' : '') +
       '<div class="row r2" style="margin-top:12px"><div><h3 class="pos">✔ Went as foreseen (' + s.won + ')</h3>' + callTable(s.wonList.slice().sort(byFav), 'None.') + '</div>' +
-      '<div><h3 class="neg">✘ Went the other way (' + s.lost + ')</h3>' + callTable(s.lostList.slice().sort(byFav), 'None.') + '</div></div>';
+      '<div><h3 class="neg">\u2718 Went the other way (' + s.lost + ')</h3>' + callTable(s.lostList.slice().sort(byFav), 'None.') + '</div></div>' +
+      newsBlock(w, 'The news that week \u00b7 high-impact releases for these currencies (UK time)', false);
+  }
+
+  const ukT = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+  const bwTag = (n, ccy) => !n[3] ? '<span class="mcell c-mut">' + (n[0] < Date.now() / 1000 ? 'no figure' : 'to come') + '</span>' : !n[4] ? '<span class="mcell c-mut">no forecast</span>' : n[5] === 1 ? '<span class="mcell c-pos">better for ' + ccy + '</span>' : n[5] === 2 ? '<span class="mcell c-neg">worse for ' + ccy + '</span>' : '<span class="mcell c-mut">as expected</span>';
+
+  // The week's big releases for the currencies in its calls.
+  function newsBlock(w, title, upcoming) {
+    const ccys = {};
+    w.calls.forEach(c => c[0].split('/').forEach(x => { ccys[x] = 1; }));
+    const list = (w.news || []).filter(n => ccys[n[1]]);
+    if (!list.length) return '<h3>' + title + '</h3><div class="mut small">No high-impact releases for these currencies in that window.</div>';
+    const rows = list.map(n => '<li' + (upcoming ? ' class="mlink" data-mev="' + esc(n[0] + '|' + n[1] + '|' + n[2]) + '" data-mgo="1" title="Open the breakdown in Macro & News"' : '') + '><span><span class="mut">' + ukT.format(new Date(n[0] * 1000)) + '</span> <span class="mtag">' + esc(n[1]) + '</span> ' + esc(n[2]) +
+      (n[3] ? ' <b>' + esc(n[3]) + '</b> <span class="mut">vs ' + esc(n[4] || '\u2013') + '</span>' : n[4] ? ' <span class="mut">forecast ' + esc(n[4]) + '</span>' : '') + '</span>' + bwTag(n, n[1]) + '</li>').join('');
+    let read = '';
+    if (!upcoming) {
+      const s = stats(w);
+      const wb = s.wonList.filter(c => c[9] > 0).length, la = s.lostList.filter(c => c[9] < 0).length;
+      read = '<div class="small msoft" style="margin-bottom:6px">Of the ' + s.won + ' calls that worked, <b>' + wb + '</b> had the week\u2019s news behind them. Of the ' + s.lost + ' that went the other way, <b>' + la + '</b> had the news against them' +
+        (s.lost && la / s.lost >= 0.5 ? ', so surprises in the data explain much of the miss.' : s.lost ? ', so most misses were not down to the scheduled data.' : '.') + '</div>';
+    }
+    return '<h3>' + title + '</h3>' + read + '<ul class="l scnews">' + rows + '</ul>';
   }
 
   function history() {
@@ -84,7 +107,7 @@
     const pending = all.filter(w => w.status === 'pending').pop();
     const running = all.filter(w => w.status === 'running').pop();
     const upcoming = pending ? '<div class="panel"><h2>Calls for the coming week · ' + esc(weekLabel(pending)) + '</h2><div class="small mut" style="margin-bottom:8px">Picked from the latest COT report. Tracking starts with the first price after the release; check back next weekend for the result.</div><div class="scchips">' +
-      pending.calls.slice().sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).map(c => '<span class="scchip click" data-go="pair:' + esc(c[0]) + '"><b>' + esc(c[0]) + '</b> <span class="' + (c[2] > 0 ? 'pos' : 'neg') + '">' + (c[2] > 0 ? '▲' : '▼') + '</span> <b style="color:' + col(c[1]) + '">' + sgn(c[1]) + '</b></span>').join('') + '</div></div>' : '';
+      pending.calls.slice().sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).map(c => '<span class="scchip click" data-go="pair:' + esc(c[0]) + '"><b>' + esc(c[0]) + '</b> <span class="' + (c[2] > 0 ? 'pos' : 'neg') + '">' + (c[2] > 0 ? '▲' : '▼') + '</span> <b style="color:' + col(c[1]) + '">' + sgn(c[1]) + '</b></span>').join('') + '</div>' + newsBlock(pending, 'News that could move these calls \u00b7 click for the breakdown', true) + '</div>' : '';
     const opts = all.slice().reverse().filter(w => w.status !== 'pending').map(w => '<option value="' + esc(w.week) + '"' + (w.week === sel.week ? ' selected' : '') + '>' + esc(weekLabel(w)) + (w.status === 'running' ? ' (running)' : '') + '</option>').join('');
     return '<div class="panel"><h2>Scorecard · did the calls work out?</h2>' +
       '<div class="chp"><label for="scw">WEEK</label><select id="scw">' + opts + '</select>' + (running && running.week !== sel.week ? '<button class="btn" data-sw="' + esc(running.week) + '">THIS WEEK SO FAR</button>' : '') + '</div>' +

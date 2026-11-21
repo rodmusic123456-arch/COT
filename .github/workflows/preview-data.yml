@@ -1,0 +1,24 @@
+# TEMPORARY (scorecard branch only): fetch fresh data with the price fix so the preview shows real numbers.
+# It never deploys the live site. Removed before the branch is merged.
+name: Preview data (scorecard branch)
+on:
+  push:
+    branches: [scorecard]
+    paths: ['.github/workflows/preview-data.yml']
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/update.js
+      - run: npm test
+      - run: |
+          git config user.name "cot-dashboard-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data docs
+          git commit -m "Preview data refresh $(date -u +%FT%H:%MZ)" || echo "nothing to commit"
+          git push

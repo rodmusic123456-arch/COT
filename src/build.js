@@ -216,7 +216,7 @@ function build(opts) {
   // Weekly calls and how they played out (recorded once, never rewritten).
   const callStore = scorecard.load();
   scorecard.recordCalls(callStore, scorecard.rebuildCalls(histories, scorecard.WEEKS), isoNow);
-  const score = scorecard.buildScorecard(callStore, readJSON(prices.FILE, {}), now);
+  const score = scorecard.buildScorecard(callStore, readJSON(prices.FILE, {}), now, calendar.loadEvents());
 
   const payload = {
     cfg: {

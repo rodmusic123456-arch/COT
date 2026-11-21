@@ -64,3 +64,18 @@ test('price revisions are taken instead of freezing the series; broken data is s
   assert.equal(o.status, 'MISMATCH');
   assert.equal(s.c[3], 1.15);
 });
+
+test('news in the tracking window is attached and scored for or against each call', function () {
+  const t = d => Date.UTC(2026, 10, d, 13, 30) / 1000;
+  const events = [
+    { c: 'USD', n: 'CPI y/y', t: t(10), imp: 'h', a: '3.9%', f: '3.7%', bw: 1 },   // inside 6-13 Nov window
+    { c: 'AUD', n: 'Employment Change', t: t(12), imp: 'h', a: '-5K', f: '20K', bw: 2 },
+    { c: 'USD', n: 'Retail Sales m/m', t: t(3), imp: 'h', a: '1%', f: '0.5%', bw: 1 }, // before the window
+    { c: 'GBP', n: 'CPI y/y', t: t(11), imp: 'm', a: '3%', f: '3%', bw: 0 }            // medium impact: left out
+  ];
+  const news = sc.weekNews(events, '2026-11-03');
+  assert.deepEqual(news.map(n => n[2]), ['CPI y/y', 'Employment Change']);
+  assert.equal(sc.newsTilt('AUD/USD', -1, news), 2);  // bearish AUD/USD: strong USD data and weak AUD data both backed it
+  assert.equal(sc.newsTilt('AUD/USD', 1, news), -2);
+  assert.equal(sc.newsTilt('EUR/GBP', 1, news), 0);
+});

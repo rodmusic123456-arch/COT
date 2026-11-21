@@ -91,7 +91,29 @@ function outcome(s, wk, nowS) {
   return { status: nowS > windowEnd ? 'final' : 'running', entry: entry, exit: L.p, entryD: s.d[ei], exitD: L.live ? new Date(L.t * 1000).toISOString().slice(0, 16) + 'Z' : L.d };
 }
 
-function buildScorecard(store, priceStore, now) {
+const CCYS = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'NZD', 'CHF'];
+
+// High-impact releases inside a week's tracking window (Friday release to the following Friday close).
+// bw: 1 = better than forecast for that currency, 2 = worse, 0 = as expected / no forecast.
+function weekNews(events, wk) {
+  const from = (E.cotDayNumber(wk) + 3) * 86400 + 21 * 3600, to = (E.cotDayNumber(wk) + 10) * 86400 + 21 * 3600;
+  return (events || []).filter(e => e.imp === 'h' && CCYS.indexOf(e.c) >= 0 && e.t >= from && e.t < to)
+    .map(e => [e.t, e.c, e.n, e.a || '', e.f || '', e.bw || 0]);
+}
+
+// Did the week's news favour the call? Better data for the base currency (or worse for the quote) favours a rise.
+function newsTilt(pair, dir, news) {
+  const p = pair.split('/');
+  let t = 0;
+  news.forEach(function (n) {
+    const v = n[5] === 1 ? 1 : n[5] === 2 ? -1 : 0;
+    if (n[1] === p[0]) t += v;
+    if (n[1] === p[1]) t -= v;
+  });
+  return t * dir;
+}
+
+function buildScorecard(store, priceStore, now, events) {
   const nowS = Math.floor(now.getTime() / 1000);
   const weeks = Object.keys(store.weeks || {}).sort().slice(-WEEKS);
   const out = { asOf: now.toISOString(), neutral: E.PAIR_BIAS_THRESHOLD, strong: E.COT_DASH_STRONG, started: store.started || null, weeks: [] };
@@ -108,7 +130,9 @@ function buildScorecard(store, priceStore, now) {
     // All pairs share the same window, so the week is final once any pair is.
     const st = calls.map(c => c[8]);
     const status = st.indexOf('final') >= 0 ? 'final' : st.indexOf('running') >= 0 ? 'running' : 'pending';
-    out.weeks.push({ week: wk, release: E.cotDayToKey(E.cotDayNumber(wk) + 3), rebuilt: !!rec.rebuilt, status: status, calls: calls });
+    const news = weekNews(events, wk);
+    calls.forEach(function (c) { c.push(newsTilt(c[0], c[2], news)); });
+    out.weeks.push({ week: wk, release: E.cotDayToKey(E.cotDayNumber(wk) + 3), rebuilt: !!rec.rebuilt, status: status, calls: calls, news: news });
   });
   return out;
 }
@@ -116,4 +140,4 @@ function buildScorecard(store, priceStore, now) {
 function load() { return readJSON(FILE, { weeks: {} }); }
 function save(store) { writeJSON(FILE, store); }
 
-module.exports = { rebuildCalls, recordCalls, buildScorecard, outcome, latest, load, save, FILE, WEEKS };
+module.exports = { weekNews, newsTilt, rebuildCalls, recordCalls, buildScorecard, outcome, latest, load, save, FILE, WEEKS };
