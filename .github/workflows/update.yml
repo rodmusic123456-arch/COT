@@ -18,6 +18,7 @@ on:
       - 'docs/index.html'
       - 'docs/data-loader.js'
       - 'docs/macro-view.js'
+      - 'docs/scorecard-view.js'
       - 'data/macro_notes.json'
       - 'src/**'
       - 'scripts/**'

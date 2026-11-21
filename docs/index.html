@@ -177,6 +177,17 @@ details.ib p{margin-top:8px}
 .mlink{cursor:pointer}.mlink:hover{background:#1a2432}
 details.mhow{margin-bottom:8px;font-size:12px}details.mhow summary{cursor:pointer;color:var(--acc);font-weight:600}details.mhow p{color:#c3cedb;margin:6px 0 0;max-width:110ch}
 @media(max-width:640px){.mev,.mev.wide{grid-template-columns:78px 42px minmax(0,1fr)}.mev .fp{grid-column:3;text-align:left}.mvs{grid-template-columns:1fr}.mvs .mid{display:none}}
+/* ---- Scorecard (scorecard-view.js) ---- */
+.sctw{overflow-x:auto}
+.scn{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.scstrong{font-size:9px;font-weight:700;letter-spacing:.06em;border-radius:3px;padding:1px 5px;background:#22344d;color:#6ea8fe;vertical-align:middle}
+.scbar{display:flex;height:10px;border-radius:3px;overflow:hidden;background:#10161e}
+.scbar i{display:block;height:100%}
+.scsum{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.scchips{display:flex;flex-wrap:wrap;gap:6px}
+.scchip{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:5px 9px;font-size:12px;cursor:pointer}
+.scchip:hover{border-color:var(--acc)}
+.panel h3.pos{color:#58c26d}.panel h3.neg{color:#f0624d}
 </style>
 </head>
 <body>
@@ -194,6 +205,7 @@ details.mhow{margin-bottom:8px;font-size:12px}details.mhow summary{cursor:pointe
 <script src="research.js"></script>
 <script src="data-loader.js"></script>
 <script src="macro-view.js"></script>
+<script src="scorecard-view.js"></script>
 <script>
 window.onerror = function (msg, src, line, col) {
   var m = document.getElementById('page');
@@ -219,11 +231,11 @@ const fDT = s => { if (!s) return 'N/A'; const d = new Date(s); return isNaN(d) 
 const num = v => (v === undefined || v === null || v === '') ? null : Number(v);
 
 let P = null;
-let S = { page: 'home', tf: 'WEEKLY', filter: 'ALL', pair: 'EUR/USD', inst: 'EUR', gq: '', chi: '', mv: 'overview', mc: 'USD', mev: null, mcf: 'ALL' };
+let S = { page: 'home', tf: 'WEEKLY', filter: 'ALL', pair: 'EUR/USD', inst: 'EUR', gq: '', chi: '', mv: 'overview', mc: 'USD', mev: null, mcf: 'ALL', sw: '' };
 const TFS = ['DAILY','WEEKLY','MONTHLY','QUARTERLY','6 MONTH','ANNUAL'];
 const TFL = { 'DAILY':'Daily','WEEKLY':'Weekly','MONTHLY':'Monthly','QUARTERLY':'Quarterly','6 MONTH':'6 Month','ANNUAL':'Annual' };
 const FILTERS = ['ALL','BULLISH','BEARISH','EXTREME','REVERSAL','DIVERGENCE','ACCELERATING','MULTI TF ALIGNED'];
-const PAGES = [['home','MARKET COMMAND CENTRE'],['pair','PAIR ANALYSIS'],['inst','INSTRUMENT ANALYSIS'],['macro','MACRO & NEWS'],['pos','POSITIONING'],['hist','HISTORICAL CONTEXT'],['res','RESEARCH / BACKTEST'],['gloss','GLOSSARY'],['meth','METHODOLOGY']];
+const PAGES = [['home','MARKET COMMAND CENTRE'],['pair','PAIR ANALYSIS'],['inst','INSTRUMENT ANALYSIS'],['macro','MACRO & NEWS'],['score','SCORECARD'],['pos','POSITIONING'],['hist','HISTORICAL CONTEXT'],['res','RESEARCH / BACKTEST'],['gloss','GLOSSARY'],['meth','METHODOLOGY']];
 
 /* ============================== colour scale ============================== */
 /* One scale used everywhere: red -> orange -> grey (neutral zone) -> light green -> green */
@@ -960,6 +972,7 @@ document.addEventListener('click', ev => {
   const t = ev.target;
   if (!t.closest) return;
   if (t.id === 'info' || t.closest('[data-close]')) { closeInfo(); return; }
+  if (window.ScoreView && ScoreView.click(t)) { $('tip').style.display = 'none'; return; }
   if (window.MacroView && MacroView.click(t)) { $('tip').style.display = 'none'; return; }
   const ci = t.closest('[data-chi]');
   if (ci) { S.chi = ci.dataset.chi; render(); return; }
@@ -1125,6 +1138,7 @@ function pHome() {
   const dq = P.status;
   return '<div class="panel"><h2>Market regime \u00b7 ' + TFL[S.tf] + ' \u00b7 hover for a quick read, click for the full explanation</h2><div class="kpis">' + k(bull, 'nBull', 'BULLISH PAIRS') + k(bear, 'nBear', 'BEARISH PAIRS') + k(neu, 'nNeutral', 'NEUTRAL PAIRS') + k(ext, 'nExtreme', 'EXTREME POSITIONING') + k(rev, 'nReversal', 'REVERSAL CONDITIONS') + k(mom, 'nMomentum', 'STRONG MOMENTUM') + k(div, 'nDiverge', 'COT / PRICE DIVERGENCES') + k(P.live.daysSince, 'daysSince', 'DAYS SINCE COT') + '</div></div>' +
     (window.MacroView ? MacroView.homePanels() : '') +
+    (window.ScoreView ? ScoreView.homePanel() : '') +
     '<div class="panel"><h2>Pair heatmap \u00b7 hover for intelligence, click for analysis</h2>' + heatLegend() + hm + '</div>' +
     '<div class="row r2"><div class="panel"><h2>What changed since last COT report</h2>' + chPicker() + (S.chi ? cotHistory(S.chi) : '<ul class="l">' + ch + '</ul>') + '</div><div class="panel"><h2>Markets to watch \u00b7 monitoring only</h2><ul class="l">' + wt + '</ul></div></div>' +
     '<div class="row r2"><div class="panel"><h2>Currency strength</h2><div class="ct">' + ccy.map(tile).join('') + '</div></div><div class="panel"><h2>Commodity strength</h2><div class="ct">' + com.map(tile).join('') + '</div></div></div>' +
@@ -1319,7 +1333,7 @@ function pMeth() {
 function render() {
   if (!P) return;
   chips(); nav(); controls();
-  const pages = { home: pHome, pair: pPair, inst: pInst, macro: () => window.MacroView ? MacroView.page() : '', pos: pPos, hist: pHist, res: pRes, gloss: pGloss, meth: pMeth };
+  const pages = { home: pHome, pair: pPair, inst: pInst, macro: () => window.MacroView ? MacroView.page() : '', score: () => window.ScoreView ? ScoreView.page() : '', pos: pPos, hist: pHist, res: pRes, gloss: pGloss, meth: pMeth };
   try { $('page').innerHTML = pages[S.page](); }
   catch (e) { $('page').innerHTML = '<div class="warn">Render error: ' + esc(e.message) + '</div>'; }
   const on = (id, fn) => { const el = $(id); if (el) el.onchange = fn; };
@@ -1328,6 +1342,7 @@ function render() {
   on('pp', e => { S.pair = e.target.value; render(); });
   on('ip', e => { S.inst = e.target.value; render(); });
   on('hcp', e => { S.pair = e.target.value; render(); });
+  on('scw', e => { S.sw = e.target.value; render(); });
   on('mpp', e => { S.pair = e.target.value; S.mev = null; render(); });
   const gq = $('gq'); if (gq) gq.oninput = e => { S.gq = e.target.value; const pos = e.target.selectionStart; render(); const n = $('gq'); n.focus(); n.setSelectionRange(pos, pos); };
   if (S.page === 'hist') afterHist();

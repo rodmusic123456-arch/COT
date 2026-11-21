@@ -47,16 +47,23 @@ async function fetchYahoo(symbol, startKey) {
     byKey[engine.cotDayToKey(Math.floor((stamps[i] + offset) / 86400))] = c;
   }
 
-  return Object.keys(byKey).sort().map(function (k) { return { d: k, c: byKey[k] }; });
+  const rows = Object.keys(byKey).sort().map(function (k) { return { d: k, c: byKey[k] }; });
+  // The latest quote at the time of the update (e.g. Friday's close when the Friday-night update runs).
+  const m = result.meta || {};
+  if (Number(m.regularMarketPrice) > 0 && Number(m.regularMarketTime) > 0) rows.last = { p: Number(m.regularMarketPrice), t: Number(m.regularMarketTime) };
+  return rows;
 }
 
 // Merge fetched rows into one stored series. Returns { status, added, detail }.
+const MAX_REVISION = 0.15;
+
 function mergeSeries(series, fetched, tolerance, todayKey) {
   const rows = fetched.filter(function (r) { return r.d < todayKey; });
 
   if (rows.length === 0) return { status: 'NO DATA', added: 0, detail: 'source returned no completed days' };
 
   const lastKey = series.d.length ? series.d[series.d.length - 1] : '';
+  let revisedNote = '';
 
   if (lastKey) {
     const old = {};
@@ -68,22 +75,35 @@ function mergeSeries(series, fetched, tolerance, todayKey) {
       compared++;
       worst = Math.max(worst, Math.abs(r.c - old[r.d]) / old[r.d]);
     });
-    if (compared > 0 && worst > tolerance) {
+    // A large gap means the source changed symbol or is broken: keep the stored history.
+    if (compared > 0 && worst > MAX_REVISION) {
       return {
         status: 'MISMATCH', added: 0,
         detail: 'new data differs from stored closes by ' + (worst * 100).toFixed(1) + '% (limit ' +
-          (tolerance * 100).toFixed(0) + '%). Not updated.'
+          (MAX_REVISION * 100).toFixed(0) + '%). Not updated.'
       };
+    }
+    // A smaller gap is a revision (usually a close that was stored while the session was still trading):
+    // take the source's corrected closes for the overlapping days, so the series can never freeze.
+    if (compared > 0 && worst > tolerance) {
+      let revised = 0;
+      rows.forEach(function (r) {
+        const i = series.d.indexOf(r.d);
+        if (i >= 0 && series.c[i] !== r.c) { series.c[i] = r.c; revised++; }
+      });
+      revisedNote = revised + ' recent close(s) corrected by up to ' + (worst * 100).toFixed(1) + '%';
     }
   }
 
   const fresh = rows.filter(function (r) { return !lastKey || r.d > lastKey; });
 
-  if (fresh.length === 0) return { status: 'UP TO DATE', added: 0, detail: 'last close ' + lastKey };
+  if (fetched.last) series.last = fetched.last;
+
+  if (fresh.length === 0) return { status: revisedNote ? 'REVISED' : 'UP TO DATE', added: 0, detail: revisedNote || 'last close ' + lastKey };
 
   fresh.forEach(function (r) { series.d.push(r.d); series.c.push(r.c); });
 
-  return { status: 'UPDATED', added: fresh.length, detail: fresh[0].d + ' to ' + fresh[fresh.length - 1].d };
+  return { status: revisedNote ? 'REVISED' : 'UPDATED', added: fresh.length, detail: fresh[0].d + ' to ' + fresh[fresh.length - 1].d + (revisedNote ? '; ' + revisedNote : '') };
 }
 
 async function updatePrices(log) {

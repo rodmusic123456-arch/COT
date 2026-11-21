@@ -15,6 +15,7 @@ const cot = require('./cot');
 const prices = require('./prices');
 const calendar = require('./calendar');
 const macro = require('./macro');
+const scorecard = require('./scorecard');
 const { writeJSON, readJSON, localKey } = require('./util');
 
 /* ---------- table rows -> objects (empty cells dropped, dates as yyyy-MM-dd) ---------- */
@@ -212,6 +213,11 @@ function build(opts) {
 
   const stamp = status['LAST UPDATED'] + '|' + status['COT DATE'];
 
+  // Weekly calls and how they played out (recorded once, never rewritten).
+  const callStore = scorecard.load();
+  scorecard.recordCalls(callStore, scorecard.rebuildCalls(histories, scorecard.WEEKS), isoNow);
+  const score = scorecard.buildScorecard(callStore, readJSON(prices.FILE, {}), now);
+
   const payload = {
     cfg: {
       neutral: E.PAIR_BIAS_THRESHOLD,
@@ -226,6 +232,7 @@ function build(opts) {
     watch: toObjects(['Item', 'Kind', 'Score', 'Direction', 'Reasons', 'Reason Count', 'Primary Reason'], out.watch),
     hist: hist,
     cot: cot.loadRecentReports(183),
+    scorecard: score,
     hasBacktest: !!backtest,
     stamp: stamp,
     serverTime: isoNow
@@ -247,6 +254,7 @@ function build(opts) {
 
   if (opts.write !== false) {
     writeJSON(path.join(cfg.DOCS_DIR, 'data.json'), payload);
+    scorecard.save(callStore);
     if (macroOut) writeJSON(path.join(cfg.DOCS_DIR, 'macro.json'), macroOut);
     writeJSON(path.join(cfg.DOCS_DIR, 'stamp.json'), { stamp: stamp });
     if (backtest) writeJSON(path.join(cfg.DOCS_DIR, 'backtest.json'), backtest);
