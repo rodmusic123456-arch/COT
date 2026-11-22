@@ -79,3 +79,22 @@ test('news in the tracking window is attached and scored for or against each cal
   assert.equal(sc.newsTilt('AUD/USD', 1, news), -2);
   assert.equal(sc.newsTilt('EUR/GBP', 1, news), 0);
 });
+
+test('momentum fade picks trade against momentum, are added once to older weeks, and are never rewritten', function () {
+  assert.equal(sc.fadeDir(60), -1);
+  assert.equal(sc.fadeDir(-45), 1);
+  const store = { weeks: { '2026-11-03': { calls: [['EUR/USD', -30]], recorded: '2026-11-04T00:00:00Z' } } };
+  sc.recordFade(store, { '2026-11-03': [['GBP/USD', 55]], '2026-11-10': [['EUR/USD', -50]] }, '2026-11-22T00:00:00Z');
+  assert.deepEqual(store.weeks['2026-11-03'].fade, [['GBP/USD', 55]]);
+  assert.equal(store.weeks['2026-11-10'], undefined); // only weeks that have model calls recorded
+  sc.recordFade(store, { '2026-11-03': [['AUD/USD', -70]] }, '2026-11-29T00:00:00Z');
+  assert.deepEqual(store.weeks['2026-11-03'].fade, [['GBP/USD', 55]]);
+
+  const vals = []; for (let i = 0; i < 20; i++) vals.push(100 + i); // price rising
+  const s = series(1, vals);
+  const out = sc.buildScorecard(store, { 'EUR/USD': s, 'GBP/USD': s }, new Date(Date.UTC(2026, 10, 25)));
+  const f = out.weeks[0].fade[0];
+  assert.equal(f[2], -1);          // momentum +55 -> fade is a sell
+  assert.ok(f[5] * f[2] < 0);       // price rose: the fade went the other way
+  assert.equal(out.fadeMomentum, 40);
+});

@@ -25,8 +25,18 @@ const WEEKS = Infinity; // every week with enough history (COT from 2021, so cal
 
 const leg = c => (c === 'USD' ? 'Dollar Index' : c);
 
-// Point-in-time pair scores for the last `weeks` COT reports.
-function rebuildCalls(histories, weeks) {
+/*
+ * Momentum fade (trial list, tracked beside the model's calls; it does not change the model).
+ * Research 2022-2026: when the pair's momentum divergence is beyond +/-FADE_MOMENTUM, the price more often moved
+ * AGAINST the momentum over the next one to two weeks. So a fade pick trades the opposite way to momentum.
+ * FX pairs only (it did not work on oil). Picks are stored as [pair, momentum divergence]; direction = -sign(momentum).
+ */
+const FADE_MOMENTUM = 40;
+const FADE_EXCLUDE = /^(XAU|XAG|WTI|Brent)\//;
+const fadeDir = m => (m > 0 ? -1 : 1);
+
+// Point-in-time model calls and fade picks for the last `weeks` COT reports: { week: { calls, fade } }.
+function rebuildWeeks(histories, weeks) {
   const names = Object.keys(histories);
   if (!names.length) return {};
   const keys = histories[names[0]].map(r => r.dateKey).filter(k => names.every(n => histories[n].some(r => r.dateKey === k)));
@@ -39,15 +49,31 @@ function rebuildCalls(histories, weeks) {
       if (i >= E.BACKTEST_WARMUP_WEEKS) m[n] = E.computeCOTMetricsAt(d, i);
     });
     if (Object.keys(m).length < names.length) return; // not enough history yet for every market
-    const calls = [];
+    const calls = [], fade = [];
     E.PAIR_LIST.forEach(function (p) {
       const a = m[leg(p[1])], b = m[leg(p[2])];
       if (!a || !b) return;
-      const s = E.scoreCOTPair(E.backtestComponent(a), E.backtestComponent(b)).relativeScore;
+      const r = E.scoreCOTPair(E.backtestComponent(a), E.backtestComponent(b));
+      const s = r.relativeScore, mo = r.momentumDivergence;
       if (isFinite(s) && Math.abs(s) >= E.PAIR_BIAS_THRESHOLD) calls.push([p[0], E.cotRound(s, 1)]);
+      if (isFinite(mo) && Math.abs(mo) > FADE_MOMENTUM && !FADE_EXCLUDE.test(p[0])) fade.push([p[0], E.cotRound(mo, 1)]);
     });
-    out[wk] = calls;
+    out[wk] = { calls: calls, fade: fade };
   });
+  return out;
+}
+
+// Model calls only: { week: [[pair, score], ...] }.
+function rebuildCalls(histories, weeks) {
+  const w = rebuildWeeks(histories, weeks), out = {};
+  Object.keys(w).forEach(k => { out[k] = w[k].calls; });
+  return out;
+}
+
+// Fade picks: { week: [[pair, momentum], ...] }.
+function rebuildFade(histories, weeks) {
+  const w = rebuildWeeks(histories, weeks), out = {};
+  Object.keys(w).forEach(k => { out[k] = w[k].fade; });
   return out;
 }
 
@@ -62,6 +88,22 @@ function recordCalls(store, fresh, nowIso) {
     added++;
   });
   if (!store.started) store.started = nowIso;
+  return added;
+}
+
+// Same for the fade list. Weeks recorded before the fade list existed get it once (rebuilt with the same
+// point-in-time data), then it is never changed.
+function recordFade(store, fresh, nowIso) {
+  store.weeks = store.weeks || {};
+  let added = 0;
+  Object.keys(fresh).sort().forEach(function (wk) {
+    const rec = store.weeks[wk];
+    if (!rec || rec.fade) return;
+    rec.fade = fresh[wk];
+    rec.fadeRecorded = nowIso;
+    added++;
+  });
+  if (!store.fadeStarted) store.fadeStarted = nowIso;
   return added;
 }
 
@@ -123,23 +165,26 @@ function isRebuilt(wk, recorded) {
 function buildScorecard(store, priceStore, now, events) {
   const nowS = Math.floor(now.getTime() / 1000);
   const weeks = Object.keys(store.weeks || {}).sort();
-  const out = { asOf: now.toISOString(), neutral: E.PAIR_BIAS_THRESHOLD, strong: E.COT_DASH_STRONG, started: store.started || null, weeks: [] };
+  const out = { asOf: now.toISOString(), neutral: E.PAIR_BIAS_THRESHOLD, strong: E.COT_DASH_STRONG, started: store.started || null,
+    fadeMomentum: FADE_MOMENTUM, fadeStarted: store.fadeStarted || null, weeks: [] };
   weeks.forEach(function (wk) {
     const rec = store.weeks[wk];
-    const calls = rec.calls.map(function (c) {
+    const track = function (c, dir) {
       const s = priceStore[c[0]];
-      const dir = c[1] > 0 ? 1 : -1;
       if (!s || !s.d || s.d.length < 2) return [c[0], c[1], dir, null, null, null, '', '', 'nodata'];
       const o = outcome(s, wk, nowS);
       const move = o.entry ? E.cotRound((o.exit / o.entry - 1) * 100, 3) : null;
       return [c[0], c[1], dir, o.entry || null, o.exit || null, move, o.entryD || '', o.exitD || '', o.status];
-    });
+    };
+    const calls = rec.calls.map(c => track(c, c[1] > 0 ? 1 : -1));
+    const fade = (rec.fade || []).map(c => track(c, fadeDir(c[1])));
     // All pairs share the same window, so the week is final once any pair is.
-    const st = calls.map(c => c[8]);
+    const st = calls.concat(fade).map(c => c[8]);
     const status = st.indexOf('final') >= 0 ? 'final' : st.indexOf('running') >= 0 ? 'running' : 'pending';
     const news = weekNews(events, wk);
     calls.forEach(function (c) { c.push(newsTilt(c[0], c[2], news)); });
-    out.weeks.push({ week: wk, release: E.cotDayToKey(E.cotDayNumber(wk) + 3), rebuilt: isRebuilt(wk, rec.recorded), status: status, calls: calls, news: news });
+    fade.forEach(function (c) { c.push(newsTilt(c[0], c[2], news)); });
+    out.weeks.push({ week: wk, release: E.cotDayToKey(E.cotDayNumber(wk) + 3), rebuilt: isRebuilt(wk, rec.recorded), fadeRebuilt: isRebuilt(wk, rec.fadeRecorded), status: status, calls: calls, fade: fade, news: news });
   });
   return out;
 }
@@ -147,4 +192,4 @@ function buildScorecard(store, priceStore, now, events) {
 function load() { return readJSON(FILE, { weeks: {} }); }
 function save(store) { writeJSON(FILE, store); }
 
-module.exports = { isRebuilt, weekNews, newsTilt, rebuildCalls, recordCalls, buildScorecard, outcome, latest, load, save, FILE, WEEKS };
+module.exports = { FADE_MOMENTUM, fadeDir, isRebuilt, weekNews, newsTilt, rebuildWeeks, rebuildCalls, rebuildFade, recordCalls, recordFade, buildScorecard, outcome, latest, load, save, FILE, WEEKS };
