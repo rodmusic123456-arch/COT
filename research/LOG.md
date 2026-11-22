@@ -52,4 +52,4 @@ Score check: backtest score = 0.5·pos + 0.3·mom + 0.2·acc exactly (mean abs e
 ### 2026-11-22 (later): forward tracker started (Blaze's request)
 - New `research/track.js` + `research/fade_track.json`: each Sunday it freezes the coming week's picks for both lists (current calls vs momentum fade) and scores weeks once their 1w/2w windows close, using data/prices.json daily closes for both (so moves can differ slightly from the scorecard, which uses its own exit stamp).
 - First tracked COT week: 2026-11-17 (trades 23–27 Nov). The 10-week comparison report is due once 10 weeks are scored (around the end of January 2027).
-- Note on this week: the two lists disagree on 6 pairs (AUD/JPY, AUD/CHF, AUD/CAD, NZD/JPY, NZD/CHF, GBP/AUD, GBP/NZD): the current calls follow the selling in AUD/NZD and the fade says buy.
+- Note on this week: the two lists disagree on 7 pairs (AUD/JPY, AUD/CHF, AUD/CAD, NZD/JPY, NZD/CHF, GBP/AUD, GBP/NZD): the current calls follow the selling in AUD/NZD and the fade says buy.
