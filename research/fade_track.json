@@ -1,0 +1,204 @@
+{
+ "started": "2026-11-17",
+ "rules": {
+  "current": "live model call: |pair score| > 20, direction = sign(score)",
+  "fade": "FX pairs only (no XAU/XAG/WTI/Brent), |momentum divergence| > 40, direction = opposite of momentum",
+  "entry": "first close after the Friday release (COT date + 3 days); exit = last close on or before entry + 7 days (1w) / + 14 days (2w)"
+ },
+ "weeks": [
+  {
+   "cot": "2026-11-17",
+   "added": "2026-11-22",
+   "current": [
+    {
+     "pair": "EUR/USD",
+     "dir": -1,
+     "score": -25.9,
+     "mom": 22
+    },
+    {
+     "pair": "AUD/USD",
+     "dir": -1,
+     "score": -40.1,
+     "mom": -32.9
+    },
+    {
+     "pair": "NZD/USD",
+     "dir": -1,
+     "score": -39.3,
+     "mom": -15.1
+    },
+    {
+     "pair": "USD/JPY",
+     "dir": -1,
+     "score": -24.8,
+     "mom": -34.5
+    },
+    {
+     "pair": "EUR/GBP",
+     "dir": -1,
+     "score": -29.9,
+     "mom": -38.2
+    },
+    {
+     "pair": "EUR/JPY",
+     "dir": -1,
+     "score": -50.7,
+     "mom": -12.5
+    },
+    {
+     "pair": "EUR/CHF",
+     "dir": -1,
+     "score": -45,
+     "mom": -36.8
+    },
+    {
+     "pair": "EUR/CAD",
+     "dir": -1,
+     "score": -22.2,
+     "mom": -2.3
+    },
+    {
+     "pair": "GBP/JPY",
+     "dir": -1,
+     "score": -20.9,
+     "mom": 25.7
+    },
+    {
+     "pair": "GBP/AUD",
+     "dir": 1,
+     "score": 44.1,
+     "mom": 93.1
+    },
+    {
+     "pair": "GBP/NZD",
+     "dir": 1,
+     "score": 43.3,
+     "mom": 75.3
+    },
+    {
+     "pair": "AUD/JPY",
+     "dir": -1,
+     "score": -65,
+     "mom": -67.4
+    },
+    {
+     "pair": "AUD/CHF",
+     "dir": -1,
+     "score": -59.3,
+     "mom": -91.8
+    },
+    {
+     "pair": "AUD/CAD",
+     "dir": -1,
+     "score": -36.4,
+     "mom": -57.2
+    },
+    {
+     "pair": "NZD/JPY",
+     "dir": -1,
+     "score": -64.2,
+     "mom": -49.7
+    },
+    {
+     "pair": "NZD/CHF",
+     "dir": -1,
+     "score": -58.4,
+     "mom": -74
+    },
+    {
+     "pair": "NZD/CAD",
+     "dir": -1,
+     "score": -35.6,
+     "mom": -39.5
+    },
+    {
+     "pair": "CAD/JPY",
+     "dir": -1,
+     "score": -28.6,
+     "mom": -10.2
+    },
+    {
+     "pair": "CAD/CHF",
+     "dir": -1,
+     "score": -22.9,
+     "mom": -34.5
+    },
+    {
+     "pair": "XAU/USD",
+     "dir": -1,
+     "score": -24,
+     "mom": -14.8
+    },
+    {
+     "pair": "WTI/USD",
+     "dir": -1,
+     "score": -26.3,
+     "mom": 2.6
+    }
+   ],
+   "fade": [
+    {
+     "pair": "GBP/USD",
+     "dir": -1,
+     "score": 4,
+     "mom": 60.2
+    },
+    {
+     "pair": "USD/CHF",
+     "dir": 1,
+     "score": -19.1,
+     "mom": -58.9
+    },
+    {
+     "pair": "EUR/AUD",
+     "dir": -1,
+     "score": 14.2,
+     "mom": 54.9
+    },
+    {
+     "pair": "GBP/AUD",
+     "dir": -1,
+     "score": 44.1,
+     "mom": 93.1
+    },
+    {
+     "pair": "GBP/NZD",
+     "dir": -1,
+     "score": 43.3,
+     "mom": 75.3
+    },
+    {
+     "pair": "AUD/JPY",
+     "dir": 1,
+     "score": -65,
+     "mom": -67.4
+    },
+    {
+     "pair": "AUD/CHF",
+     "dir": 1,
+     "score": -59.3,
+     "mom": -91.8
+    },
+    {
+     "pair": "AUD/CAD",
+     "dir": 1,
+     "score": -36.4,
+     "mom": -57.2
+    },
+    {
+     "pair": "NZD/JPY",
+     "dir": 1,
+     "score": -64.2,
+     "mom": -49.7
+    },
+    {
+     "pair": "NZD/CHF",
+     "dir": 1,
+     "score": -58.4,
+     "mom": -74
+    }
+   ]
+  }
+ ]
+}

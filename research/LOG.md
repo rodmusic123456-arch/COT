@@ -48,3 +48,8 @@ Score check: backtest score = 0.5·pos + 0.3·mom + 0.2·acc exactly (mean abs e
 **Recommendation this week:** add a tracked "momentum fade" list (FX only, |mom|>40, trade against momentum, 1–2 week hold) to the scorecard alongside the current calls, without changing the current calls. Review after ~8 more weeks; if it keeps beating, consider replacing the momentum weight with a faded one.
 
 **Still checking next week:** fade-momentum live track (incl. week 2026-11-10 once r1 lands), 4w acceleration fade, news-tilt contrarian effect as weeks accumulate, whether 2025-style regimes can be detected in advance (e.g. trailing 8-week result of current vs fade).
+
+### 2026-11-22 (later): forward tracker started (Blaze's request)
+- New `research/track.js` + `research/fade_track.json`: each Sunday it freezes the coming week's picks for both lists (current calls vs momentum fade) and scores weeks once their 1w/2w windows close, using data/prices.json daily closes for both (so moves can differ slightly from the scorecard, which uses its own exit stamp).
+- First tracked COT week: 2026-11-17 (trades 23–27 Nov). The 10-week comparison report is due once 10 weeks are scored (around the end of January 2027).
+- Note on this week: the two lists disagree on 6 pairs (AUD/JPY, AUD/CHF, AUD/CAD, NZD/JPY, NZD/CHF, GBP/AUD, GBP/NZD): the current calls follow the selling in AUD/NZD and the fade says buy.
