@@ -1,54 +1,54 @@
 {
- "asOf": "2026-11-21",
- "written": "Written 21 Nov 2026. Figures in the tables update automatically; these summaries are refreshed separately.",
+ "asOf": "2026-11-28",
+ "written": "Written 28 Nov 2026. Figures in the tables update automatically; these summaries are refreshed separately.",
  "themes": [
   [
-   "Share markets slump, led by AI and tech",
-   "US shares had their worst week since April 2025. The S&P 500 fell about 8.6% and is now in a “correction” (more than 10% below its peak); the tech-heavy Nasdaq fell about 10% and is now down for the year. Nvidia dropped 14% on Friday after a report that US regulators are examining its accounting, and Taiwan’s market had a record weekly fall. Safe havens such as the yen and US bonds gained."
+   "Shares bounce back after the sell-off",
+   "A week after US shares fell into a “correction”, they had their best week since April 2025. The S&P 500 rose about 5.6% and the tech-heavy Nasdaq about 6.7%, as AI and chip shares recovered. Gold and silver also rebounded. The calmer mood took some pressure off safe havens such as the yen."
   ],
   [
-   "A December Fed rise is now almost fully expected",
-   "Minutes of the Fed’s October meeting showed nearly all officials expect to raise rates in December, and two raised the idea of a bigger half-point move. New York Fed President Williams said there is no need for “dramatic action”. Futures on Friday put a quarter-point rise on 9 Dec at about 94%."
+   "Strong US data keeps a December Fed rise on track",
+   "US growth in July–September was revised up to 4.3% at an annual rate, and the Fed’s preferred core inflation measure (core PCE) rose to 3.3%, the highest in nearly three years. Jobless claims fell to 189,000. Futures put a quarter-point rise on 9 Dec at roughly 95%, and two rises are now fully priced by March 2027."
   ],
   [
-   "The dollar holds at a 19-month high",
-   "The dollar index was near 103.8, its fourth weekly gain. The euro fell below $1.10 for the first time since April 2025 and the pound slipped to about $1.31. The Australian dollar hit its lowest of 2026 (about 66.5 US cents) and the New Zealand dollar its lowest since 2020 (about 55 cents)."
+   "Most central banks still lean towards higher rates",
+   "Bank of England Governor Bailey told MPs further rises are more likely than not if energy prices stay high. ECB minutes showed many members see the case for another rise, and Bank of Japan board member Tamura called for faster rises. Markets put a Bank of Canada rise on 9 Dec at about 77%. Australia is the exception: despite inflation jumping to 4.9%, markets expect the RBA to hold."
   ],
   [
-   "US bond yields ease but real yields stay high",
-   "The US 10-year yield ended the week near 4.92%, down from about 5.1%, as investors moved out of shares into bonds. After allowing for expected inflation, the 10-year “real” yield is still close to 2.9%; a government auction on 19 Nov sold at 2.90%, the highest in 24 years."
+   "The dollar stays near a 19-month high",
+   "The dollar index ended near 104, little changed on the week. The New Zealand dollar fell to about 54.4 US cents on 23 Nov, its lowest since 2009, and the euro dipped to about $1.088. The Canadian dollar recovered about 0.7% to around C$1.425 per US dollar. The dollar stayed just below ¥160, a level where Japan has stepped in before."
   ],
   [
-   "Gold and silver have their worst week since March",
-   "Gold fell about 8.7% to near $3,540 and silver to about $41, both the lowest in over a year. High real yields and a strong dollar hurt metals that pay no interest, and some investors sold them to cover losses on shares."
+   "US bond yields steady; the gap between short and long yields narrows",
+   "The US 10-year yield ended the week near 4.94%, roughly unchanged. The 2-year yield, which tracks expected Fed moves, rose to about 4.72%, so the gap between the two shrank to its narrowest since February. After allowing for expected inflation, the 10-year “real” yield is still high, near 2.8%."
   ],
   [
-   "Oil falls for a third week",
-   "Brent ended at $92.57 (−3.4%) and WTI at $83.98 (−5.2%). Gulf exports are recovering, US crude stocks rose unexpectedly and the IEA now sees supply running ahead of demand. Attacks on ships near Hormuz continue. OPEC+ meets on 29 Nov to set 2027 output."
+   "Oil steadies as attacks revive supply worries",
+   "Brent rose about 3% to $95.44, its first weekly gain in November, while WTI slipped about 1% to $83.08. A projectile hit a Saudi refinery at Jazan on 26 Nov and tankers near Hormuz were attacked. OPEC+ meets on 29 Nov and is expected to keep output targets for early 2027 unchanged."
   ]
  ],
  "cb": {
   "USD": {
    "bank": "Federal Reserve",
    "target": 2,
-   "note": "Held at 3.75–4.00% on 28 Oct; two members (Cook and Hammack) wanted a rise. Minutes published on 18 Nov showed nearly all officials expect a rise in December, and two floated a half-point move; futures put a quarter-point rise on 9 Dec at about 94%.",
+   "note": "Held at 3.75–4.00% on 28 Oct; two members wanted a rise. Since then data has run hot (Q3 growth 4.3% annualised, core PCE inflation 3.3%), and futures put a quarter-point rise to 4.00–4.25% on 9 Dec at roughly 95%.",
    "leaning": "raise"
   },
   "EUR": {
    "bank": "European Central Bank",
    "target": 2,
-   "note": "Held on 29 Oct (deposit rate 2.50%) after two rises this year. Policymakers have said another rise is likely if the data hold, and markets now put a rise on 17 Dec at about 91%, up from about 72% a week earlier.",
+   "note": "Held on 29 Oct (deposit rate 2.50%) after two rises this year. Minutes of that meeting, published 26 Nov, showed many members felt the data backed further tightening, and a rise to 2.75% on 17 Dec is widely expected.",
    "leaning": "raise"
   },
   "GBP": {
    "bank": "Bank of England",
    "target": 2,
-   "note": "Raised to 4.00% on 5 Nov, its first rise since 2023, with all nine members voting to raise (Catherine Mann for 4.25%). Governor Bailey said on 18 Nov that the longer the Middle East conflict keeps energy prices high, the higher rates will need to be; markets put a rise on 17 Dec at about 80%."
+   "note": "Raised to 4.00% on 5 Nov, its first rise since 2023 (Catherine Mann wanted 4.25%). On 25 Nov Governor Bailey told MPs it is “more likely than not” rates must rise further if energy prices do not come down, and Mann said the best response is to raise “more and sooner”; markets put a rise on 17 Dec at about 80%."
   },
   "JPY": {
    "bank": "Bank of Japan",
    "target": 2,
-   "note": "Held at 1.25% on 30 Oct in an 8–1 vote (one member wanted a rise). Governor Ueda told parliament this week the bank should keep raising rates, and board member Takata called for moving quickly; markets put a rise to 1.50% at the 17–18 Dec meeting at roughly 75–85%.",
+   "note": "Held at 1.25% on 30 Oct in an 8–1 vote (one member wanted a rise). Board member Tamura said on 26 Nov the bank must keep raising, possibly faster, as rates are still well below “neutral”; swaps put a rise to 1.50% on 18 Dec at about 80%.",
    "leaning": "raise"
   },
   "CAD": {
@@ -58,12 +58,12 @@
     3.1,
     "Oct"
    ],
-   "note": "Raised to 2.50% on 28 Oct, its first rise since July 2023, as oil pushes inflation up. Deputy Governor Gravelle said on 18 Nov that the high-oil risk has largely come true but gave no hint on December; estimates of the chance of another rise on 9 Dec range from about 40% to 65%."
+   "note": "Raised to 2.50% on 28 Oct, its first rise since July 2023, as oil pushed inflation up. On 24 Nov Governor Macklem said firms plan to pass more costs on to shoppers and that the bank would raise rates if inflation looks set to stay too high for too long; markets put a rise on 9 Dec at about 77%."
   },
   "AUD": {
    "bank": "Reserve Bank of Australia",
    "target": 2.5,
-   "note": "Raised to 4.85% on 3 Nov in a 6–3 vote (three wanted to hold), its fifth rise this year. The minutes showed the three worried about rising unemployment and a sharper downturn; after weak jobs data, markets now expect a hold on 8 Dec and see the next move as a cut."
+   "note": "Raised to 4.85% on 3 Nov in a 6–3 vote (three wanted to hold), its fifth rise this year. October inflation then jumped to 4.9%, but with unemployment at 4.9%, markets still put a hold on 8 Dec at about 97%; some economists see a risk of a rise in February."
   },
   "NZD": {
    "bank": "Reserve Bank of New Zealand",
@@ -72,7 +72,7 @@
     3.7,
     "Q3"
    ],
-   "note": "Surprised markets by holding at 2.75% on 28 Oct in a 4–3 vote (three wanted a rise). Governor Breman said on 19 Nov that fuel costs may be spreading into other prices; markets put a rise on 9 Dec at about 90%.",
+   "note": "Surprised markets by holding at 2.75% on 28 Oct in a 4–3 vote (three wanted a rise). Governor Breman has warned fuel costs may be spreading into other prices, and markets expect a quarter-point rise on 9 Dec.",
    "leaning": "raise"
   },
   "CHF": {
@@ -87,19 +87,19 @@
   "CNY": {
    "bank": "People’s Bank of China",
    "target": 3,
-   "note": "Lending rates unchanged again on 20 Nov (1-year 3.00%, 5-year 3.50%), the 18th month in a row; growth support comes mostly from the government. Factory-gate prices are rising fast (5.7%), so a rate cut looks unlikely; the next rate fixing is in December."
+   "note": "Lending rates unchanged again on 20 Nov (1-year 3.00%, 5-year 3.50%), the 18th month in a row; growth support comes mostly from the government. The central bank set its daily yuan rate at 6.7111 per dollar on 25 Nov, the strongest since April 2022."
   }
  },
  "stories": {
-  "USD": "The Fed is set to raise rates again. Minutes of its October meeting showed nearly all officials expect a December rise, and some want to move faster. Data was mixed. Retail sales rose 0.2% in October (0.1% expected), and 0.6% without cars and petrol. The Philadelphia Fed factory survey fell to 6.3 from 20.9, while its prices-paid index jumped to 58.2. Jobless claims rose to 203,000. Consumer mood improved a little (51.5), and households now expect 3.7% inflation over the next year, down from 4.3%. Shares fell sharply, and the 10-year yield eased to about 4.92%. Next: business surveys (PMIs) 23 Nov, consumer confidence 24 Nov, Q3 GDP, core PCE inflation and jobless claims 25 Nov (UK 13:30), Thanksgiving holiday 26 Nov, November jobs report 4 Dec, Fed decision 9 Dec.",
-  "EUR": "Inflation is high. Final figures confirmed 4.0% in October, the highest in three years, mainly because of energy; core inflation (without food and energy) was revised up to 2.6%. Markets now put the chance of an ECB rise on 17 Dec at about 91%. Investor mood improved: the ZEW survey rose to 26.5 (19.1 expected) and to 35.6 in Germany. Consumer confidence edged up to −16.9. The ECB’s twice-yearly financial stability review warned that high AI share prices, increasingly funded by debt, and heavy government borrowing are key risks. The euro fell below $1.10 for the first time since April 2025, as US rates look set to rise faster. Next: business surveys (PMIs) 23 Nov (UK 08:15–09:00), final consumer confidence 27 Nov, November inflation 1 Dec, ECB decision 17 Dec.",
-  "GBP": "UK inflation rose to 3.6% in October, a one-year high and in line with forecasts. Petrol prices, up 33% on a year, gave the biggest push; core inflation stayed at 2.8% and services inflation at 3.7%. The jobs market is cooling: payrolls fell 34,000 in October, vacancies dropped to 690,000 and regular pay growth slowed to 3.5%, though unemployment fell to 4.6%. Shoppers bounced back, with retail sales up 0.7% in October against no change expected. Governor Bailey said rates may need to go higher if energy stays dear; markets put a 17 Dec rise at about 80%. The pound slipped to about $1.31. Next: business surveys (PMIs) 23 Nov (UK 09:30), Bank officials before MPs 25 Nov, Financial Stability Report 26 Nov, rate decision 17 Dec.",
-  "JPY": "Japan’s economy stalled in Q3. Output was flat on the quarter (−0.1% at an annual rate) as household spending fell 0.3% and exports slipped, while business investment rose 1.6%. Inflation picked up to 2.3% in October; core inflation (without fresh food) was 2.2%, a little below the 2.3% expected. Even so, the Bank of Japan sounds ready to raise rates: Governor Ueda told parliament the bank should keep raising because conditions are still loose, and most economists expect a rise to 1.50% in December. The dollar peaked just under ¥160 on 19 Nov, then the yen strengthened to about ¥158.8 as share markets fell. The finance minister repeated warnings against rapid moves. Next: market holiday 23 Nov, Tokyo inflation 26 Nov (UK 23:30), BoJ decision 18 Dec.",
-  "CAD": "Inflation held at 3.1% in October, a little below the 3.2% expected. Petrol was up 30.9% on a year, but without food and energy prices rose only 1.8%, and rent growth slowed. Shoppers spent 0.8% more in September, mostly at petrol stations, but an early estimate points to a 1.5% fall in October. Governor Macklem said he will not seek a second term and will leave in June 2027. The jobs market is weak (unemployment 6.7%), and views on a December rate rise are split. The Canadian dollar fell to around C$1.43 per US dollar, its weakest since April 2025, as US rates look set to rise faster and oil fell. Next: Macklem speaks 24 Nov, Q3 GDP 30 Nov, November jobs 4 Dec, rate decision 9 Dec.",
-  "AUD": "Australia’s jobs market weakened sharply. Employment fell by 43,500 in October, after a 39,300 fall in September, and unemployment jumped to 4.9%, the highest since 2021. Wages rose 1.1% in the quarter (3.5% on a year), a little faster than expected. Minutes of the RBA’s November meeting showed three of nine members wanted to hold, citing rising unemployment, falling house prices and the risk of a sharper downturn. Markets now expect the RBA to hold on 8 Dec and have started to price rate cuts by late 2027. Inflation was 4.3% in September, well above the 2–3% target. The Australian dollar fell to about 66.5 US cents, its lowest this year. Next: October inflation 25 Nov (UK 00:30), Bullock speaks 1 Dec, Q3 GDP 2 Dec, RBA decision 8 Dec.",
-  "NZD": "New Zealand’s central bank looks set to raise rates. Businesses now expect inflation of 2.92% over the next year, up from 2.60%, and Governor Breman warned on 19 Nov that fuel costs may be feeding into other prices. Markets put a rise on 9 Dec at about 90%. The economy is weak, though: unemployment is 5.7% and jobs fell in the September quarter. October’s trade deficit was NZ$2.8bn, much wider than expected, as imports of fuel and aircraft rose. Inflation is 3.7% (Q3). Coalition talks after the 7 Nov election are in their last stages. The kiwi fell to about 55 US cents, its lowest since 2020. Next: Q3 retail sales 22 Nov (UK 21:45), final election result 27 Nov, RBNZ decision 9 Dec.",
-  "CHF": "Swiss inflation rose to 1.5% in October, the highest since late 2023, mostly because of fuel and heating oil; core inflation stayed low at 0.5%. An early estimate shows the economy grew 0.2% in Q3, and exports rose in October. The SNB keeps its rate at 0% and says it is ready to sell francs if the currency gets too strong, while Chairman Schlegel sees no broad spread of price pressure. Markets expect no change in December. The franc weakened against the dollar this week: the dollar reached about 0.844 francs on 19 Nov, an 18-month high, as US rates look set to rise. The franc is a safe haven, so it can gain when global worries rise. Next: full Q3 GDP 30 Nov, November inflation 2 Dec, SNB decision 10 Dec.",
-  "CNY": "China is shown because it drives AUD, NZD and commodity demand. October data was weak. Retail sales grew just 0.4% on a year (0.8% expected) and factory output 4.8% (5.3% expected). Investment in factories, roads and buildings is down 8.1% so far this year, and property investment is down 21.6%. New home prices fell 2.4% on a year, though that is the smallest drop in almost a year. Unemployment eased to 5.1%. Lending rates were left unchanged for an 18th month (1-year 3.00%), and no new stimulus was announced. Consumer inflation is only 0.7%, but factory-gate prices are up 5.7%. The yuan is strong, near 6.67 per dollar, around its strongest since 2022. Next: industrial profits next week, official business surveys (PMIs) at the end of November."
+  "USD": "The US economy is running hot. Growth in July–September was revised up to 4.3% at an annual rate, from 3.4%. Core PCE inflation, the Fed’s preferred measure (without food and energy), rose to 3.3% in October from 3.1%, the highest in nearly three years. Jobless claims fell to 189,000, well below the 201,000 expected, and new home sales jumped 14.2%. This all supports a Fed rise in December, which futures price at roughly 95%. Shares had their best week since April 2025, and the 10-year yield held near 4.94%. Next: ISM factory survey and job openings 1 Dec (UK 15:00), ISM services 3 Dec, November jobs report 4 Dec (UK 13:30), Fed decision 9 Dec, November inflation 10 Dec.",
+  "EUR": "Inflation is high at 4.0% (October), mainly because of energy; core inflation (without food and energy) was 2.6%. Business surveys held steady in November: the overall PMI stayed at 51.7 (above 50 means growth). Germany grew at its fastest pace in over four and a half years, while France largely stalled. Services were a little weaker than expected (51.2). Minutes of the ECB’s October meeting showed many members felt the data backed more tightening, and a rise on 17 Dec is widely expected. The euro dipped to about $1.088 on 23 Nov, its weakest since April 2025. Spain holds a general election on 29 Nov. Next: German inflation 30 Nov, euro-area inflation 1 Dec (UK 10:00), Lagarde speaks 2 Dec, unemployment 2 Dec, retail sales 4 Dec, ECB decision 17 Dec.",
+  "GBP": "UK inflation is 3.6% (October), pushed up by petrol, and the Bank of England is leaning towards another rise. On 25 Nov Governor Bailey told MPs a further rise is more likely than not if energy prices stay high, and called the economy “more resilient than we expected”. Deputy Governor Lombardelli and Catherine Mann also sounded worried about inflation. Markets put a 17 Dec rise at about 80%. Business surveys showed slightly slower growth in November (services 52.0, below the 53.0 expected). The Bank’s Financial Stability Report (26 Nov) warned that AI firms’ borrowing is “complex, circular and opaque”, and said about 6.5 million households face higher mortgage payments over three years. Next: Bank officials before Parliament 3 Dec (UK 14:15), rate decision 17 Dec.",
+  "JPY": "Prices in Tokyo, an early guide for the whole country, rose faster in November. Core inflation (without fresh food) climbed to 2.9% from 2.6%, the highest since July 2025, though a little below the 3.0% expected. Electricity and gas bills drove much of the rise. National core inflation was 2.2% in October. The economy stalled in Q3 (output flat), but the Bank of Japan sounds ready to raise rates: board member Tamura said on 26 Nov it should keep raising, possibly faster. Swaps put a rise to 1.50% on 18 Dec at about 80%. The dollar stayed just under ¥160, near ¥159, a level where Japan has stepped in to buy yen before. Next: retail sales 29 Nov (UK 23:50), Ueda speaks 30 Nov (UK 01:05), unemployment 30 Nov, BoJ decision 18 Dec.",
+  "CAD": "Inflation is 3.1% (October), driven by petrol, while prices without food and energy rose only 1.8%. On 24 Nov Governor Macklem warned that firms expect to pass more of their higher costs on to shoppers, and said the bank would raise rates if inflation looks set to stay too high for too long. Markets now put a rise on 9 Dec at about 77%, and most big Canadian banks expect one. The economy is slowing: economists expect Q3 growth of about 1.3–1.5% at an annual rate, down from 3.3%, and unemployment is 6.7%. The Canadian dollar hit about C$1.438 per US dollar on 23 Nov, its weakest in 19 months, then recovered to around C$1.425. Next: Q3 GDP 30 Nov (UK 13:30), November jobs 4 Dec, rate decision 9 Dec.",
+  "AUD": "Inflation jumped to 4.9% in October from 4.3%, the highest in three years and above forecasts. Electricity bills rose 25.2% on a year as government rebates ended, and fuel was up about 32%. The RBA’s preferred core measure (trimmed mean) rose to 3.8% from 3.6%. Even so, the jobs market is weak: unemployment is 4.9%, the highest since 2021, after two months of job losses. So markets still put a hold on 8 Dec at about 97%, though some economists now see a risk of a rise in February. Markets still see the next move as a cut, in 2027. The Australian dollar is near 66 US cents, close to its lowest this year. Next: household spending 30 Nov, Bullock speaks 1 Dec (UK 08:15), Q3 GDP 2 Dec (UK 00:30), RBA decision 8 Dec.",
+  "NZD": "Shoppers bounced back strongly: retail sales volumes rose 2.2% in the September quarter, more than four times the 0.5% expected and the strongest since 2021. Inflation is 3.7% (Q3), and markets expect the central bank to raise rates on 9 Dec. Unemployment is high at 5.7%, though. Final results of the 7 Nov election, released on 27 Nov, left Prime Minister Luxon’s three-party coalition with 65 seats, one short of a majority. The centrist Opportunity Party (7 seats) now holds the balance, so coalition talks may take time. The kiwi fell to about 54.4 US cents on 23 Nov, its lowest since 2009, as the US dollar rose. Next: ANZ business confidence 30 Nov (UK 00:00), RBNZ decision 9 Dec.",
+  "CHF": "Swiss inflation rose to 1.5% in October, the highest since late 2023, mostly because of fuel and heating oil; core inflation stayed low at 0.5%. An early estimate shows the economy grew 0.2% in Q3. The SNB keeps its rate at 0% and says it is ready to sell francs if the currency gets too strong, while Chairman Schlegel sees no broad spread of price pressure. Markets expect no change in December. The franc is a safe haven, so it can gain when global worries rise; it has weakened against the dollar this month as US rates look set to rise. Swiss voters go to the polls in referendums on 29 Nov. Next: full Q3 GDP and retail sales 30 Nov, November inflation 2 Dec (UK 07:30), SNB decision 10 Dec.",
+  "CNY": "China is shown because it drives AUD, NZD and commodity demand. Factory profits jumped 20.1% on a year in October, up from 14.4% in September, led by electronics makers riding the AI boom; profits are up 16% so far this year. But shoppers are cautious: October retail sales grew just 0.4% on a year, and property investment is down 21.6% so far this year. Consumer inflation is only 0.7%. Lending rates were left unchanged for an 18th month. The yuan is strong: the central bank’s daily rate hit 6.7111 per dollar on 25 Nov, the strongest since April 2022, helped by exporters swapping dollars for yuan before year-end. Next: official business surveys (PMIs) 30 Nov (UK 01:30)."
  },
  "commodities": {
   "oil": {
@@ -113,8 +113,8 @@
     "Brent"
    ],
    "what": "The price of crude oil. Brent is the global benchmark, WTI the US one.",
-   "now": "Brent ended the week at $92.57 and WTI at $83.98, a third weekly fall (−3.4% and −5.2%). That is about 11% below late May (Brent about $104), and WTI touched its lowest since August this week. Gulf exports are recovering, US crude stocks rose unexpectedly, and the IEA says supply is now running ahead of demand, with stocks building. Shipping costs from the Gulf have dropped sharply, a sign traders see less danger. The risk has not gone: tankers near Oman were attacked on 16 Nov, Houthi drones targeted Saudi pipeline sites, and Iran wants the US blockade lifted before it reopens Hormuz. OPEC+ meets on 29 Nov to set 2027 output.",
-   "links": "High oil helps oil exporters (CAD) and hurts importers (JPY, EUR). It feeds straight into inflation, which is why central banks have turned to raising rates. Falling oil has added to the Canadian dollar’s weakness."
+   "now": "Brent ended the week at $95.44, up about 3% and its first weekly gain in November; WTI slipped about 1% to $83.08. Brent is about 8% below late May (about $104). Supply fears returned: a projectile hit Saudi Aramco’s Jazan refinery on 26 Nov, the Houthis claimed attacks on Ras Tanura, and tankers near Hormuz were attacked. There is still no US–Iran deal, and the US blockade of Iranian ports continues. On the other side, Gulf exports are recovering and the IEA expects supply to run ahead of demand. OPEC+ meets on 29 Nov and is expected to keep output targets for early 2027 unchanged.",
+   "links": "High oil helps oil exporters (CAD) and hurts importers (JPY, EUR). It feeds straight into inflation, which is why central banks have turned to raising rates."
   },
   "gold": {
    "title": "Gold",
@@ -125,7 +125,7 @@
     "XAU"
    ],
    "what": "Gold priced in US dollars. It pays no interest, so it competes with what investors can earn elsewhere.",
-   "now": "Around $3,540, down about 8.7% this week, its worst week since March and its lowest since September 2025. That is about 21% lower than in late May (about $4,500) and roughly 37% below January’s record near $5,595. Markets see a December Fed rise as almost certain, the 10-year real yield is near 2.9% and the dollar is at a 19-month high. During the share sell-off some investors sold gold to cover losses. Central banks are still buying: they added a net 321 tonnes in Q3, according to the World Gold Council.",
+   "now": "Around $3,650, up about 3.3% this week after its worst week since March, as shares recovered and bargain hunters bought. That is still about 19% lower than in late May (about $4,500) and roughly 35% below January’s record near $5,595. The headwind has not gone: a December Fed rise looks almost certain, the 10-year real yield is near 2.8% and the dollar is near a 19-month high. Central banks are still buying: they added a net 321 tonnes in Q3, according to the World Gold Council.",
    "links": "Gold tends to rise when real yields fall, the dollar weakens or fear spikes. It often moves with CHF and JPY as a safe haven, and with AUD, since Australia is a big producer."
   },
   "silver": {
@@ -137,7 +137,7 @@
     "XAG"
    ],
    "what": "Half precious metal, half industrial metal (solar panels, electronics), so it swings more than gold.",
-   "now": "Around $41, its lowest in over a year, down roughly 15% this week. It is roughly 46% lower than in late May (about $76) and about two-thirds below January’s peak near $120. It faces the same rate headwind as gold, plus worries about factory demand as tech and AI shares slump.",
+   "now": "Around $43.70, up about 6% this week after hitting its lowest in over a year. It is still roughly 43% lower than in late May (about $76) and around 64% below January’s peak near $120. It faces the same rate headwind as gold; this week it was helped by the rebound in tech and AI shares, which eased worries about factory demand.",
    "links": "Follows gold in direction but with bigger swings; weaker Chinese industry weighs on it."
   }
  }

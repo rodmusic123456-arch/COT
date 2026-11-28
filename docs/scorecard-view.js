@@ -15,12 +15,13 @@
   const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(Math.round(v));
 
   // One week's numbers. A call "worked" when price moved the way the call said; "went the other way" when it moved against it.
-  function stats(w, strongOnly) {
+  function stats(w, strongOnly, key) {
     const lim = SC().strong;
-    const calls = w.calls.filter(c => c[5] !== null && (!strongOnly || Math.abs(c[1]) >= lim));
+    const src = w[key || 'calls'] || [];
+    const calls = src.filter(c => c[5] !== null && (key === 'fade' || !strongOnly || Math.abs(c[1]) >= lim));
     const won = calls.filter(c => c[5] * c[2] > 0), lost = calls.filter(c => c[5] * c[2] < 0);
     const avg = calls.length ? calls.reduce((a, c) => a + c[5] * c[2], 0) / calls.length : null;
-    return { n: calls.length, won: won.length, lost: lost.length, hit: calls.length ? won.length / calls.length * 100 : null, avg: avg, wonList: won, lostList: lost, nodata: w.calls.filter(c => c[5] === null && c[8] !== 'pending').length };
+    return { n: calls.length, won: won.length, lost: lost.length, hit: calls.length ? won.length / calls.length * 100 : null, avg: avg, wonList: won, lostList: lost, nodata: src.filter(c => c[5] === null && c[8] !== 'pending').length };
   }
   const finals = () => SC().weeks.filter(w => w.status === 'final');
   const lastFinal = () => { const f = finals(); return f.length ? f[f.length - 1] : null; };
@@ -233,11 +234,79 @@
     ['pfm', 'pfy', 'ptm', 'pty'].forEach(id => { const el = document.getElementById(id); if (el) el.onchange = read; });
   }
 
+  /* ================= Momentum fade: trial list tracked beside the model's calls ================= */
+  const hasFade = () => SC().weeks.some(w => w.fade && w.fade.length);
+  const modelView = (w, pair) => { const c = w.calls.find(x => x[0] === pair); return c ? c[2] : 0; };
+  const agreeTag = (w, c) => { const m = modelView(w, c[0]);
+    return m === 0 ? '<span class="mcell c-mut" title="The model has no call on this pair">model neutral</span>' : m === c[2] ? '<span class="mcell c-pos" title="The model\u2019s call points the same way">model agrees</span>' : '<span class="mcell c-neg" title="The model\u2019s call points the opposite way: lower confidence">model opposite</span>'; };
+
+  function fadeChips(w) {
+    if (!w.fade || !w.fade.length) return '';
+    const list = w.fade.slice().sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+    const clash = list.filter(c => modelView(w, c[0]) === -c[2]).length;
+    return '<h3 style="margin-top:12px">Momentum fade picks (trial) \u00b7 trading against momentum beyond \u00b1' + SC().fadeMomentum + '</h3><div class="scchips">' +
+      list.map(c => { const m = modelView(w, c[0]); return '<span class="scchip click" data-go="pair:' + esc(c[0]) + '" title="Momentum ' + sgn(c[1]) + (m === 0 ? ' \u00b7 model neutral' : m === c[2] ? ' \u00b7 model agrees' : ' \u00b7 model says the opposite') + '"><b>' + esc(c[0]) + '</b> <span class="' + (c[2] > 0 ? 'pos' : 'neg') + '">' + (c[2] > 0 ? '\u25b2' : '\u25bc') + '</span> <span class="mut">mom ' + sgn(c[1]) + '</span>' + (m === -c[2] ? ' <span class="neg">\u2715</span>' : m === c[2] ? ' <span class="pos">\u2714</span>' : '') + '</span>'; }).join('') + '</div>' +
+      '<div class="small mut" style="margin:4px 0 6px">\u2714 = the model\u2019s call agrees, \u2715 = the model says the opposite (' + clash + ' this week: lower confidence). A trial being tracked against the model\u2019s calls; see MOMENTUM FADE \u00b7 TRIAL on the Scorecard.</div>';
+  }
+
+  function fadeRow(w, c) {
+    const fav = c[5] === null ? null : c[5] * c[2];
+    return '<tr class="click" data-go="pair:' + esc(c[0]) + '"><td><b>' + esc(c[0]) + '</b></td>' +
+      '<td><span class="' + (c[2] > 0 ? 'pos' : 'neg') + '">' + (c[2] > 0 ? '\u25b2 Up (buy)' : '\u25bc Down (sell)') + '</span></td>' +
+      '<td class="scn"><b style="color:' + col(c[1]) + '">' + sgn(c[1]) + '</b></td>' +
+      '<td class="scn">' + pct(c[5]) + '</td>' +
+      '<td class="scn"><b class="' + (fav > 0 ? 'pos' : fav < 0 ? 'neg' : '') + '">' + (c[5] === null ? '\u2013' : pct(fav)) + '</b></td><td>' + agreeTag(w, c) + '</td></tr>';
+  }
+  const fadeTable = (w, list) => list.length ? '<div class="sctw"><table><tr><th>PAIR</th><th>FADE PICK</th><th class="scn">MOMENTUM</th><th class="scn">PRICE MOVE</th><th class="scn">FOR THE PICK</th><th>MODEL\u2019S CALL</th></tr>' + list.map(c => fadeRow(w, c)).join('') + '</table></div>' : '<div class="mut small">No fade picks that week.</div>';
+
+  // Both lists over a set of finished weeks: picks, win rate, average move, weeks with a positive average.
+  function duel(weeks) {
+    const one = key => { const a = { n: 0, won: 0, sum: 0, wk: 0, wkUp: 0 };
+      weeks.forEach(w => { const s = stats(w, false, key); if (!s.n) return; a.n += s.n; a.won += s.won; a.sum += s.avg * s.n; a.wk++; if (s.avg > 0) a.wkUp++; });
+      a.hit = a.n ? a.won / a.n * 100 : null; a.avg = a.n ? a.sum / a.n : null; return a; };
+    return { m: one('calls'), f: one('fade') };
+  }
+  const duelCell = a => '<td class="scn"><b style="color:' + hitCol(a.hit) + '">' + (a.hit === null ? '\u2013' : Math.round(a.hit) + '%') + '</b></td><td class="scn">' + (a.avg === null ? '\u2013' : '<span class="' + (a.avg > 0 ? 'pos' : a.avg < 0 ? 'neg' : '') + '">' + pct(a.avg) + '</span>') + '</td><td class="scn">' + (a.wk ? a.wkUp + '/' + a.wk : '\u2013') + '</td><td class="scn mut">' + a.n + '</td>';
+  const winner = d => d.m.avg === null || d.f.avg === null ? '' : d.f.avg > d.m.avg ? '<b style="color:#58c26d">Fade</b>' : d.f.avg < d.m.avg ? '<b style="color:#e8a33d">Model</b>' : 'Tie';
+
+  function fadePage() {
+    if (!hasFade()) return '<div class="panel"><h2>Momentum fade \u00b7 trial</h2><div class="note">The fade list will appear after the next data update.</div></div>';
+    const all = SC().weeks, fin = finals().filter(w => w.fade);
+    const live = fin.filter(w => !w.fadeRebuilt);
+    const pending = all.filter(w => w.status === 'pending').pop(), running = all.filter(w => w.status === 'running').pop();
+    const last = fin[fin.length - 1];
+    const yr = k => fin.filter(w => w.release.slice(0, 4) === k);
+    const years = []; fin.forEach(w => { const y = w.release.slice(0, 4); if (years.indexOf(y) < 0) years.push(y); });
+    const periods = [['Live trial (since tracking started)', live], ['Last 13 weeks', fin.slice(-13)], ['Last 26 weeks', fin.slice(-26)], ['Last 52 weeks', fin.slice(-52)]]
+      .concat(years.slice().reverse().map(y => [y, yr(y)])).concat([['All history (' + fin.length + ' weeks)', fin]]);
+    const head = '<tr><th>PERIOD</th><th class="scn" colspan="4" style="text-align:center">MODEL CALLS (current method)</th><th class="scn" colspan="4" style="text-align:center">MOMENTUM FADE</th><th>BETTER AVG</th></tr>' +
+      '<tr><th></th><th class="scn">WIN</th><th class="scn">AVG</th><th class="scn">WEEKS +</th><th class="scn">PICKS</th><th class="scn">WIN</th><th class="scn">AVG</th><th class="scn">WEEKS +</th><th class="scn">PICKS</th><th></th></tr>';
+    const cmp = '<div class="sctw"><table>' + head + periods.map(p => { const d = duel(p[1]); return '<tr><td>' + esc(p[0]) + '</td>' + duelCell(d.m) + duelCell(d.f) + '<td>' + winner(d) + '</td></tr>'; }).join('') + '</table></div>';
+    const dl = duel(live);
+    const trial = '<div class="kpis">' +
+      kpi(live.length + ' / 10', 'LIVE TRIAL WEEKS DONE', null, 'full comparison report after 10') +
+      kpi(dl.f.hit === null ? '\u2013' : Math.round(dl.f.hit) + '%', 'FADE WIN RATE (LIVE)', hitCol(dl.f.hit), dl.f.n ? dl.f.won + ' of ' + dl.f.n + ' picks' : 'first result next weekend') +
+      kpi(dl.m.hit === null ? '\u2013' : Math.round(dl.m.hit) + '%', 'MODEL WIN RATE (LIVE)', hitCol(dl.m.hit), dl.m.n ? dl.m.won + ' of ' + dl.m.n + ' calls' : 'same weeks') +
+      kpi(pct(dl.f.avg), 'FADE AVG MOVE (LIVE)', dl.f.avg > 0 ? '#58c26d' : dl.f.avg < 0 ? '#f0624d' : null, 'per pick') +
+      kpi(pct(dl.m.avg), 'MODEL AVG MOVE (LIVE)', dl.m.avg > 0 ? '#58c26d' : dl.m.avg < 0 ? '#f0624d' : null, 'per call') + '</div>';
+    const rows = fin.slice(-27).reverse().map(w => { const d = duel([w]); return '<tr class="click" data-sw="' + esc(w.week) + '"><td>' + fd(w.release, true) + ' ' + w.release.slice(2, 4) + (w.fadeRebuilt ? ' <span class="mut small" title="Rebuilt from history with the same rules, before the trial started">rebuilt</span>' : ' <span class="small" style="color:#e8a33d">live</span>') + '</td>' + duelCell(d.m) + duelCell(d.f) + '<td>' + winner(d) + '</td></tr>'; }).join('');
+    const up = pending || running;
+    return '<div class="panel"><h2>Momentum fade \u00b7 trial</h2>' +
+      '<div class="note">The research found that when a pair\u2019s <b>momentum</b> reading (how fast speculators have been adding to one side) is beyond \u00b1' + SC().fadeMomentum + ', the price has more often moved <b>the other way</b> over the next week or two, as if the crowd had already done its buying or selling. ' +
+      'This list trades against that momentum: momentum strongly up \u2192 sell, strongly down \u2192 buy. FX pairs only (it did not work on oil). It is a trial tracked beside the model\u2019s calls; <b>it does not change the model, the scores or the calls</b>.</div>' + trial +
+      '<div class="small mut">In the 2022\u20132026 history: fade 54% win, +0.08% average per pick; model calls 47%, \u22120.07%. The fade worked in 4 of 5 years (not 2025) and tends to lose in the weeks the model wins.</div></div>' +
+      (up ? '<div class="panel"><h2>Fade picks for ' + (pending ? 'the coming week' : 'this week (running)') + ' \u00b7 ' + esc(weekLabel(up)) + '</h2>' + fadeTable(up, up.fade.slice().sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))) + '<div class="small mut" style="margin-top:6px">\u201cModel opposite\u201d = the two lists disagree on that pair; treat it as lower confidence.</div></div>' : '') +
+      (last ? '<div class="panel"><h2>Last finished week \u00b7 ' + esc(weekLabel(last)) + '</h2>' + fadeTable(last, last.fade.slice().sort((a, b) => Math.abs(b[5] || 0) - Math.abs(a[5] || 0))) + '</div>' : '') +
+      '<div class="panel"><h2>Model calls vs momentum fade</h2>' + cmp + '<div class="small mut" style="margin-top:6px">WIN = share that moved the way the list said over the week. AVG = average move in that direction per pick (gains minus losses). WEEKS + = weeks whose average was positive (one vote per week: pairs sharing a currency move together, so this is the fairer count).</div></div>' +
+      '<div class="panel"><h2>Week by week \u00b7 last six months \u00b7 click a week for the model\u2019s calls</h2><div class="sctw"><table>' + head.replace('PERIOD', 'COT REPORT RELEASED') + rows + '</table></div></div>' +
+      '<div class="panel small mut">Both lists are measured the same way: from the first price after the Friday release to the price a week later. Fade picks are saved the first time they are seen and never rewritten' + (SC().fadeStarted ? ' (live since ' + fd(SC().fadeStarted.slice(0, 10)) + ' ' + SC().fadeStarted.slice(0, 4) + ')' : '') + '; earlier weeks were rebuilt with the same rules using only the data available at the time. Direction only: no entries, stops, targets or spreads. Not financial advice.</div>';
+  }
+
   function page() {
     if (!SC() || !SC().weeks.length) return '<div class="panel"><h2>Scorecard</h2><div class="note">The scorecard will appear after the next data update.</div></div>';
     const v = S.scv || 'week';
-    const tabs = '<div class="grp msub">' + [['week', 'WEEK BY WEEK'], ['perf', 'PERFORMANCE \u00b7 WIN RATE OVER TIME']].map(x => '<button class="btn ' + (v === x[0] ? 'on' : '') + '" data-scv="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>';
-    return tabs + (v === 'perf' ? perfPage() : weekPage());
+    const tabs = '<div class="grp msub">' + [['week', 'WEEK BY WEEK'], ['perf', 'PERFORMANCE \u00b7 WIN RATE OVER TIME'], ['fade', 'MOMENTUM FADE \u00b7 TRIAL']].map(x => '<button class="btn ' + (v === x[0] ? 'on' : '') + '" data-scv="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>';
+    return tabs + (v === 'perf' ? perfPage() : v === 'fade' ? fadePage() : weekPage());
   }
 
   function weekPage() {
@@ -248,7 +317,7 @@
     const pending = all.filter(w => w.status === 'pending').pop();
     const running = all.filter(w => w.status === 'running').pop();
     const upcoming = pending ? '<div class="panel"><h2>Calls for the coming week · ' + esc(weekLabel(pending)) + '</h2><div class="small mut" style="margin-bottom:8px">Picked from the latest COT report. Tracking starts with the first price after the release; check back next weekend for the result.</div><div class="scchips">' +
-      pending.calls.slice().sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).map(c => '<span class="scchip click" data-go="pair:' + esc(c[0]) + '"><b>' + esc(c[0]) + '</b> <span class="' + (c[2] > 0 ? 'pos' : 'neg') + '">' + (c[2] > 0 ? '▲' : '▼') + '</span> <b style="color:' + col(c[1]) + '">' + sgn(c[1]) + '</b></span>').join('') + '</div>' + newsBlock(pending, 'News that could move these calls \u00b7 click for the breakdown', true) + '</div>' : '';
+      pending.calls.slice().sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).map(c => '<span class="scchip click" data-go="pair:' + esc(c[0]) + '"><b>' + esc(c[0]) + '</b> <span class="' + (c[2] > 0 ? 'pos' : 'neg') + '">' + (c[2] > 0 ? '▲' : '▼') + '</span> <b style="color:' + col(c[1]) + '">' + sgn(c[1]) + '</b></span>').join('') + '</div>' + fadeChips(pending) + newsBlock(pending, 'News that could move these calls \u00b7 click for the breakdown', true) + '</div>' : '';
     const opts = all.slice().reverse().filter(w => w.status !== 'pending').map(w => '<option value="' + esc(w.week) + '"' + (w.week === sel.week ? ' selected' : '') + '>' + esc(weekLabel(w)) + (w.status === 'running' ? ' (running)' : '') + '</option>').join('');
     return '<div class="panel"><h2>Scorecard · did the calls work out?</h2>' +
       '<div class="chp"><label for="scw">WEEK</label><select id="scw">' + opts + '</select>' + (running && running.week !== sel.week ? '<button class="btn" data-sw="' + esc(running.week) + '">THIS WEEK SO FAR</button>' : '') + '</div>' +
@@ -257,6 +326,12 @@
       '<div class="panel small mut"><b>How it is measured.</b> Each Friday’s COT report gives that week’s calls. Each call is tracked from the first price after the release to the price a week later (for the newest week, the latest price), the same way the Research page measures returns. ' +
       '“For the call” is the move in the direction of the call: + means it worked, − means it went the other way. Calls are saved the first time they are seen and never rewritten' + (SC().started ? ' (recording since ' + fd(SC().started.slice(0, 10)) + ')' : '') + '; earlier weeks marked “rebuilt” were recreated with the same rules using only the data available at the time. ' +
       'This measures direction only: it ignores entries, stops, targets and spreads, so it is not a trading result. Past hit rates do not promise future ones.</div>';
+  }
+
+  function fadeLine(w) {
+    if (!w.fade || !w.fade.length) return '';
+    const f = stats(w, false, 'fade');
+    return '<div class="small msoft" style="margin-top:6px">Momentum fade (trial): <b style="color:' + hitCol(f.hit) + '">' + f.won + ' of ' + f.n + '</b> worked, ' + pct(f.avg) + ' average. <span class="click" data-scv-go="fade" style="text-decoration:underline">See the trial</span></div>';
   }
 
   function homePanel() {
@@ -268,13 +343,15 @@
     return '<div class="panel"><h2>Last week’s calls · ' + esc(weekLabel(w)) + '</h2>' +
       '<div class="scsum"><span><b style="font-size:22px;color:' + hitCol(s.hit) + '">' + s.won + ' of ' + s.n + '</b> went as foreseen' + (s.hit === null ? '' : ' (' + Math.round(s.hit) + '%)') + '</span>' +
       '<div class="scbar" style="flex:1 1 200px"><i style="width:' + (s.n ? s.won / s.n * 100 : 0) + '%;background:#3fae5a"></i><i style="width:' + (s.n ? s.lost / s.n * 100 : 0) + '%;background:#d9412b"></i></div>' +
-      '<button class="btn" data-go="page:score">OPEN SCORECARD</button></div>' +
+      '<button class="btn" data-go="page:score">OPEN SCORECARD</button></div>' + fadeLine(w) +
       '<div class="row r2" style="margin-top:8px"><div><h3 class="pos">Biggest that worked</h3><ul class="l">' + (top(s.wonList) || '<li class="mut">None.</li>') + '</ul></div><div><h3 class="neg">Biggest that went the other way</h3><ul class="l">' + (top(s.lostList) || '<li class="mut">None.</li>') + '</ul></div></div></div>';
   }
 
   function click(t) {
     const w = t.closest('[data-sw]');
     if (w) { S.page = 'score'; S.scv = 'week'; S.sw = w.dataset.sw; render(); window.scrollTo(0, 0); return true; }
+    const fg = t.closest('[data-scv-go]');
+    if (fg) { S.page = 'score'; S.scv = fg.dataset.scvGo; render(); window.scrollTo(0, 0); return true; }
     if (perfClick(t)) return true;
     return false;
   }

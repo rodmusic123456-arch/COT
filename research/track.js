@@ -2,6 +2,8 @@
 // Run from repo root on the research branch, after `git checkout origin/main -- docs data` (or with main's files present):
 //   node research/track.js
 // Adds this COT week's picks (frozen before the outcome) and scores any week whose 1-week / 2-week window has closed.
+// Timing: a week's 1w result is final only after the Monday close one week after entry, so a Saturday run scores the
+// week before last and prints the just-finished week as PROVISIONAL (not stored). Added 2026-11-28.
 // Uses data/prices.json closes for both lists so the comparison is like for like.
 const fs = require('fs'), path = require('path');
 const root = path.join(__dirname, '..');
@@ -66,6 +68,14 @@ for (const w of T.weeks) {
 }
 console.log(`\nScored weeks: ${scored} (10-week comparison due when this reaches 10)`);
 for (const k of ['current', 'fade']) console.log(`${k.padEnd(8)} 1w: ${f(stat(tot[k].r1, 'r1'))} | 2w: ${f(stat(tot[k].r2, 'r2'))} | weeks positive: ${wv[k][0]}/${wv[k][1]}`);
+// provisional: weeks whose 1w window is still open (e.g. a Saturday run), entry close -> latest close. Printed only, never stored.
+function prov(pair, cotDate) { const s = P[pair]; if (!s || !s.d) return null; const c = s.c; const ei = s.d.findIndex(d => d > addDays(cotDate, 3));
+  if (ei < 0 || ei >= s.d.length - 1) return null; return (c[c.length - 1] / c[ei] - 1) * 100; }
+for (const w of T.weeks) for (const k of ['current', 'fade']) {
+  const open = w[k].filter(c => c.r1 == null); if (!open.length) continue;
+  const v = open.map(c => { const m = prov(c.pair, w.cot); return m == null ? null : m * c.dir; }).filter(x => x != null);
+  if (v.length) console.log(`PROVISIONAL ${w.cot} ${k}: ${(100 * v.filter(x => x > 0).length / v.length).toFixed(0)}% win, ${(v.reduce((a, b) => a + b, 0) / v.length).toFixed(2)}% avg (${v.length}), entry close -> latest close, not final`);
+}
 const last = T.weeks[T.weeks.length - 1];
 console.log(`\nPicks for COT week ${last.cot} (trading from ${addDays(last.cot, 6)}):`);
 console.log('Current calls: ' + last.current.map(c => `${c.pair} ${c.dir > 0 ? 'BUY' : 'SELL'} (${c.score})`).join(', '));
